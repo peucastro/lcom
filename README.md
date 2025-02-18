@@ -1,10 +1,10 @@
 # LCOM Project
 
-LCOM Project for group GRUPO_2LEIC&lt;m&gt;&lt;n&gt;_&lt;p&gt;.
+LCOM Project for group GRUPO_2LEIC04_5.
 
 Group members:
 
-1. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
-2. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
-3. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
-4. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
+1. José Silveira (up202200040@edu.fe.up.pt)
+2. Nuno Gomes (up202306826@edu.fe.up.pt)
+3. Pedro Castro (up202200044@edu.fe.up.pt)
+4. Vasco Lemos (up202306905@edu.fe.up.pt)
