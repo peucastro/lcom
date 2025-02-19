@@ -4,67 +4,86 @@
 
 #define BIT(n) (1 << n)
 
-unsigned int and_repl(unsigned int uint1, unsigned int uint2) {
+// performs bitwise and of two unsigned ints
+unsigned int bit_and(unsigned int uint1, unsigned int uint2) {
   return uint1 & uint2;
 }
 
-unsigned int or_repl(unsigned int uint1, unsigned int uint2) {
+// performs bitwise or of two unsigned ints
+unsigned int bit_or(unsigned int uint1, unsigned int uint2) {
   return uint1 | uint2;
 }
 
-unsigned int set_repl(unsigned int uint1, unsigned int uint2) {
-  if (uint2 >= sizeof(unsigned int) * 8) {
-    perror("please provide a valid value!\n");
+// sets the bit at position 'bitpos' in uint1
+unsigned int set_bit(unsigned int uint1, unsigned int bitpos) {
+  if (bitpos >= sizeof(unsigned int) * 8) {
+    fprintf(stderr, "error: please provide a valid bit position!\n");
     exit(EXIT_FAILURE);
   }
-  return uint1 | BIT(uint2);
+  return uint1 | BIT(bitpos);
 }
 
-unsigned int unset_repl(unsigned int uint1, unsigned int uint2) {
-  if (uint2 >= sizeof(unsigned int) * 8) {
-    perror("please provide a valid value!\n");
+// clears the bit at position 'bitpos' in uint1
+unsigned int clear_bit(unsigned int uint1, unsigned int bitpos) {
+  if (bitpos >= sizeof(unsigned int) * 8) {
+    fprintf(stderr, "error: please provide a valid bit position!\n");
     exit(EXIT_FAILURE);
   }
-  return uint1 & ~(BIT(uint2));
+  return uint1 & ~(BIT(bitpos));
 }
 
-unsigned int byte_repl(unsigned int uint1, unsigned int uint2) {
-  if (uint2 >= sizeof(unsigned int)) {
-    perror("please provide a valid value!\n");
+// extracts a specific byte from uint1 based on bytepos
+unsigned int get_byte(unsigned int uint1, unsigned int bytepos) {
+  if (bytepos >= sizeof(unsigned int)) {
+    fprintf(stderr, "error: please provide a valid byte position!\n");
     exit(EXIT_FAILURE);
   }
-  return (uint1 >> (uint2 * 8)) & 0xFF;
+  return (uint1 >> (bytepos * 8)) & 0xFF; // shift and mask to extract the byte
 }
 
 int main(int argc, char **argv) {
   if (argc != 4) {
-    perror("correct usage:\n    and <uint1> <uint2>\n    or <uint1> <uint2>\n    set <uint> <bitpos>\n    unset <uint> <bitpos>\n    byte <uint> <bytepos>\n");
+    fprintf(stderr, "correct usage:\n    and <uint1> <uint2>\n    or <uint1> <uint2>\n    set <uint> <bitpos>\n    unset <uint> <bitpos>\n    byte <uint> <bytepos>\n");
+    exit(EXIT_FAILURE); // exit if incorrect number of arguments
+  }
+
+  char *endptr;
+  // convert first numeric argument from string to unsigned int
+  unsigned int uint1 = (unsigned int) strtoul(argv[2], &endptr, 0);
+  if (*endptr != '\0') {
+    fprintf(stderr, "invalid number: %s\n", argv[2]); // check conversion error
+    exit(EXIT_FAILURE);
+  }
+  // convert second numeric argument from string to unsigned int
+  unsigned int uint2 = (unsigned int) strtoul(argv[3], &endptr, 0);
+  if (*endptr != '\0') {
+    fprintf(stderr, "invalid number: %s\n", argv[3]); // check conversion error
     exit(EXIT_FAILURE);
   }
 
   unsigned int ans = 0;
 
+  // decide which operation to perform based on the first argument
   if (strcmp(argv[1], "and") == 0) {
-    ans = and_repl((unsigned int) strtoul(argv[2], NULL, 0), (unsigned int) strtoul(argv[3], NULL, 0));
+    ans = bit_and(uint1, uint2);
   }
   else if (strcmp(argv[1], "or") == 0) {
-    ans = or_repl((unsigned int) strtoul(argv[2], NULL, 0), (unsigned int) strtoul(argv[3], NULL, 0));
+    ans = bit_or(uint1, uint2);
   }
   else if (strcmp(argv[1], "set") == 0) {
-    ans = set_repl((unsigned int) strtoul(argv[2], NULL, 0), (unsigned int) strtoul(argv[3], NULL, 0));
+    ans = set_bit(uint1, uint2);
   }
   else if (strcmp(argv[1], "unset") == 0) {
-    ans = unset_repl((unsigned int) strtoul(argv[2], NULL, 0), (unsigned int) strtoul(argv[3], NULL, 0));
+    ans = clear_bit(uint1, uint2);
   }
   else if (strcmp(argv[1], "byte") == 0) {
-    ans = byte_repl((unsigned int) strtoul(argv[2], NULL, 0), (unsigned int) strtoul(argv[3], NULL, 0));
+    ans = get_byte(uint1, uint2);
   }
   else {
-    perror("correct usage:\n    and <uint1> <uint2>\n    or <uint1> <uint2>\n    set <uint> <bitpos>\n    unset <uint> <bitpos>\n    byte <uint> <bytepos>\n");
+    fprintf(stderr, "correct usage:\n    and <uint1> <uint2>\n    or <uint1> <uint2>\n    set <uint> <bitpos>\n    unset <uint> <bitpos>\n    byte <uint> <bytepos>\n");
     exit(EXIT_FAILURE);
   }
 
   printf("%u\n", ans);
-
-  exit(EXIT_SUCCESS);
+  return 0;
 }
