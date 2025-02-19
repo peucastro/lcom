@@ -31,9 +31,15 @@ int main() {
   printf("*cp=%c\n", *cp);
   printf("*p=%d\n", *p);
 
-  // disclaimer: this will output 4, as minix is a 32 bit machine.
-  // if you compile this and run it at your host machine, it will output 8
-  printf("sizeof(int) = %zu\n", sizeof(int));
+  // results: 4 and 1
+  printf("sizeof(int) = %zu\n", sizeof(int));   // typically 4 bytes on most systems
+  printf("sizeof(char) = %zu\n", sizeof(char)); // always 1 byte by definition
+
+  // results: 4 and 4 (on 32-bit systems)
+  // results: 8 and 8 (on 64-bit systems)
+  // explanation: all pointers have the same size on a given system, as they store memory addresses
+  printf("sizeof(int *) = %zu\n", sizeof(int *));
+  printf("sizeof(char *) = %zu\n", sizeof(char *));
 
   // arrays
   int s[100] = {0};                   // all zeroes by the compiler
