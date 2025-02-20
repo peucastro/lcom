@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BIT(n) (1 << n)
+#define BIT(n) (1 << (n))
 
 // performs bitwise and of two unsigned ints
 unsigned int bit_and(unsigned int uint1, unsigned int uint2) {
@@ -41,49 +41,58 @@ unsigned int get_byte(unsigned int uint1, unsigned int bytepos) {
   return (uint1 >> (bytepos * 8)) & 0xFF; // shift and mask to extract the byte
 }
 
-int main(int argc, char **argv) {
-  if (argc != 4) {
-    fprintf(stderr, "correct usage:\n    and <uint1> <uint2>\n    or <uint1> <uint2>\n    set <uint> <bitpos>\n    unset <uint> <bitpos>\n    byte <uint> <bytepos>\n");
-    exit(EXIT_FAILURE); // exit if incorrect number of arguments
-  }
-
-  char *endptr;
-  // convert first numeric argument from string to unsigned int
-  unsigned int uint1 = (unsigned int) strtoul(argv[2], &endptr, 0);
-  if (*endptr != '\0') {
-    fprintf(stderr, "invalid number: %s\n", argv[2]); // check conversion error
-    exit(EXIT_FAILURE);
-  }
-  // convert second numeric argument from string to unsigned int
-  unsigned int uint2 = (unsigned int) strtoul(argv[3], &endptr, 0);
-  if (*endptr != '\0') {
-    fprintf(stderr, "invalid number: %s\n", argv[3]); // check conversion error
-    exit(EXIT_FAILURE);
-  }
-
+void repl() {
+  char input[256];
+  char command[16];
+  unsigned int uint1, uint2;
   unsigned int ans = 0;
+  const char *usage = "correct usage:\n"
+                      "    and <uint1> <uint2>\n"
+                      "    or <uint1> <uint2>\n"
+                      "    set <uint> <bitpos>\n"
+                      "    unset <uint> <bitpos>\n"
+                      "    byte <uint> <bytepos>\n"
+                      "    exit\n";
 
-  // decide which operation to perform based on the first argument
-  if (strcmp(argv[1], "and") == 0) {
-    ans = bit_and(uint1, uint2);
-  }
-  else if (strcmp(argv[1], "or") == 0) {
-    ans = bit_or(uint1, uint2);
-  }
-  else if (strcmp(argv[1], "set") == 0) {
-    ans = set_bit(uint1, uint2);
-  }
-  else if (strcmp(argv[1], "unset") == 0) {
-    ans = clear_bit(uint1, uint2);
-  }
-  else if (strcmp(argv[1], "byte") == 0) {
-    ans = get_byte(uint1, uint2);
-  }
-  else {
-    fprintf(stderr, "correct usage:\n    and <uint1> <uint2>\n    or <uint1> <uint2>\n    set <uint> <bitpos>\n    unset <uint> <bitpos>\n    byte <uint> <bytepos>\n");
-    exit(EXIT_FAILURE);
-  }
+  while (1) {
+    printf("> ");
+    if (!fgets(input, sizeof(input), stdin)) {
+      break;
+    }
 
-  printf("%u\n", ans);
+    if (sscanf(input, "%15s %u %u", command, &uint1, &uint2) < 1) {
+      fprintf(stderr, "%s", usage);
+      continue;
+    }
+
+    if (strcmp(command, "exit") == 0) {
+      break;
+    }
+    else if (strcmp(command, "and") == 0) {
+      ans = bit_and(uint1, uint2);
+    }
+    else if (strcmp(command, "or") == 0) {
+      ans = bit_or(uint1, uint2);
+    }
+    else if (strcmp(command, "set") == 0) {
+      ans = set_bit(uint1, uint2);
+    }
+    else if (strcmp(command, "unset") == 0) {
+      ans = clear_bit(uint1, uint2);
+    }
+    else if (strcmp(command, "byte") == 0) {
+      ans = get_byte(uint1, uint2);
+    }
+    else {
+      fprintf(stderr, "%s", usage);
+      continue;
+    }
+
+    printf("%u\n", ans);
+  }
+}
+
+int main() {
+  repl();
   return 0;
 }
