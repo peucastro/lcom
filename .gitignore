@@ -1,7 +1,8 @@
-# Ignore all files without extension
+# Ignore all files without extension (except for Makefiles)
 *
 !*.*
 !/**/
+!Makefile
 
 ### C ###
 # Prerequisites
