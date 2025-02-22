@@ -1,8 +1,12 @@
-# Ignore all files without extension (except for Makefiles)
+# All files without extension (except for Makefiles)
 *
 !*.*
 !/**/
 !Makefile
+
+# LCF output
+output.txt
+trace.txt
 
 ### C ###
 # Prerequisites
@@ -49,6 +53,9 @@
 *.idb
 *.pdb
 
+# GDB files
+.gdbinit
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
@@ -57,4 +64,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
