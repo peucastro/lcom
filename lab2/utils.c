@@ -14,13 +14,20 @@ int(util_get_MSB)(uint16_t val, uint8_t *msb) {
   if (msb == NULL)
     return 1;
 
-  *msb = ((val >> 6) & 0xFF);
+  *msb = ((val >> 8) & 0xFF);
   return 0;
 }
 
 int(util_sys_inb)(int port, uint8_t *value) {
-  /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  if (value == NULL)
+    return 1;
 
-  return 1;
+  uint32_t val = 0;
+  int ret = sys_inb(port, &val);
+  if (ret != 0)
+    return 1;
+
+  *value = val & 0xFF;
+
+  return 0;
 }
