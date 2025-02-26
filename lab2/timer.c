@@ -69,7 +69,7 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
         val.in_mode = MSB_after_LSB;
       }
       else {
-        return 1;
+        val.in_mode = INVAL_val;
       }
 
       break;
