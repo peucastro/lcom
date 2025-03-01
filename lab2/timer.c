@@ -6,7 +6,7 @@
 #include "i8254.h"
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
-  if (freq < 19 || freq > TIMER_FREQ)
+  if (timer < 0 || timer > 2 || freq < 19 || freq > TIMER_FREQ)
     return 1;
 
   uint8_t ctrl_word;
@@ -66,7 +66,7 @@ void(timer_int_handler)() {
 }
 
 int(timer_get_conf)(uint8_t timer, uint8_t *st) {
-  if (st == NULL)
+  if (timer < 0 || timer > 2 || st == NULL)
     return 1;
 
   uint8_t rdb_cmd = TIMER_RB_CMD | TIMER_RB_COUNT_ | TIMER_RB_SEL(timer);
@@ -81,6 +81,9 @@ int(timer_get_conf)(uint8_t timer, uint8_t *st) {
 
 int(timer_display_conf)(uint8_t timer, uint8_t st,
                         enum timer_status_field field) {
+  if (timer < 0 || timer > 2)
+    return 1;
+
   union timer_status_field_val val;
 
   switch (field) {
