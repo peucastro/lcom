@@ -6,34 +6,25 @@
 #include "i8254.h"
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
-  uint8_t config = 0;
-  int ret = timer_get_conf(timer, &config);
-  if (ret != 0)
+  uint8_t ctrl_word;
+  if (timer_get_conf(timer, &ctrl_word) != 0)
     return 1;
 
-  config = config | TIMER_LSB_MSB;
+  ctrl_word = ctrl_word | TIMER_LSB_MSB;
 
   uint16_t count = TIMER_FREQ / freq;
   uint8_t lsb, msb;
-  ret = util_get_LSB(count, &lsb);
-  if (ret != 0)
+  if (util_get_LSB(count, &lsb) != 0)
     return 1;
-  ret = util_get_MSB(count, &msb);
-  if (ret != 0)
+  if (util_get_MSB(count, &msb) != 0)
     return 1;
 
-  ret = sys_outb(TIMER_CTRL, config);
-  if (ret != 0) {
+  if (sys_outb(TIMER_CTRL, ctrl_word) != 0)
     return 1;
-  }
-  ret = sys_outb(TIMER_0 + timer, lsb);
-  if (ret != 0) {
+  if (sys_outb(TIMER_0 + timer, lsb) != 0)
     return 1;
-  }
-  ret = sys_outb(TIMER_0 + timer, msb);
-  if (ret != 0) {
+  if (sys_outb(TIMER_0 + timer, msb) != 0)
     return 1;
-  }
 
   return 0;
 }
@@ -62,12 +53,10 @@ int(timer_get_conf)(uint8_t timer, uint8_t *st) {
     return 1;
 
   uint8_t rdb_cmd = TIMER_RB_CMD | TIMER_RB_COUNT_ | TIMER_RB_SEL(timer);
-  int ret = sys_outb(TIMER_CTRL, rdb_cmd);
-  if (ret != 0)
+  if ((sys_outb(TIMER_CTRL, rdb_cmd)) != 0)
     return 1;
 
-  ret = util_sys_inb(TIMER_0 + timer, st);
-  if (ret != 0)
+  if ((util_sys_inb(TIMER_0 + timer, st)) != 0)
     return 1;
 
   return 0;
@@ -84,7 +73,6 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
 
     case tsf_initial:
       st = ((st >> 4) & 0x3);
-
       if (st == 1) {
         val.in_mode = LSB_only;
       }
@@ -97,12 +85,10 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
       else {
         val.in_mode = INVAL_val;
       }
-
       break;
 
     case tsf_mode:
       st = ((st >> 1) & 0x7);
-
       if (st == 6) {
         val.count_mode = 2;
       }
@@ -112,7 +98,6 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
       else {
         val.count_mode = st;
       }
-
       break;
 
     case tsf_base:
@@ -123,8 +108,7 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
       return 1;
   }
 
-  int ret = timer_print_config(timer, field, val);
-  if (ret != 0)
+  if ((timer_print_config(timer, field, val)) != 0)
     return 1;
 
   return 0;
