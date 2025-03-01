@@ -6,6 +6,9 @@
 #include "i8254.h"
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
+  if (freq < 19 || freq > TIMER_FREQ)
+    return 1;
+
   uint8_t ctrl_word;
   if (timer_get_conf(timer, &ctrl_word) != 0)
     return 1;
