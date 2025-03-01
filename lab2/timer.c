@@ -10,6 +10,7 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
   if (timer_get_conf(timer, &ctrl_word) != 0)
     return 1;
 
+  ctrl_word &= 0x0F;
   ctrl_word = ctrl_word | TIMER_LSB_MSB;
 
   uint16_t count = TIMER_FREQ / freq;
