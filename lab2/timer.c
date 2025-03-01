@@ -12,6 +12,19 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
 
   ctrl_word &= 0x0F;
   ctrl_word = ctrl_word | TIMER_LSB_MSB;
+  switch (timer) {
+    case 0:
+      ctrl_word |= TIMER_SEL0;
+      break;
+    case 1:
+      ctrl_word |= TIMER_SEL1;
+      break;
+    case 2:
+      ctrl_word |= TIMER_SEL2;
+      break;
+    default:
+      return 1;
+  }
 
   uint16_t count = TIMER_FREQ / freq;
   uint8_t lsb, msb;
