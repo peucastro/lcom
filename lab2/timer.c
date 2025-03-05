@@ -9,15 +9,23 @@ int hook_id = 0;
 int counter = 0;
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
+  // MINIX does not support frequencies below 19 (it causes overflow). TIMER_FREQ / 2^16 = 18.2
   if (timer < 0 || timer > 2 || freq < 19 || freq > TIMER_FREQ)
     return 1;
 
   uint8_t ctrl_word;
-  if (timer_get_conf(timer, &ctrl_word) != 0)
+  if (timer_get_conf(timer, &ctrl_word) != 0) // get the currect config
     return 1;
 
-  ctrl_word &= 0x0F;
-  ctrl_word = ctrl_word | TIMER_LSB_MSB;
+  /*
+   * before we proceed, we need to clear out the first for bits of the timer's config!
+   * the 4 most significant bits of the status represent the output, null count and type of access,
+   * and we need to write the counter selection and initialization mode in order to change the config
+   */
+  ctrl_word &= 0x0F;                     // clear the first 4 bits
+  ctrl_word = ctrl_word | TIMER_LSB_MSB; // set the initialization mode to LSB followed by MSB
+
+  // set the counter selection bits based on the timer number
   switch (timer) {
     case 0:
       ctrl_word |= TIMER_SEL0;
@@ -32,18 +40,18 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
       return 1;
   }
 
-  uint16_t count = TIMER_FREQ / freq;
+  uint16_t count = TIMER_FREQ / freq; // calculate the internal value
   uint8_t lsb, msb;
-  if (util_get_LSB(count, &lsb) != 0)
+  if (util_get_LSB(count, &lsb) != 0) // get the LSB of the count
     return 1;
-  if (util_get_MSB(count, &msb) != 0)
+  if (util_get_MSB(count, &msb) != 0) // get the MSB of the count
     return 1;
 
-  if (sys_outb(TIMER_CTRL, ctrl_word) != 0)
+  if (sys_outb(TIMER_CTRL, ctrl_word) != 0) // tell the timer we are going to change its config
     return 1;
-  if (sys_outb(TIMER_0 + timer, lsb) != 0)
+  if (sys_outb(TIMER_0 + timer, lsb) != 0) // write the LSB
     return 1;
-  if (sys_outb(TIMER_0 + timer, msb) != 0)
+  if (sys_outb(TIMER_0 + timer, msb) != 0) // followed by the MSB
     return 1;
 
   return 0;
