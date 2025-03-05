@@ -69,30 +69,36 @@ int(timer_get_conf)(uint8_t timer, uint8_t *st) {
   if (timer < 0 || timer > 2 || st == NULL)
     return 1;
 
+  /*
+   * reading a timer's configuration requires a special command: the Read-Back command.
+   * TIMER_RB_CMD: distinguish between a control word and a read-back command.
+   * TIMER_RB_COUNT_: we want to read the config, so we need to activate the status bit
+   * TIMER_RB_SEL: selects the timer
+   */
   uint8_t rdb_cmd = TIMER_RB_CMD | TIMER_RB_COUNT_ | TIMER_RB_SEL(timer);
-  if ((sys_outb(TIMER_CTRL, rdb_cmd)) != 0)
+  if ((sys_outb(TIMER_CTRL, rdb_cmd)) != 0) // writes the rdb_cmd to the control register
     return 1;
 
-  if ((util_sys_inb(TIMER_0 + timer, st)) != 0)
+  // TIMER_0 [0x40] + timer [0, 1 or 2]: specifies the desired port
+  if ((util_sys_inb(TIMER_0 + timer, st)) != 0) // efectivelly reads the timer's configuration
     return 1;
 
   return 0;
 }
 
-int(timer_display_conf)(uint8_t timer, uint8_t st,
-                        enum timer_status_field field) {
+int(timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field) {
   if (timer < 0 || timer > 2)
     return 1;
 
-  union timer_status_field_val val;
+  union timer_status_field_val val; // union to store the value of the specified status field
 
-  switch (field) {
+  switch (field) { // switch based on the specified field to display
     case tsf_all:
-      val.byte = st;
+      val.byte = st; // display the entire status byte
       break;
 
     case tsf_initial:
-      st = ((st >> 4) & 0x3);
+      st = ((st >> 4) & 0x3); // extract the initialization mode (bits 4 and 5)
       if (st == 1) {
         val.in_mode = LSB_only;
       }
@@ -108,7 +114,7 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
       break;
 
     case tsf_mode:
-      st = ((st >> 1) & 0x7);
+      st = ((st >> 1) & 0x7); // extract the counting mode (bits 1, 2, and 3)
       if (st == 6) {
         val.count_mode = 2;
       }
@@ -121,14 +127,14 @@ int(timer_display_conf)(uint8_t timer, uint8_t st,
       break;
 
     case tsf_base:
-      val.bcd = (st & TIMER_BCD);
+      val.bcd = (st & TIMER_BCD); // extract the counting base (bit 0)
       break;
 
     default:
       return 1;
   }
 
-  if ((timer_print_config(timer, field, val)) != 0)
+  if ((timer_print_config(timer, field, val)) != 0) // print the timer configuration
     return 1;
 
   return 0;
