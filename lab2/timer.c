@@ -5,8 +5,13 @@
 
 #include "i8254.h"
 
-int hook_id = 0;
-int counter = 0;
+/*
+ * bit position to activate in the message for the interrupt notifications
+ * it tells us which bit in msg.m_notify.interrupts corresponds to timer 0 interrupts
+ * the value is arbitrary (but should be between 0 and 31)
+ */
+int hook_id = 3;
+int counter = 0; // global counter (in seconds)
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
   // MINIX does not support frequencies below 19 (it causes overflow). TIMER_FREQ / 2^16 = 18.2
@@ -60,17 +65,17 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
 int(timer_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL)
     return 1;
-  *bit_no = BIT(hook_id);
+  *bit_no = hook_id; // sets the bit_no to be the bit position in the mask returned upon an interrupt
 
-  return sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id);
+  return sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id); // subscribes the interrupt notification
 }
 
 int(timer_unsubscribe_int)() {
-  return sys_irqrmpolicy(&hook_id);
+  return sys_irqrmpolicy(&hook_id); // unsubscribes the notification
 }
 
 void(timer_int_handler)() {
-  counter++;
+  counter++; // increases the counter
 }
 
 int(timer_get_conf)(uint8_t timer, uint8_t *st) {
