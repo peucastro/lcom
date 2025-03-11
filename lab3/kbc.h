@@ -7,4 +7,4 @@ int(read_kbc_st)(uint8_t *st);
 
 int(read_kbc_data)(uint8_t *data);
 
-#endif
+#endif /* __KBC_H */

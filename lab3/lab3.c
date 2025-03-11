@@ -5,8 +5,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "i8042.h"
 #include "kbc.h"
 #include "kbd.h"
+
+extern uint8_t scancode;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -34,16 +37,14 @@ int main(int argc, char *argv[]) {
 
 int(kbd_test_scan)() {
   int ipc_status, r;
-  uint8_t data, bit_no, irq_set;
+  uint8_t bit_no, irq_set;
   message msg;
-
-  data = 0;
 
   if (kbd_subscribe_int(&bit_no) != 0)
     return 1;
   irq_set = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
-  while (true) { /*breakcode ESC*/
+  while (scancode != 0x81) { /*breakcode ESC*/
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
@@ -53,8 +54,8 @@ int(kbd_test_scan)() {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            read_kbc_data(&data);
-            printf("%c\n", data);
+            kbc_ih();
+            kbd_print_scancode(!(scancode & MAKE_CODE), (scancode & 0xEF) == 0 ? 2 : 1, &scancode);
           }
           break;
         default:

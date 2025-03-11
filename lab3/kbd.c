@@ -1,9 +1,11 @@
 #include <lcom/lcf.h>
 
 #include "i8042.h"
+#include "kbd.h"
 #include <lcom/lab3.h>
 
 int hook_id = 5;
+uint8_t scancode = 0;
 
 int(kbd_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL)
@@ -15,4 +17,14 @@ int(kbd_subscribe_int)(uint8_t *bit_no) {
 
 int(kbd_unsubscribe_int)() {
   return sys_irqrmpolicy(&hook_id);
+}
+
+void(kbc_ih)() {
+  uint8_t st;
+
+  read_kbc_st(&st);
+  if (st & (KBC_PARITY_ERROR | KBC_TIMEOUT_ERROR))
+    return;
+
+  read_kbc_data(&scancode);
 }

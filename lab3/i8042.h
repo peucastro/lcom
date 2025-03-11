@@ -1,12 +1,20 @@
 #ifndef _LCOM_I8042_H_
 #define _LCOM_I8042_H_
 
-#define KBD_IRQ 1 /* keyboard irq line */
+#define MAKE_CODE BIT(7)
 
-#define KBD_OUT 0X60 /* output register */
+#define KBC_OUT 0X60
 
-#define KBD_IN 0X64 /* input register */
+#define KBC_IN 0X64
 
-#define KBD_ST 0X64 /* keyboard status */
+#define KBC_ST 0X64
 
-#endif
+#define KBC_PARITY_ERROR BIT(7)
+
+#define KBC_TIMEOUT_ERROR BIT(6)
+
+#define KBC_FULL_IBF BIT(1)
+
+#define KBC_FULL_OBF BIT(0)
+
+#endif /* _LCOM_I8042_H_ */
