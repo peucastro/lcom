@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "i8042.h"
+
 int(read_kbc_st)(uint8_t *st);
 
 int(read_kbc_data)(uint8_t *data);

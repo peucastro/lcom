@@ -1,8 +1,10 @@
 #ifndef __KBD_H
 #define __KBD_H
 
-#include "kbc.h"
 #include <stdint.h>
+
+#include "i8042.h"
+#include "kbc.h"
 
 #define KBD_IRQ 1
 

@@ -1,8 +1,6 @@
 #include <lcom/lcf.h>
 
-#include "i8042.h"
 #include "kbd.h"
-#include <lcom/lab3.h>
 
 int hook_id = 5;
 uint8_t scancode = 0;
