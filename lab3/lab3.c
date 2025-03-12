@@ -45,7 +45,7 @@ int(kbd_test_scan)() {
     return 1;
   irq_set = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
-  while (scancode != 0x81) { /*breakcode ESC*/
+  while (scancode != BREAK_ESC) { /*breakcode ESC*/
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
@@ -56,7 +56,7 @@ int(kbd_test_scan)() {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
             kbc_ih();
-            kbd_print_scancode(!(scancode & MAKE_CODE), (scancode & 0xEF) == 0 ? 2 : 1, &scancode);
+            kbd_print_scancode(!(scancode & MAKE_CODE), (scancode & TWO_BYTES) == 0 ? 2 : 1, &scancode);
           }
           break;
         default:

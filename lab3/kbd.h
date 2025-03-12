@@ -6,8 +6,6 @@
 #include "i8042.h"
 #include "kbc.h"
 
-#define KBD_IRQ 1
-
 int(kbd_subscribe_int)(uint8_t *bit_no);
 
 int(kbd_unsubscribe_int)();

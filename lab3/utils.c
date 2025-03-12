@@ -2,9 +2,7 @@
 
 #include <stdint.h>
 
-#ifdef LAB3
 int cnt_sys_inb = 0;
-#endif
 
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
   if (lsb == NULL)
@@ -28,12 +26,11 @@ int(util_sys_inb)(int port, uint8_t *value) {
     return 1;
 
   uint32_t val; // sys_inb expects a 4 bytes variable
-  int ret = sys_inb(port, &val);
+  if (sys_inb(port, &val) != 0)
+    return 1;
 
   // count the number of sys_inb calls
-  #ifdef LAB3
   cnt_sys_inb++;
-  #endif
 
   /*
    * since the timer's configuration only occupies 8 bits (the status byte),
@@ -42,5 +39,5 @@ int(util_sys_inb)(int port, uint8_t *value) {
    */
   *value = val & 0xFF; // extract the least significant byte from the 4-byte value
 
-  return ret;
+  return 0;
 }
