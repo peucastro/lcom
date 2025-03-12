@@ -10,6 +10,7 @@
 #include "kbd.h"
 
 extern uint8_t scancode;
+uint8_t bytes[2];
 extern int cnt_sys_inb;
 
 int main(int argc, char *argv[]) {
@@ -56,7 +57,17 @@ int(kbd_test_scan)() {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
             kbc_ih();
-            kbd_print_scancode(!(scancode & MAKE_CODE), (scancode & TWO_BYTES) == 0 ? 2 : 1, &scancode);
+            int size = 0;
+            if (scancode == CODE_HEADER) {
+              bytes[0] = scancode;
+              size++;
+            }
+            else {
+              kbc_ih();
+              bytes[size] = scancode;
+            }
+
+            kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes);
           }
           break;
         default:

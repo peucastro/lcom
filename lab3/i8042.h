@@ -15,7 +15,7 @@
 
 #define MAKE_CODE BIT(7) /**< @brief Make code bit mask */
 
-#define TWO_BYTES 0xEF /**< @brief Bit mask used to indicate if the scancode has 2 bytes */
+#define CODE_HEADER 0xE0 /**< @brief Byte that indicates if the scancode has 2 bytes */
 
 #define BREAK_ESC 0x81 /**< @brief ESC key breakcode */
 
