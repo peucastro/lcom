@@ -18,11 +18,5 @@ int(kbd_unsubscribe_int)() {
 }
 
 void(kbc_ih)() {
-  uint8_t st;
-
-  read_kbc_st(&st);
-  if (!kbc_ready(&st))
-    return;
-
-  read_kbc_data(&scancode);
+  read_kbc_data(KBC_OUT, &scancode);
 }

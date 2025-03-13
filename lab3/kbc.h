@@ -7,7 +7,7 @@
 
 int(read_kbc_st)(uint8_t *st);
 
-int(read_kbc_data)(uint8_t *data);
+int(read_kbc_data)(uint8_t port, uint8_t *data);
 
 int(kbc_ready)(uint8_t *st);
 
