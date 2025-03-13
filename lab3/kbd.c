@@ -21,7 +21,7 @@ void(kbc_ih)() {
   uint8_t st;
 
   read_kbc_st(&st);
-  if (st & (KBC_PARITY_ERROR | KBC_TIMEOUT_ERROR))
+  if (!kbc_ready(&st))
     return;
 
   read_kbc_data(&scancode);
