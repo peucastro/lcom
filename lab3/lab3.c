@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 }
 
 int(kbd_test_scan)() {
-  int ipc_status, r;
+  int ipc_status, r, size = 0;
   uint8_t bit_no, irq_set;
   message msg;
 
@@ -57,7 +57,6 @@ int(kbd_test_scan)() {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
             kbc_ih();
-            int size = 0;
             if (scancode == CODE_HEADER) {
               bytes[0] = scancode;
               size++;
@@ -77,6 +76,7 @@ int(kbd_test_scan)() {
     else { /* received a standard message, not a notification */
       /* no standard messages expected: do nothing */
     }
+    size = 0;
   }
 
   if (kbd_unsubscribe_int() != 0)
@@ -89,10 +89,27 @@ int(kbd_test_scan)() {
 }
 
 int(kbd_test_poll)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  int size = 0;
+  while (scancode != BREAK_ESC) {
+    if (read_kbc_data(KBC_OUT, &scancode) == 0) {
+      if (scancode == CODE_HEADER) {
+        bytes[0] = scancode;
+        size++;
+      }
+      else {
+        read_kbc_data(KBC_OUT, &scancode);
+        bytes[size] = scancode;
+      }
 
-  return 1;
+      kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes);
+      size = 0;
+    }
+  }
+
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0)
+    return 1;
+
+  return 0;
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
