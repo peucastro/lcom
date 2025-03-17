@@ -20,3 +20,21 @@ int(kbd_unsubscribe_int)() {
 void(kbc_ih)() {
   read_kbc_data(KBC_OUT, &scancode);
 }
+
+int(kbd_enable_int)() {
+  uint8_t cmd;
+
+  if (kbc_write_cmd(KBC_IN, KBC_READ_CMD) != 0)
+    return 1;
+  if (read_kbc_data(KBC_OUT, &cmd) != 0)
+    return 1;
+
+  cmd |= BIT(0);
+
+  if (kbc_write_cmd(KBC_IN, KBC_WRITE_CMD) != 0)
+    return 1;
+  if (kbc_write_cmd(KBC_OUT, cmd) != 0)
+    return 1;
+
+  return 0;
+}

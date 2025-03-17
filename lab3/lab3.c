@@ -104,7 +104,11 @@ int(kbd_test_poll)() {
       kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes);
       size = 0;
     }
+    tickdelay(micros_to_ticks(20000));
   }
+
+  if (kbd_enable_int() != 0)
+    return 1;
 
   if (kbd_print_no_sysinb(cnt_sys_inb) != 0)
     return 1;

@@ -12,4 +12,6 @@ int(kbd_unsubscribe_int)();
 
 void(kbc_ih)();
 
+int(kbd_enable_int)();
+
 #endif /* __KBD_H */
