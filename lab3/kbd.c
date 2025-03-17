@@ -19,22 +19,14 @@ int(kbd_unsubscribe_int)() {
 
 int(kbd_enable_int)() {
   uint8_t cmd;
-
-  if (kbc_write_cmd(KBC_IN, KBC_READ_CMD) != 0)
-    return 1;
-  if (kbc_read_buffer(&cmd) != 0)
-    return 1;
-
+  kbc_write_cmd(KBC_IN, KBC_READ_CMD);
+  kbc_read_buffer(KBC_OUT, &cmd);
   cmd |= BIT(0);
-
-  if (kbc_write_cmd(KBC_IN, KBC_WRITE_CMD) != 0)
-    return 1;
-  if (kbc_write_cmd(KBC_OUT, cmd) != 0)
-    return 1;
-
+  kbc_write_cmd(KBC_IN, KBC_WRITE_CMD);
+  kbc_write_cmd(0x60, cmd);
   return 0;
 }
 
 void(kbc_ih)() {
-  kbc_read_buffer(&scancode);
+  kbc_read_buffer(KBC_OUT, &scancode);
 }

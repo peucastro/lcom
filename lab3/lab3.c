@@ -91,13 +91,13 @@ int(kbd_test_scan)() {
 int(kbd_test_poll)() {
   int size = 0;
   while (scancode != BREAK_ESC) {
-    if (kbc_read_buffer(&scancode) == 0) {
+    if (kbc_read_data(&scancode) == 0) {
       if (scancode == CODE_HEADER) {
         bytes[0] = scancode;
         size++;
       }
       else {
-        kbc_read_buffer(&scancode);
+        kbc_read_data(&scancode);
         bytes[size] = scancode;
       }
 
