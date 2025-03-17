@@ -17,16 +17,12 @@ int(kbd_unsubscribe_int)() {
   return sys_irqrmpolicy(&hook_id);
 }
 
-void(kbc_ih)() {
-  read_kbc_data(KBC_OUT, &scancode);
-}
-
 int(kbd_enable_int)() {
   uint8_t cmd;
 
   if (kbc_write_cmd(KBC_IN, KBC_READ_CMD) != 0)
     return 1;
-  if (read_kbc_data(KBC_OUT, &cmd) != 0)
+  if (kbc_read_buffer(&cmd) != 0)
     return 1;
 
   cmd |= BIT(0);
@@ -37,4 +33,8 @@ int(kbd_enable_int)() {
     return 1;
 
   return 0;
+}
+
+void(kbc_ih)() {
+  kbc_read_buffer(&scancode);
 }
