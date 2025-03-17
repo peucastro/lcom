@@ -13,20 +13,20 @@ int(kbd_subscribe_int)(uint8_t *bit_no) {
   return sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id);
 }
 
-int(kbd_unsubscribe_int)() {
+int(kbd_unsubscribe_int)(void) {
   return sys_irqrmpolicy(&hook_id);
 }
 
-int(kbd_enable_int)() {
+int(kbd_enable_int)(void) {
   uint8_t cmd;
   kbc_write_cmd(KBC_IN, KBC_READ_CMD);
   kbc_read_buffer(KBC_OUT, &cmd);
-  cmd |= BIT(0);
+  cmd |= KBC_INT;
   kbc_write_cmd(KBC_IN, KBC_WRITE_CMD);
-  kbc_write_cmd(0x60, cmd);
+  kbc_write_cmd(KBC_ARG, cmd);
   return 0;
 }
 
-void(kbc_ih)() {
+void(kbc_ih)(void) {
   kbc_read_buffer(KBC_OUT, &scancode);
 }

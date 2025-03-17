@@ -8,10 +8,10 @@
 
 int(kbd_subscribe_int)(uint8_t *bit_no);
 
-int(kbd_unsubscribe_int)();
+int(kbd_unsubscribe_int)(void);
 
-int(kbd_enable_int)();
+int(kbd_enable_int)(void);
 
-void(kbc_ih)();
+void(kbc_ih)(void);
 
 #endif /* __KBD_H */
