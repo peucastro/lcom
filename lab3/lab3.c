@@ -43,7 +43,7 @@ int(kbd_test_scan)() {
   uint8_t bit_no, irq_set;
   message msg;
 
-  if (kbd_subscribe_int(&bit_no) != 0) {
+  if (kbd_subscribe_int(&bit_no) != 0) { // subscribes for the kbd interrupts
     perror("Failed to subscribe kbd interrupts.");
     return 1;
   }
@@ -59,17 +59,23 @@ int(kbd_test_scan)() {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            kbc_ih();
+            kbc_ih();                              // calls the interrupt handler
+
+            /*
+             * scancodes may be one byte long or two byte long
+             * in the case where it's one byte long, the first byte is always 0xE0
+             * so when we read this scancode, we can assure that this is not the full scancode
+             */
             if (scancode == CODE_HEADER) {
-              bytes[0] = scancode;
-              size++;
+              bytes[0] = scancode; // sets the scancode array to be the read value
+              size++;              // increases the size count so we can use it as an index for the next byte
             }
             else {
-              kbc_ih();
-              bytes[size] = scancode;
+              kbc_ih();               // calls the interrupt handler to read the next byte (if there's no header, the index here will be simply 0)
+              bytes[size] = scancode; // sets the array to the read value
             }
 
-            kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes);
+            kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes); // calls the provided function
           }
           break;
         default:
@@ -79,15 +85,15 @@ int(kbd_test_scan)() {
     else { /* received a standard message, not a notification */
       /* no standard messages expected: do nothing */
     }
-    size = 0;
+    size = 0; // resets the size variable for the next iteration
   }
 
-  if (kbd_unsubscribe_int() != 0) {
+  if (kbd_unsubscribe_int() != 0) { // unsubscribes the interrupt
     perror("Failed to unsubscribe kbd interrupts.");
     return 1;
   }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
     perror("Failed to print no_sysinb.");
     return 1;
   }
