@@ -5,10 +5,10 @@
 
 #include "i8042.h"
 
-/** @defgroup kbd kbc
+/** @defgroup kbc kbc
  * @{
  *
- * Functions for using the i8042 Keyboard Controller.
+ * Functions for using the i8042 Controller.
  */
 
 /**
