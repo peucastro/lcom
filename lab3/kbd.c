@@ -19,11 +19,18 @@ int(kbd_unsubscribe_int)(void) {
 
 int(kbd_enable_int)(void) {
   uint8_t cmd;
-  kbc_write_cmd(KBC_IN, KBC_READ_CMD);
-  kbc_read_buffer(KBC_OUT, &cmd);
+  if (kbc_write_cmd(KBC_IN, KBC_READ_CMD) != 0)
+    return 1;
+  if (kbc_read_buffer(KBC_OUT, &cmd) != 0)
+    return 1;
+
   cmd |= KBC_INT;
-  kbc_write_cmd(KBC_IN, KBC_WRITE_CMD);
-  kbc_write_cmd(KBC_ARG, cmd);
+
+  if (kbc_write_cmd(KBC_IN, KBC_WRITE_CMD) != 0)
+    return 1;
+  if (kbc_write_cmd(KBC_ARG, cmd) != 0)
+    return 1;
+
   return 0;
 }
 

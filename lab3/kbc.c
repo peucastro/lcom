@@ -37,7 +37,7 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
     if (kbc_read_st(&st) != 0)
       return 1;
 
-    if ((st & KBC_IN) == 0) {
+    if (!(st & KBC_FULL_IBF)) {
       if (sys_outb(port, cmd) != 0)
         return 1;
 
