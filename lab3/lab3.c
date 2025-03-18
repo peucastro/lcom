@@ -132,12 +132,16 @@ int(kbd_test_timed_scan)(uint8_t n) {
   uint8_t bit_no, irq_set_timer, irq_set_kbd, time = 0;
   message msg;
 
-  if (timer_subscribe_int(&bit_no) != 0)
+  if (timer_subscribe_int(&bit_no) != 0) {
+    perror("Failed to subscribe timer interrupts.");
     return 1;
+  }
   irq_set_timer = BIT(bit_no);
 
-  if (kbd_subscribe_int(&bit_no) != 0)
+  if (kbd_subscribe_int(&bit_no) != 0) {
+    perror("Failed to subscribe kbd interrupts.");
     return 1;
+  }
   irq_set_kbd = BIT(bit_no);
 
   while (scancode != BREAK_ESC && time < n) { /* breakcode ESC and timeout check */
@@ -181,13 +185,19 @@ int(kbd_test_timed_scan)(uint8_t n) {
     size = 0;
   }
 
-  if (kbd_unsubscribe_int() != 0)
+  if (kbd_unsubscribe_int() != 0) {
+    perror("Failed to unsubscribe kbd interrupts.");
     return 1;
-  if (timer_unsubscribe_int() != 0)
+  }
+  if (timer_unsubscribe_int() != 0) {
+    perror("Failed to unsubscribe timer interrupts.");
     return 1;
+  }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0)
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
+    perror("Failed to print no_sysinb.");
     return 1;
+  }
 
   return 0;
 }
