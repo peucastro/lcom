@@ -43,8 +43,10 @@ int(kbd_test_scan)() {
   uint8_t bit_no, irq_set;
   message msg;
 
-  if (kbd_subscribe_int(&bit_no) != 0)
+  if (kbd_subscribe_int(&bit_no) != 0) {
+    perror("Failed to subscribe kbd interrupts.");
     return 1;
+  }
   irq_set = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
   while (scancode != BREAK_ESC) { /*breakcode ESC*/
@@ -80,11 +82,15 @@ int(kbd_test_scan)() {
     size = 0;
   }
 
-  if (kbd_unsubscribe_int() != 0)
+  if (kbd_unsubscribe_int() != 0) {
+    perror("Failed to unsubscribe kbd interrupts.");
     return 1;
+  }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0)
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
+    perror("Failed to print no_sysinb.");
     return 1;
+  }
 
   return 0;
 }
@@ -108,11 +114,15 @@ int(kbd_test_poll)() {
     tickdelay(micros_to_ticks(20000));
   }
 
-  if (kbd_enable_int() != 0)
+  if (kbd_enable_int() != 0) {
+    perror("Failed to enable kbd interrupts.");
     return 1;
+  }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0)
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
+    perror("Failed to print no_sysinb.");
     return 1;
+  }
 
   return 0;
 }
@@ -138,7 +148,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
     }
     if (is_ipc_notify(ipc_status)) { /* received notification */
       switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE:                             /* hardware interrupt notification */
+        case HARDWARE:                                 /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
             kbc_ih();
             if (scancode == CODE_HEADER) {
@@ -160,7 +170,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
               time++;
             }
           }
-            break;
+          break;
         default:
           break; /* no other notifications expected: do nothing */
       }
@@ -173,7 +183,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
 
   if (kbd_unsubscribe_int() != 0)
     return 1;
-  if(timer_unsubscribe_int() != 0)
+  if (timer_unsubscribe_int() != 0)
     return 1;
 
   if (kbd_print_no_sysinb(cnt_sys_inb) != 0)

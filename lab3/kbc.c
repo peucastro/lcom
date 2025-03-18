@@ -16,12 +16,16 @@ int(kbc_read_buffer)(uint8_t port, uint8_t *data) {
 
 int(kbc_read_data)(uint8_t *data) {
   uint8_t st;
-  if (kbc_read_st(&st) != 0)
+  if (kbc_read_st(&st) != 0) {
+    perror("Failed to read the kbc status.");
     return 1;
+  }
 
   if (st & KBC_FULL_OBF) {
-    if (kbc_read_buffer(KBC_OUT, data) != 0)
+    if (kbc_read_buffer(KBC_OUT, data) != 0) {
+      perror("Failed to read the kbc buffer.");
       return 1;
+    }
 
     if (kbc_ready(st))
       return 0;
@@ -34,12 +38,16 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
   uint8_t st = 0, timeout_cnt = 0;
 
   while (timeout_cnt < 5) {
-    if (kbc_read_st(&st) != 0)
+    if (kbc_read_st(&st) != 0) {
+      perror("Failed to read the kbc status.");
       return 1;
+    }
 
     if (!(st & KBC_FULL_IBF)) {
-      if (sys_outb(port, cmd) != 0)
+      if (sys_outb(port, cmd) != 0) {
+        perror("Failed to read the kbc port.");
         return 1;
+      }
 
       return 0;
     }
