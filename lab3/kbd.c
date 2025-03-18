@@ -2,19 +2,19 @@
 
 #include "kbd.h"
 
-int hook_id = 5;
+int hook_id_kbd = 5;
 uint8_t scancode = 0;
 
 int(kbd_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL)
     return 1;
 
-  *bit_no = hook_id;
-  return sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id);
+  *bit_no = hook_id_kbd;
+  return sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_kbd);
 }
 
 int(kbd_unsubscribe_int)(void) {
-  return sys_irqrmpolicy(&hook_id);
+  return sys_irqrmpolicy(&hook_id_kbd);
 }
 
 int(kbd_enable_int)(void) {
