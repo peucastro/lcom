@@ -2,8 +2,8 @@
 
 #include "kbc.h"
 
-int(kbc_ready)(uint8_t *st) {
-  return st == NULL ? 1 : !((*st) & (KBC_PARITY_ERROR | KBC_TIMEOUT_ERROR));
+int(kbc_ready)(uint8_t st) {
+  return !((st) & (KBC_PARITY_ERROR | KBC_TIMEOUT_ERROR));
 }
 
 int(kbc_read_st)(uint8_t *st) {
@@ -23,7 +23,7 @@ int(kbc_read_data)(uint8_t *data) {
     if (kbc_read_buffer(KBC_OUT, data) != 0)
       return 1;
 
-    if (kbc_ready(&st))
+    if (kbc_ready(st))
       return 0;
   }
 
