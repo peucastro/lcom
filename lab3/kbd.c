@@ -2,7 +2,7 @@
 
 #include "kbd.h"
 
-int hook_id_kbd = 5;
+static int hook_id_kbd = 5;
 uint8_t scancode = 0;
 
 int(kbd_subscribe_int)(uint8_t *bit_no) {
