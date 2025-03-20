@@ -3,7 +3,7 @@
 #include "kbd.h"
 
 static int hook_id_kbd = 5;
-uint8_t scancode = 0; // global variable for communicating with our program
+static uint8_t scancode = 0; // static global variable for communicating with our program
 
 int(kbd_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
@@ -52,4 +52,12 @@ int(kbd_enable_int)(void) {
 
 void(kbc_ih)(void) {
   kbc_read_data(&scancode); // reads the value stored on the output buffer
+}
+
+uint8_t get_scancode(void) {
+  return scancode; // getter function to access the scancode
+}
+
+void set_scancode(uint8_t value) {
+  scancode = value; // setter function to modify the scancode
 }

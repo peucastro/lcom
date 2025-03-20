@@ -35,4 +35,18 @@ int(kbd_enable_int)(void);
  */
 void(kbc_ih)(void);
 
+/**
+ * @brief Getter for the scancode variable
+ *
+ * @return The current value of the scancode
+ */
+uint8_t get_scancode(void);
+
+/**
+ * @brief Setter for the scancode variable
+ *
+ * @param value The value to set the scancode to
+ */
+void set_scancode(uint8_t value);
+
 #endif /* __KBD_H */

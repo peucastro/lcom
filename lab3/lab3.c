@@ -9,7 +9,6 @@
 #include "kbc.h"
 #include "kbd.h"
 
-extern uint8_t scancode;
 uint8_t bytes[2];
 extern int cnt_sys_inb;
 extern int counter;
@@ -49,7 +48,7 @@ int(kbd_test_scan)() {
   }
   irq_set = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
-  while (scancode != BREAK_ESC) { /*breakcode ESC*/
+  while (get_scancode() != BREAK_ESC) { // use getter to access scancode
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
@@ -66,16 +65,16 @@ int(kbd_test_scan)() {
              * in the case where it's one byte long, the first byte is always 0xE0
              * so when we read this scancode, we can assure that this is not the full scancode
              */
-            if (scancode == CODE_HEADER) {
-              bytes[0] = scancode; // sets the scancode array to be the read value
-              size++;              // increases the size count so we can use it as an index for the next byte
+            if (get_scancode() == CODE_HEADER) { // use getter to access scancode
+              bytes[0] = get_scancode();         // sets the scancode array to be the read value
+              size++;                            // increases the size count so we can use it as an index for the next byte
             }
             else {
-              kbc_ih();               // calls the interrupt handler to read the next byte (if there's no header, the index here will be simply 0)
-              bytes[size] = scancode; // sets the array to the read value
+              kbc_ih();                     // calls the interrupt handler to read the next byte (if there's no header, the index here will be simply 0)
+              bytes[size] = get_scancode(); // sets the array to the read value
             }
 
-            kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes); // calls the provided function
+            kbd_print_scancode(!(get_scancode() & MAKE_CODE), size + 1, bytes); // calls the provided function
           }
           break;
         default:
@@ -103,18 +102,21 @@ int(kbd_test_scan)() {
 
 int(kbd_test_poll)() {
   int size = 0;
-  while (scancode != BREAK_ESC) {
-    if (kbc_read_data(&scancode) == 0) {
-      if (scancode == CODE_HEADER) {
-        bytes[0] = scancode;
+  uint8_t data;
+  while (get_scancode() != BREAK_ESC) {
+    if (kbc_read_data(&data) == 0) {
+      set_scancode(data);
+      if (get_scancode() == CODE_HEADER) {
+        bytes[0] = get_scancode();
         size++;
       }
       else {
-        kbc_read_data(&scancode);
-        bytes[size] = scancode;
+        kbc_read_data(&data);
+        set_scancode(data);
+        bytes[size] = get_scancode();
       }
 
-      kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes);
+      kbd_print_scancode(!(get_scancode() & MAKE_CODE), size + 1, bytes);
       size = 0;
     }
     tickdelay(micros_to_ticks(20000));
@@ -150,7 +152,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
   }
   irq_set_kbd = BIT(bit_no);
 
-  while (scancode != BREAK_ESC && time < n) { /* breakcode ESC and timeout check */
+  while (get_scancode() != BREAK_ESC && time < n) { /* breakcode ESC and timeout check */
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
@@ -161,18 +163,18 @@ int(kbd_test_timed_scan)(uint8_t n) {
         case HARDWARE:                                 /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
             kbc_ih();
-            if (scancode == CODE_HEADER) {
-              bytes[0] = scancode;
+            if (get_scancode() == CODE_HEADER) {
+              bytes[0] = get_scancode();
               size++;
             }
             else {
               kbc_ih();
-              bytes[size] = scancode;
+              bytes[size] = get_scancode();
             }
 
             counter = 0;
             time = 0;
-            kbd_print_scancode(!(scancode & MAKE_CODE), size + 1, bytes);
+            kbd_print_scancode(!(get_scancode() & MAKE_CODE), size + 1, bytes);
           }
           if (msg.m_notify.interrupts & irq_set_timer) {
             timer_int_handler();
