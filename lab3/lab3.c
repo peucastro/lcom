@@ -95,33 +95,35 @@ int(kbd_test_scan)() {
 }
 
 int(kbd_test_poll)() {
-  int size = 0;
-  uint8_t data;
-  while (get_scancode() != BREAK_ESC) {
-    if (kbc_read_data(&data) == 0) {
-      set_scancode(data);
-      if (get_scancode() == CODE_HEADER) {
-        bytes[0] = get_scancode();
-        size++;
+  int i = 0; // index used for handling scancondes with 2 bytes
+  uint8_t data; // variable to store the data read from the KBC
+
+  while (get_scancode() != BREAK_ESC) { // loop until the ESC breakcode is detected
+    if (kbc_read_data(&data) == 0) { // reads data from the KBC output buffer
+      set_scancode(data); // sets the scancode using the setter function
+
+      if (get_scancode() == CODE_HEADER) { // checks if the scancode is a header (indicating a two-byte scancode)
+        bytes[0] = get_scancode(); // stores the first byte of the scancode
+        i++; // increments the size to prepare for the next byte
       }
       else {
-        kbc_read_data(&data);
-        set_scancode(data);
-        bytes[size] = get_scancode();
+        kbc_read_data(&data); // reads the next byte of the scancode
+        set_scancode(data); // sets the scancode using the setter function
+        bytes[i] = get_scancode(); // stores the second byte of the scancode
       }
 
-      kbd_print_scancode(!(get_scancode() & MAKE_CODE), size + 1, bytes);
-      size = 0;
+      kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode using the provided function
+      i = 0; // increase index for the next byte
     }
-    tickdelay(micros_to_ticks(20000));
+    tickdelay(micros_to_ticks(20000)); // delay to prevent excessive polling
   }
 
-  if (kbd_enable_int() != 0) {
+  if (kbd_enable_int() != 0) { // re-enables kbd interrupts after polling
     perror("Failed to enable kbd interrupts.");
     return 1;
   }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
     perror("Failed to print no_sysinb.");
     return 1;
   }
