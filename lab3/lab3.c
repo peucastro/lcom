@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 }
 
 int(kbd_test_scan)() {
-  int ipc_status, r, size = 0;
+  int ipc_status, r, i = 0;
   uint8_t bit_no, irq_set;
   message msg;
 
@@ -60,15 +60,16 @@ int(kbd_test_scan)() {
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
             kbc_ih();                              // Calls the interrupt handler once
 
-            if (get_scancode() == CODE_HEADER) { // Check if it's the first byte of a two-byte scancode
-              bytes[size] = get_scancode();      // Store the first byte
-              size++;                            // Increase index for the next byte
+            if (get_scancode() == CODE_HEADER) { // check if it's a header
+              bytes[i] = get_scancode();         // store the first byte
+              i++;                               // increase index for the next byte
               continue;
             }
 
-            bytes[size] = get_scancode();
+            bytes[i] = get_scancode(); // stores the scancode (or the second scancode, in the case where the first one was a header)
 
-            kbd_print_scancode(!(bytes[size] & MAKE_CODE), size + 1, bytes); // Print scancode if it's a single-byte code
+            kbd_print_scancode(!(bytes[i] & MAKE_CODE), i + 1, bytes); // prints the scancode
+            i = 0;                                                     // resets the index for the next iteration
           }
           break;
         default:
@@ -78,10 +79,9 @@ int(kbd_test_scan)() {
     else { /* received a standard message, not a notification */
       /* no standard messages expected: do nothing */
     }
-    size = 0; // resets the size variable for the next iteration
   }
 
-  if (kbd_unsubscribe_int() != 0) { // unsubscribes the interrupt
+  if (kbd_unsubscribe_int() != 0) { // unsubscribes the kbd interrupt
     perror("Failed to unsubscribe kbd interrupts.");
     return 1;
   }
@@ -130,17 +130,17 @@ int(kbd_test_poll)() {
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
-  int ipc_status, r, size = 0;
+  int ipc_status, r, i = 0;
   uint8_t bit_no, irq_set_timer, irq_set_kbd, time = 0;
   message msg;
 
-  if (timer_subscribe_int(&bit_no) != 0) {
+  if (timer_subscribe_int(&bit_no) != 0) { // subscribes for the timer interrupts
     perror("Failed to subscribe timer interrupts.");
     return 1;
   }
   irq_set_timer = BIT(bit_no);
 
-  if (kbd_subscribe_int(&bit_no) != 0) {
+  if (kbd_subscribe_int(&bit_no) != 0) { // subscribes for the kbd interrupts
     perror("Failed to subscribe kbd interrupts.");
     return 1;
   }
@@ -164,18 +164,17 @@ int(kbd_test_timed_scan)(uint8_t n) {
           if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
             kbc_ih();                                  // Calls the interrupt handler once
 
-            if (get_scancode() == CODE_HEADER) { // Check if it's the first byte of a two-byte scancode
-              bytes[size] = get_scancode();      // Store the first byte
-              size++;                            // Increase index for the next byte
+            if (get_scancode() == CODE_HEADER) { // check if it's a header
+              bytes[i] = get_scancode();         // store the first byte
+              i++;                               // increase index for the next byte
               continue;
             }
 
-            bytes[size] = get_scancode();
-            kbd_print_scancode(!(bytes[size] & MAKE_CODE), size + 1, bytes); // Print scancode if it's a single-byte code
-            counter = 0;
-            size = 0;
+            bytes[i] = get_scancode();
+            kbd_print_scancode(!(bytes[i] & MAKE_CODE), i + 1, bytes); // prints the scancode
+            counter = 0;                                               // clear out the timer's counter
+            i = 0;                                                     // resets the index for the next iteration
           }
-
           break;
         default:
           break; /* no other notifications expected: do nothing */
@@ -186,16 +185,16 @@ int(kbd_test_timed_scan)(uint8_t n) {
     }
   }
 
-  if (kbd_unsubscribe_int() != 0) {
-    perror("Failed to unsubscribe kbd interrupts.");
-    return 1;
-  }
-  if (timer_unsubscribe_int() != 0) {
+  if (timer_unsubscribe_int() != 0) { // unsubscribes the timer interrupt
     perror("Failed to unsubscribe timer interrupts.");
     return 1;
   }
+  if (kbd_unsubscribe_int() != 0) { // unsubscribes the kbd interrupt
+    perror("Failed to unsubscribe kbd interrupts.");
+    return 1;
+  }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
     perror("Failed to print no_sysinb.");
     return 1;
   }
