@@ -58,23 +58,17 @@ int(kbd_test_scan)() {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            kbc_ih();                              // calls the interrupt handler
+            kbc_ih();                              // Calls the interrupt handler once
 
-            /*
-             * scancodes may be one byte long or two byte long
-             * in the case where it's one byte long, the first byte is always 0xE0
-             * so when we read this scancode, we can assure that this is not the full scancode
-             */
-            if (get_scancode() == CODE_HEADER) { // use getter to access scancode
-              bytes[0] = get_scancode();         // sets the scancode array to be the read value
-              size++;                            // increases the size count so we can use it as an index for the next byte
-            }
-            else {
-              kbc_ih();                     // calls the interrupt handler to read the next byte (if there's no header, the index here will be simply 0)
-              bytes[size] = get_scancode(); // sets the array to the read value
+            if (get_scancode() == CODE_HEADER) { // Check if it's the first byte of a two-byte scancode
+              bytes[size] = get_scancode();      // Store the first byte
+              size++;                            // Increase index for the next byte
+              continue;
             }
 
-            kbd_print_scancode(!(get_scancode() & MAKE_CODE), size + 1, bytes); // calls the provided function
+            bytes[size] = get_scancode();
+
+            kbd_print_scancode(!(bytes[size] & MAKE_CODE), size + 1, bytes); // Print scancode if it's a single-byte code
           }
           break;
         default:
@@ -160,28 +154,28 @@ int(kbd_test_timed_scan)(uint8_t n) {
     }
     if (is_ipc_notify(ipc_status)) { /* received notification */
       switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE:                                 /* hardware interrupt notification */
-          if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
-            kbc_ih();
-            if (get_scancode() == CODE_HEADER) {
-              bytes[0] = get_scancode();
-              size++;
-            }
-            else {
-              kbc_ih();
-              bytes[size] = get_scancode();
-            }
-
-            counter = 0;
-            time = 0;
-            kbd_print_scancode(!(get_scancode() & MAKE_CODE), size + 1, bytes);
-          }
+        case HARDWARE: /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set_timer) {
             timer_int_handler();
             if (counter % 60 == 0) {
               time++;
             }
           }
+          if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
+            kbc_ih();                                  // Calls the interrupt handler once
+
+            if (get_scancode() == CODE_HEADER) { // Check if it's the first byte of a two-byte scancode
+              bytes[size] = get_scancode();      // Store the first byte
+              size++;                            // Increase index for the next byte
+              continue;
+            }
+
+            bytes[size] = get_scancode();
+            kbd_print_scancode(!(bytes[size] & MAKE_CODE), size + 1, bytes); // Print scancode if it's a single-byte code
+            counter = 0;
+            size = 0;
+          }
+
           break;
         default:
           break; /* no other notifications expected: do nothing */
@@ -190,7 +184,6 @@ int(kbd_test_timed_scan)(uint8_t n) {
     else { /* received a standard message, not a notification */
       /* no standard messages expected: do nothing */
     }
-    size = 0;
   }
 
   if (kbd_unsubscribe_int() != 0) {
