@@ -117,4 +117,20 @@
 
 #define KBC_INT BIT(0) /**< @brief Enable interrupt on OBF, from keyboard */
 
+/* Mouse Data Packet bytes */
+
+#define MOUSE_LB BIT(0)
+
+#define MOUSE_RB BIT(1)
+
+#define MOUSE_MB BIT(2)
+
+#define MOUSE_XSIGN BIT(4)
+
+#define MOUSE_YSIGN BIT(5)
+
+#define MOUSE_XOV BIT(6)
+
+#define MOUSE_YOV BIT(7)
+
 #endif /* _LCOM_I8042_H_ */

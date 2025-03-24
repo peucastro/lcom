@@ -4,8 +4,6 @@
 #include "i8042.h"
 #include "kbc.h"
 
-struct packet *(mouse_get_packet) ();
-
 uint8_t(mouse_get_index)();
 
 /**
@@ -26,6 +24,8 @@ int(mouse_unsubscribe_int)(void);
 int(mouse_write_cmd)(uint8_t cmd);
 
 void(mouse_sync)(void);
+
+struct packet(mouse_parse_packet)(void);
 
 void(mouse_ih)(void);
 

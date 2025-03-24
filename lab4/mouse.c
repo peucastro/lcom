@@ -3,13 +3,9 @@
 #include "mouse.h"
 
 static int hook_id_mouse = 7;
-static struct packet mouse_packet;
+static uint8_t mouse_packet_bytes[3] = {0, 0, 0};
 static uint8_t mouse_index = 0;
 static uint8_t byte = 0;
-
-struct packet *(mouse_get_packet) () {
-  return &mouse_packet;
-}
 
 uint8_t(mouse_get_index)() {
   return mouse_index;
@@ -50,7 +46,7 @@ int(mouse_write_cmd)(uint8_t cmd) {
 }
 
 void(mouse_sync)() {
-  mouse_packet.bytes[mouse_index] = byte;
+  mouse_packet_bytes[mouse_index] = byte;
 
   if (byte & BIT(3)) {
     mouse_index = 0;
@@ -58,6 +54,31 @@ void(mouse_sync)() {
   else {
     mouse_index = (mouse_index + 1) % 3;
   }
+}
+
+struct packet(mouse_parse_packet)(void) {
+  struct packet p;
+
+  if (mouse_index != 0) {
+    perror("couldn't assemble the mouse packet");
+    return p;
+  }
+
+  for (int i = 0; i < 3; i++) {
+    p.bytes[i] = mouse_packet_bytes[i];
+  }
+
+  p.rb = p.bytes[0] & MOUSE_RB;
+  p.mb = p.bytes[0] & MOUSE_MB;
+  p.lb = p.bytes[0] & MOUSE_LB;
+
+  p.delta_x = (p.bytes[0] & MOUSE_XSIGN) ? (0xFF00 | p.bytes[1]) : (p.bytes[1]);
+  p.delta_y = (p.bytes[0] & MOUSE_YSIGN) ? (0xFF00 | p.bytes[2]) : (p.bytes[2]);
+
+  p.x_ov = p.bytes[0] & MOUSE_XOV;
+  p.y_ov = p.bytes[0] & MOUSE_YOV;
+
+  return p;
 }
 
 void(mouse_ih)(void) {

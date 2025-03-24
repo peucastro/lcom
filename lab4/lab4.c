@@ -34,6 +34,8 @@ int(mouse_test_packet)(uint32_t cnt) {
   uint8_t bit_no, irq_set;
   message msg;
 
+  struct packet p;
+
   if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
     return 1;
 
@@ -54,8 +56,9 @@ int(mouse_test_packet)(uint32_t cnt) {
             mouse_ih();
             mouse_sync();
 
-            if (mouse_get_index() == 2) {
-              mouse_print_packet(mouse_get_packet());
+            if (mouse_get_index() == 3) {
+              p = mouse_parse_packet();
+              mouse_print_packet(&p);
               cnt--;
             }
           }
