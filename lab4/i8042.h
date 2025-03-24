@@ -9,6 +9,8 @@
 
 #define KBD_IRQ 1 /**< @brief Keyboard IRQ line */
 
+#define MOUSE_IRQ 12 /**< @brief Mouse IRQ line */
+
 /* I/O port addresses */
 
 #define KBC_OUT 0X60 /**< @brief KBC output buffer port */
