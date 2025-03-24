@@ -29,6 +29,26 @@ int(mouse_unsubscribe_int)(void) {
   return sys_irqrmpolicy(&hook_id_mouse);
 }
 
+int(mouse_write_cmd)(uint8_t cmd) {
+  int attempts = 10;
+  uint8_t response;
+
+  do {
+    attempts--;
+    if (kbc_write_cmd(KBC_IN, MOUSE_WRITE_BYTE) != 0)
+      return 1;
+    if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0)
+      return 1;
+    micro_delay(micros_to_ticks(20000));
+    if (kbc_read_buffer(KBC_OUT, &response) != 0)
+      return 1;
+    if (response == MOUSE_ACK)
+      return 0;
+  } while (attempts > 0);
+
+  return 1;
+}
+
 void(mouse_sync)() {
   mouse_packet.bytes[mouse_index] = byte;
 

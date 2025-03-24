@@ -57,6 +57,56 @@
 
 #define KBC_EN_KBD_I 0XAE /**< @brief KBC command to enable KBD interface */
 
+/* Mouse-Related KBC Commands */
+
+#define MOUSE_READ_CMD 0x20
+
+#define MOUSE_WRITE_CMD 0x60
+
+#define MOUSE_DIS 0xA7
+
+#define MOUSE_EN 0xA8
+
+#define MOUSE_CHECK
+
+#define MOUSE_WRITE_BYTE 0xD4
+
+/* Arguments of Write Byte to Mouse Command */
+
+#define MOUSE_RESET 0XFF
+
+#define MOUSE_RESEND 0xFE
+
+#define MOUSE_SET_DEFAULTS 0xF6
+
+#define MOUSE_DIS_DATA_REPORTS 0xF5
+
+#define MOUSE_EN_DATA_REPORTS 0xF4
+
+#define MOUSE_SET_SAMPLE_RATE 0xF3
+
+#define MOUSE_SET_REMOTE_MODE 0xF0
+
+#define MOUSE_READ_DATA 0xEB
+
+#define MOUSE_SET_STREAM_MODE 0xEA
+
+#define MOUSE_ST_REQ 0xE9
+
+#define MOUSE_SET_RES 0xE8
+
+#define MOUSE_SET_SCALING_ACC 0xE7
+
+#define MOUSE_SET_SCALING_LIN 0xE6
+
+/* Mouse acknowledgment bytes */
+
+#define MOUSE_ACK 0xFA
+
+#define MOUSE_NACK 0xFE
+
+#define MOUSE_ERR 0xFC
+
 /* KBC Command Byte */
 
 #define KBC_DIS2 BIT(5) /**< @brief Disable mouse interface */

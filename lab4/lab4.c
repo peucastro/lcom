@@ -34,7 +34,7 @@ int(mouse_test_packet)(uint32_t cnt) {
   uint8_t bit_no, irq_set;
   message msg;
 
-  if (mouse_enable_data_reporting() != 0)
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
     return 1;
 
   if (mouse_subscribe_int(&bit_no) != 0)
@@ -70,6 +70,9 @@ int(mouse_test_packet)(uint32_t cnt) {
   }
 
   if (mouse_unsubscribe_int() != 0)
+    return 1;
+
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
     return 1;
 
   return 0;

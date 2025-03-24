@@ -23,6 +23,8 @@ int(mouse_subscribe_int)(uint8_t *bit_no);
  */
 int(mouse_unsubscribe_int)(void);
 
+int(mouse_write_cmd)(uint8_t cmd);
+
 void(mouse_sync)(void);
 
 void(mouse_ih)(void);
