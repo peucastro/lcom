@@ -3,11 +3,12 @@
 #include "mouse.h"
 
 static int hook_id_mouse = 7;
-static uint8_t mouse_packet[] = {0, 0, 0};
+static struct packet mouse_packet;
 static uint8_t mouse_index = 0;
+static uint8_t byte = 0;
 
-uint8_t *(mouse_get_packet) () {
-  return mouse_packet;
+struct packet *(mouse_get_packet) () {
+  return &mouse_packet;
 }
 
 uint8_t(mouse_get_index)() {
@@ -26,4 +27,19 @@ int(mouse_subscribe_int)(uint8_t *bit_no) {
 
 int(mouse_unsubscribe_int)(void) {
   return sys_irqrmpolicy(&hook_id_mouse);
+}
+
+void(mouse_sync)() {
+  mouse_packet.bytes[mouse_index] = byte;
+
+  if (byte & BIT(3)) {
+    mouse_index = 0;
+  }
+  else {
+    mouse_index = (mouse_index + 1) % 3;
+  }
+}
+
+void(mouse_ih)(void) {
+  kbc_read_data(&byte);
 }

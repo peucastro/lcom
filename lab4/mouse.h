@@ -2,8 +2,9 @@
 #define __MOUSE_H
 
 #include "i8042.h"
+#include "kbc.h"
 
-uint8_t *(mouse_get_packet) ();
+struct packet *(mouse_get_packet) ();
 
 uint8_t(mouse_get_index)();
 
@@ -21,5 +22,9 @@ int(mouse_subscribe_int)(uint8_t *bit_no);
  * @return Return 0 upon success and non-zero otherwise
  */
 int(mouse_unsubscribe_int)(void);
+
+void(mouse_sync)(void);
+
+void(mouse_ih)(void);
 
 #endif /* __MOUSE_H */

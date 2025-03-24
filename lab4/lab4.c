@@ -51,7 +51,13 @@ int(mouse_test_packet)(uint32_t cnt) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            // handle the interrupt
+            mouse_ih();
+            mouse_sync();
+
+            if (mouse_get_index() == 2) {
+              mouse_print_packet(mouse_get_packet());
+              cnt--;
+            }
           }
           break;
         default:
