@@ -10,7 +10,7 @@
  * it tells us which bit in msg.m_notify.interrupts corresponds to timer 0 interrupts
  * the value is arbitrary (but should be between 0 and 31)
  */
-static int hook_id = 3;
+int hook_id_timer = 3;
 int counter = 0; // global counter (in seconds)
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
@@ -65,13 +65,13 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
 int(timer_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL)
     return 1;
-  *bit_no = hook_id; // sets the bit_no to be the bit position in the mask returned upon an interrupt
+  *bit_no = hook_id_timer; // sets the bit_no to be the bit position in the mask returned upon an interrupt
 
-  return sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id); // subscribes the interrupt notification
+  return sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id_timer); // subscribes the interrupt notification
 }
 
 int(timer_unsubscribe_int)() {
-  return sys_irqrmpolicy(&hook_id); // unsubscribes the notification
+  return sys_irqrmpolicy(&hook_id_timer); // unsubscribes the notification
 }
 
 void(timer_int_handler)() {
