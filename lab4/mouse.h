@@ -3,6 +3,10 @@
 
 #include "i8042.h"
 
+uint8_t *mouse_get_packet();
+
+uint8_t mouse_get_index();
+
 /**
  * @brief Subscribes mouse interrupts
  *
