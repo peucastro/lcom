@@ -5,6 +5,8 @@
 
 #include "mouse.h"
 
+extern int counter;
+
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -82,9 +84,70 @@ int(mouse_test_packet)(uint32_t cnt) {
 }
 
 int(mouse_test_async)(uint8_t idle_time) {
-  /* To be completed */
-  printf("%s(%u): under construction\n", __func__, idle_time);
-  return 1;
+  int ipc_status, r;
+  uint8_t bit_no, irq_set_timer, irq_set_mouse;
+  message msg;
+
+  uint8_t time = 0;
+  struct packet pp;
+
+  if (timer_subscribe_int(&bit_no) != 0)
+    return 1;
+  irq_set_timer = BIT(bit_no);
+
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
+    return 1;
+
+  if (mouse_subscribe_int(&bit_no) != 0)
+    return 1;
+  irq_set_mouse = BIT(bit_no);
+
+  while (time < idle_time) {
+    /* get a request message. */
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE: /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & irq_set_timer) {
+            timer_int_handler();
+            if (counter % sys_hz() == 0) {
+              time++;
+            }
+          }
+          if (msg.m_notify.interrupts & irq_set_mouse) { /* subscribed interrupt */
+            mouse_ih();
+            mouse_sync();
+
+            if (mouse_get_index() == 0) {
+              pp = mouse_parse_packet();
+              mouse_print_packet(&pp);
+            }
+            time = 0;
+            counter = 0;
+          }
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+    else { /* received a standard message, not a notification */
+      /* no standard messages expected: do nothing */
+    }
+  }
+
+  if (mouse_unsubscribe_int() != 0)
+    return 1;
+
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
+    return 1;
+
+  if (timer_unsubscribe_int() != 0)
+    return 1;
+
+  return 0;
 }
 
 int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
