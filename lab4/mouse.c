@@ -46,12 +46,11 @@ int(mouse_write_cmd)(uint8_t cmd) {
 }
 
 void(mouse_sync)() {
-  mouse_packet_bytes[mouse_index] = byte;
-
-  if (byte & BIT(3)) {
-    mouse_index = 0;
+  if ((mouse_index == 0) && !(byte & BIT(3))) {
+    return;
   }
   else {
+    mouse_packet_bytes[mouse_index] = byte;
     mouse_index = (mouse_index + 1) % 3;
   }
 }
