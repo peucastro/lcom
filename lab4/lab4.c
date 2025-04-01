@@ -7,6 +7,76 @@
 
 extern int counter;
 
+typedef enum {
+  START,
+  RIGHT_UP,
+  VERTEX,
+  RIGHT_DOWN,
+  END
+} drawing_state;
+
+void(update_drawing_state)(drawing_state *state, struct packet *pp, uint8_t tolerance, uint8_t x_len, uint16_t *x_delta, uint16_t *y_delta) {
+  switch (*state) {
+    case START:
+      if (pp->lb && !pp->mb && !pp->rb) {
+        *state = RIGHT_UP;
+        *x_delta = 0;
+        *y_delta = 0;
+      }
+      break;
+
+    case RIGHT_UP:
+      if (pp->delta_x < -tolerance || pp->delta_y < -tolerance || pp->rb || pp->mb) {
+        *state = START;
+        *x_delta = 0;
+        *y_delta = 0;
+      }
+      else if (!pp->lb && !pp->mb && !pp->rb && *x_delta > x_len && abs(*x_delta / *y_delta) > 1) {
+        *state = VERTEX;
+      }
+      else {
+        *x_delta += pp->delta_x;
+        *y_delta += pp->delta_y;
+      }
+      break;
+
+    case VERTEX:
+      *x_delta = 0;
+      *y_delta = 0;
+      if (!pp->lb && !pp->mb && pp->rb) {
+        *state = RIGHT_DOWN;
+      }
+      else if (pp->delta_x < -tolerance || pp->delta_x > tolerance || pp->delta_y < -tolerance || pp->delta_y > tolerance) {
+        *state = START;
+        *x_delta = 0;
+        *y_delta = 0;
+      }
+      break;
+
+    case RIGHT_DOWN:
+      if (pp->delta_x < -tolerance || pp->delta_y > tolerance || pp->lb || pp->mb) {
+        *state = START;
+        *x_delta = 0;
+        *y_delta = 0;
+      }
+      else if (!pp->lb && !pp->mb && !pp->rb && *x_delta > x_len && abs(*x_delta / *y_delta) > 1) {
+        *state = END;
+      }
+      else {
+        *x_delta += pp->delta_x;
+        *y_delta += pp->delta_y;
+      }
+      break;
+
+    case END:
+      break;
+
+    default:
+      *state = START;
+      break;
+  }
+}
+
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -151,9 +221,59 @@ int(mouse_test_async)(uint8_t idle_time) {
 }
 
 int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
-  /* To be completed */
-  printf("%s: under construction\n", __func__);
-  return 1;
+  int ipc_status, r;
+  uint8_t bit_no, irq_set;
+  message msg;
+
+  struct packet pp;
+  drawing_state state = START;
+  uint16_t x_delta, y_delta = 0;
+
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
+    return 1;
+
+  if (mouse_subscribe_int(&bit_no) != 0)
+    return 1;
+  irq_set = BIT(bit_no);
+
+  while (state != END) {
+    /* get a request message. */
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:                             /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+            mouse_ih();
+            mouse_sync();
+
+            if (mouse_get_index() == 0) {
+              pp = mouse_parse_packet();
+              update_drawing_state(&state, &pp, tolerance, x_len, &x_delta, &y_delta);
+              printf("drawing state: %d\n", state);
+            }
+          }
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+    else { /* received a standard message, not a notification */
+      /* no standard messages expected: do nothing */
+    }
+  }
+
+  if (mouse_unsubscribe_int() != 0)
+    return 1;
+
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
+    return 1;
+
+  return 0;
+
+  return 0;
 }
 
 int(mouse_test_remote)(uint16_t period, uint8_t cnt) {
