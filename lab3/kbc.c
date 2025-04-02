@@ -7,14 +7,37 @@ int(kbc_ready)(uint8_t st) {
 }
 
 int(kbc_read_st)(uint8_t *st) {
-  return util_sys_inb(KBC_ST, st); // reads the value stored at the status register
+  if (st == NULL) {
+    perror("st pointer cannot be null.");
+    return 1;
+  }
+  if (util_sys_inb(KBC_ST, st) != 0) { // reads the value stored at the status register
+    perror("Failed to read the value stored at the status register.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(kbc_read_buffer)(uint8_t port, uint8_t *data) {
-  return util_sys_inb(port, data); // reads the value stored in the indicated port
+  if (data == NULL) {
+    perror("Data pointer cannot be null.");
+    return 1;
+  }
+  if (util_sys_inb(port, data) != 0) { // reads the value stored in the indicated port
+    perror("Failed to read the value stored in the indicated port.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(kbc_read_data)(uint8_t *data) {
+  if (data == NULL) {
+    perror("Data pointer cannot be null.");
+    return 1;
+  }
+
   uint8_t st;
   if (kbc_read_st(&st) != 0) { // reads the KBC status
     perror("Failed to read the kbc status.");
@@ -30,6 +53,7 @@ int(kbc_read_data)(uint8_t *data) {
     return 0;
   }
 
+  perror("Failed to read the kbc data.");
   return 1;
 }
 
@@ -60,5 +84,6 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
     timeout_cnt++;                     // increases the timeout counter
   }
 
+  perror("Failed to write the kbc command.");
   return 1;
 }
