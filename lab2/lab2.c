@@ -1,5 +1,6 @@
-#include <lcom/lab2.h>
 #include <lcom/lcf.h>
+
+#include <lcom/lab2.h>
 
 #include <stdbool.h>
 #include <stdint.h>
