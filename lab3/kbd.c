@@ -7,7 +7,7 @@ static uint8_t scancode = 0; // static global variable for communicating with ou
 
 int(kbd_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
-    perror("bit_no is null.");
+    perror("bit_no pointer cannot be null.");
     return 1;
   }
 
@@ -18,11 +18,21 @@ int(kbd_subscribe_int)(uint8_t *bit_no) {
    * the subscription should specify not only the IRQ_REENABLE policy but also the IRQ_EXCLUSIVE policy
    * this is done to avoid minix interrup handler to "steal" the scancodes
    */
-  return sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_kbd);
+  if (sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_kbd) != 0) {
+    perror("Failed to set the kbd interrupt subscription policy.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(kbd_unsubscribe_int)(void) {
-  return sys_irqrmpolicy(&hook_id_kbd); // unsubscribes the notification
+  if (sys_irqrmpolicy(&hook_id_kbd) != 0) { // unsubscribes the notification
+    perror("Failed to set remove the keyboard interrupt subscription policy.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(kbd_enable_int)(void) {
@@ -31,7 +41,7 @@ int(kbd_enable_int)(void) {
     perror("Failed to write the KBC_READ_CMD.");
     return 1;
   }
-  if (kbc_read_buffer(KBC_OUT, &cmd) != 0) { // effectivelly reads the command byte
+  if (kbc_read_data(&cmd) != 0) { // effectivelly reads the command byte
     perror("Failed to read the kbc command.");
     return 1;
   }
@@ -54,10 +64,10 @@ void(kbc_ih)(void) {
   kbc_read_data(&scancode); // reads the value stored on the output buffer
 }
 
-uint8_t get_scancode(void) {
+uint8_t(get_scancode)(void) {
   return scancode; // getter function to access the scancode
 }
 
-void set_scancode(uint8_t value) {
+void(set_scancode)(uint8_t value) {
   scancode = value; // setter function to modify the scancode
 }

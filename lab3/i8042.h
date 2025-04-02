@@ -9,6 +9,8 @@
 
 #define KBD_IRQ 1 /**< @brief Keyboard IRQ line */
 
+#define DELAY_US 20000 /**< @brief Keyboard response time */
+
 /* I/O port addresses */
 
 #define KBC_OUT 0X60 /**< @brief KBC output buffer port */

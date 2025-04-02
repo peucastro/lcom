@@ -28,15 +28,6 @@ int(kbc_ready)(uint8_t st);
 int(kbc_read_st)(uint8_t *st);
 
 /**
- * @brief Reads the buffer from the KBC
- *
- * @param port Port to read from
- * @param data Address of memory position to be filled with the data
- * @return Return 0 upon success and non-zero otherwise
- */
-int(kbc_read_buffer)(uint8_t port, uint8_t *data);
-
-/**
  * @brief Reads data from the KBC
  *
  * @param data Address of memory position to be filled with the data

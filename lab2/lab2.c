@@ -1,10 +1,11 @@
-#include <lcom/lab2.h>
 #include <lcom/lcf.h>
+
+#include <lcom/lab2.h>
 
 #include <stdbool.h>
 #include <stdint.h>
 
-extern int counter;
+extern uint32_t counter;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
