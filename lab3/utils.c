@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-int cnt_sys_inb = 0;
+uint32_t cnt_sys_inb = 0;
 
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
   if (lsb == NULL) {

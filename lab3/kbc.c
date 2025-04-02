@@ -26,7 +26,7 @@ int(kbc_read_st)(uint8_t *st) {
 
 int(kbc_read_buffer)(uint8_t port, uint8_t *data) {
   if (data == NULL) {
-    perror("Data pointer cannot be null.");
+    perror("data pointer cannot be null.");
     return 1;
   }
   if (util_sys_inb(port, data) != 0) { // reads the value stored in the indicated port
@@ -39,7 +39,7 @@ int(kbc_read_buffer)(uint8_t port, uint8_t *data) {
 
 int(kbc_read_data)(uint8_t *data) {
   if (data == NULL) {
-    perror("Data pointer cannot be null.");
+    perror("data pointer cannot be null.");
     return 1;
   }
 
@@ -63,14 +63,14 @@ int(kbc_read_data)(uint8_t *data) {
 }
 
 int(kbc_write_cmd)(int port, uint8_t cmd) {
-  uint8_t st = 0, timeout_cnt = 0;
+  uint8_t st = 0, attempts = 5;
 
   /*
    * both the KBC and the keyboard may take some time to respond to a command
    * thus this "driver" should not expect to get a response immediately after issuing a command
    * we need to give enough-time for the KBC to respond, retry a few times on time-out, and finally give up
    */
-  while (timeout_cnt < 5) {
+  while (attempts > 0) {
     if (kbc_read_st(&st) != 0) { // reads the kbc status
       perror("Failed to read the kbc status.");
       return 1;
@@ -85,8 +85,8 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
       return 0;
     }
 
-    tickdelay(micros_to_ticks(20000)); // waits (the cpu is way faster than the kbc)
-    timeout_cnt++;                     // increases the timeout counter
+    tickdelay(micros_to_ticks(DELAY_US)); // waits (the cpu is way faster than the kbc)
+    attempts--;                           // increases the timeout counter
   }
 
   perror("Failed to write the kbc command.");

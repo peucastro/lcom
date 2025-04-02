@@ -41,7 +41,7 @@ int(kbd_enable_int)(void) {
     perror("Failed to write the KBC_READ_CMD.");
     return 1;
   }
-  if (kbc_read_buffer(KBC_OUT, &cmd) != 0) { // effectivelly reads the command byte
+  if (kbc_read_data(&cmd) != 0) { // effectivelly reads the command byte
     perror("Failed to read the kbc command.");
     return 1;
   }
@@ -64,10 +64,10 @@ void(kbc_ih)(void) {
   kbc_read_data(&scancode); // reads the value stored on the output buffer
 }
 
-uint8_t get_scancode(void) {
+uint8_t(get_scancode)(void) {
   return scancode; // getter function to access the scancode
 }
 
-void set_scancode(uint8_t value) {
+void(set_scancode)(uint8_t value) {
   scancode = value; // setter function to modify the scancode
 }

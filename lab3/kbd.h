@@ -1,10 +1,14 @@
 #ifndef __KBD_H
 #define __KBD_H
 
-#include <stdint.h>
-
 #include "i8042.h"
 #include "kbc.h"
+
+/** @defgroup kbd kbd
+ * @{
+ *
+ * Functions for interacting with the Keyboard.
+ */
 
 /**
  * @brief Subscribes keyboard interrupts
@@ -40,13 +44,13 @@ void(kbc_ih)(void);
  *
  * @return The current value of the scancode
  */
-uint8_t get_scancode(void);
+uint8_t(get_scancode)(void);
 
 /**
  * @brief Setter for the scancode variable
  *
  * @param value The value to set the scancode to
  */
-void set_scancode(uint8_t value);
+void(set_scancode)(uint8_t value);
 
 #endif /* __KBD_H */
