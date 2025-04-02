@@ -7,7 +7,7 @@ static uint8_t scancode = 0; // static global variable for communicating with ou
 
 int(kbd_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
-    perror("bit_no is null.");
+    perror("bit_no pointer cannot be null.");
     return 1;
   }
 
@@ -18,11 +18,21 @@ int(kbd_subscribe_int)(uint8_t *bit_no) {
    * the subscription should specify not only the IRQ_REENABLE policy but also the IRQ_EXCLUSIVE policy
    * this is done to avoid minix interrup handler to "steal" the scancodes
    */
-  return sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_kbd);
+  if (sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_kbd) != 0) {
+    perror("Failed to set the kbd interrupt subscription policy.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(kbd_unsubscribe_int)(void) {
-  return sys_irqrmpolicy(&hook_id_kbd); // unsubscribes the notification
+  if (sys_irqrmpolicy(&hook_id_kbd) != 0) { // unsubscribes the notification
+    perror("Failed to set remove the keyboard interrupt subscription policy.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(kbd_enable_int)(void) {
