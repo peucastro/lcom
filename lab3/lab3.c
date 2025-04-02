@@ -59,14 +59,12 @@ int(kbd_test_scan)() {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
             kbc_ih();                              // Calls the interrupt handler once
+            bytes[i] = get_scancode();             // stores the scancode (or the second scancode, in the case where the first one was a header)
 
             if (get_scancode() == CODE_HEADER) { // check if it's a header
-              bytes[i] = get_scancode();         // store the first byte
               i++;                               // increase index for the next byte
               continue;
             }
-
-            bytes[i] = get_scancode(); // stores the scancode (or the second scancode, in the case where the first one was a header)
 
             kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode
             i = 0;                                                           // resets the index for the next iteration
@@ -101,16 +99,15 @@ int(kbd_test_poll)() {
   while (get_scancode() != BREAK_ESC) { // loop until the ESC breakcode is detected
     if (kbc_read_data(&data) == 0) {    // reads data from the KBC output buffer
       set_scancode(data);               // sets the scancode using the setter function
+      bytes[i] = get_scancode();        // stores the scancode (or the second scancode, in the case where the first one was a header)
 
       if (get_scancode() == CODE_HEADER) { // checks if the scancode is a header (indicating a two-byte scancode)
-        bytes[i] = get_scancode();         // stores the first byte of the scancode
         i++;                               // increments the size to prepare for the next byte
         continue;
       }
 
-      kbc_read_data(&data);      // reads the next byte of the scancode
-      set_scancode(data);        // sets the scancode using the setter function
-      bytes[i] = get_scancode(); // stores the second byte of the scancode
+      kbc_read_data(&data); // reads the next byte of the scancode
+      set_scancode(data);   // sets the scancode using the setter function
 
       kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode using the provided function
       i = 0;                                                           // increase index for the next byte
@@ -165,17 +162,17 @@ int(kbd_test_timed_scan)(uint8_t n) {
           }
           if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
             kbc_ih();                                  // Calls the interrupt handler once
+            bytes[i] = get_scancode();                 // stores the scancode (or the second scancode, in the case where the first one was a header)
 
             if (get_scancode() == CODE_HEADER) { // check if it's a header
-              bytes[i] = get_scancode();         // store the first byte
               i++;                               // increase index for the next byte
               continue;
             }
 
-            bytes[i] = get_scancode();
             kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode
-            counter = 0;                                                     // clear out the timer's counter
-            i = 0;                                                           // resets the index for the next iteration
+            time = 0;
+            counter = 0; // clear out the timer's counter
+            i = 0;       // resets the index for the next iteration
           }
           break;
         default:
