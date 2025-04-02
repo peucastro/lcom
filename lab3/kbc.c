@@ -24,19 +24,6 @@ int(kbc_read_st)(uint8_t *st) {
   return 0;
 }
 
-int(kbc_read_buffer)(uint8_t port, uint8_t *data) {
-  if (data == NULL) {
-    perror("data pointer cannot be null.");
-    return 1;
-  }
-  if (util_sys_inb(port, data) != 0) { // reads the value stored in the indicated port
-    perror("Failed to read the value stored in the indicated port.");
-    return 1;
-  }
-
-  return 0;
-}
-
 int(kbc_read_data)(uint8_t *data) {
   if (data == NULL) {
     perror("data pointer cannot be null.");
@@ -49,8 +36,8 @@ int(kbc_read_data)(uint8_t *data) {
     return 1;
   }
 
-  if (st & KBC_FULL_OBF) {                     // checks if the "output buffer full" bit is set to 1
-    if (kbc_read_buffer(KBC_OUT, data) != 0) { // effectivelly reads the value stored at the output buffer
+  if (st & KBC_FULL_OBF) {                  // checks if the "output buffer full" bit is set to 1
+    if (util_sys_inb(KBC_OUT, data) != 0) { // effectivelly reads the value stored at the output buffer
       perror("Failed to read the kbc buffer.");
       return 1;
     }
