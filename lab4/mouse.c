@@ -36,7 +36,7 @@ int(mouse_write_cmd)(uint8_t cmd) {
     if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0)
       return 1;
     micro_delay(micros_to_ticks(20000));
-    if (kbc_read_buffer(KBC_OUT, &response) != 0)
+    if (util_sys_inb(KBC_OUT, &response) != 0)
       return 1;
     if (response == MOUSE_ACK)
       return 0;

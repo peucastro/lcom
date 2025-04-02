@@ -5,7 +5,7 @@
 
 #include "mouse.h"
 
-extern int counter;
+extern uint32_t counter;
 
 typedef enum {
   START,

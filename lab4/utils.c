@@ -2,19 +2,21 @@
 
 #include <stdint.h>
 
-int cnt_sys_inb = 0;
-
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
-  if (lsb == NULL)
+  if (lsb == NULL) {
+    perror("lsb pointer cannot be null.");
     return 1;
+  }
 
   *lsb = val & 0xFF; // bitmask to get the 8 least significant bits
   return 0;
 }
 
 int(util_get_MSB)(uint16_t val, uint8_t *msb) {
-  if (msb == NULL)
+  if (msb == NULL) {
+    perror("msb pointer cannot be null.");
     return 1;
+  }
 
   // first we need to shift the value to put the MSB in the desired position
   *msb = ((val >> 8) & 0xFF); // same bitmask as the last function
@@ -22,15 +24,16 @@ int(util_get_MSB)(uint16_t val, uint8_t *msb) {
 }
 
 int(util_sys_inb)(int port, uint8_t *value) {
-  if (value == NULL)
+  if (value == NULL) {
+    perror("value pointer cannot be null.");
     return 1;
+  }
 
   uint32_t val; // sys_inb expects a 4 bytes variable
-  if (sys_inb(port, &val) != 0)
+  if (sys_inb(port, &val) != 0) {
+    perror("Failed to read the specified port.");
     return 1;
-
-  // count the number of sys_inb calls
-  cnt_sys_inb++;
+  }
 
   /*
    * since the timer's configuration only occupies 8 bits (the status byte),

@@ -11,6 +11,8 @@
 
 #define MOUSE_IRQ 12 /**< @brief Mouse IRQ line */
 
+#define DELAY_US 20000 /**< @brief Keyboard response time */
+
 /* I/O port addresses */
 
 #define KBC_OUT 0X60 /**< @brief KBC output buffer port */
