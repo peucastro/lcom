@@ -10,7 +10,7 @@
  * the value is arbitrary (but should be between 0 and 31)
  */
 static int hook_id = 3;
-int counter = 0; // global counter (in seconds)
+uint32_t counter = 0; // global counter (in seconds)
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
   // timers index goes from 0 to 2
@@ -25,7 +25,7 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
   }
 
   uint8_t ctrl_word;
-  if (timer_get_conf(timer, &ctrl_word) != 0) { // get the currect config
+  if (timer_get_conf(timer, &ctrl_word) != 0) { // get the timer config
     perror("Failed to get the timer config.");
     return 1;
   }
@@ -35,8 +35,8 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
    * the 4 most significant bits of the status represent the output, null count and type of access,
    * and we need to write the counter selection and initialization mode in order to change the config
    */
-  ctrl_word &= 0x0F;                     // clear the first 4 bits
-  ctrl_word = ctrl_word | TIMER_LSB_MSB; // set the initialization mode to LSB followed by MSB
+  ctrl_word &= 0x0F;          // clear the first 4 bits
+  ctrl_word |= TIMER_LSB_MSB; // set the initialization mode to LSB followed by MSB
 
   // set the counter selection bits based on the timer number
   switch (timer) {
@@ -50,6 +50,7 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
       ctrl_word |= TIMER_SEL2;
       break;
     default:
+      perror("Invalid timer index.");
       return 1;
   }
 
