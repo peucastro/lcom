@@ -16,11 +16,6 @@ int(kbc_read_st)(uint8_t *st) {
     return 1;
   }
 
-  if (!kbc_ready(*st)) {
-    perror("KBC not ready.");
-    return 1;
-  }
-
   return 0;
 }
 
@@ -30,19 +25,28 @@ int(kbc_read_data)(uint8_t *data) {
     return 1;
   }
 
-  uint8_t st;
-  if (kbc_read_st(&st) != 0) { // reads the KBC status
-    perror("Failed to read the kbc status.");
-    return 1;
-  }
+  uint8_t st = 0, attemps = 5;
 
-  if (st & KBC_FULL_OBF) {                  // checks if the "output buffer full" bit is set to 1
-    if (util_sys_inb(KBC_OUT, data) != 0) { // effectivelly reads the value stored at the output buffer
-      perror("Failed to read the kbc buffer.");
+  while (attemps > 0) {
+    if (kbc_read_st(&st) != 0) {
+      perror("Failed to read the kbc status.");
       return 1;
     }
 
-    return 0;
+    if (st & KBC_FULL_OBF) {
+      if (util_sys_inb(KBC_OUT, data) != 0) {
+        perror("Failed to read the kbc buffer.");
+        return 1;
+      }
+      if (!kbc_ready(st)) {
+        perror("KBC not ready.");
+        return 1;
+      }
+      return 0;
+    }
+
+    tickdelay(micros_to_ticks(DELAY_US));
+    attemps--;
   }
 
   perror("Failed to read the kbc data.");
@@ -60,6 +64,11 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
   while (attempts > 0) {
     if (kbc_read_st(&st) != 0) { // reads the kbc status
       perror("Failed to read the kbc status.");
+      return 1;
+    }
+
+    if (!kbc_ready(st)) {
+      perror("KBC not ready.");
       return 1;
     }
 
