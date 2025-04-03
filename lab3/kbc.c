@@ -16,11 +16,6 @@ int(kbc_read_st)(uint8_t *st) {
     return 1;
   }
 
-  if (!kbc_ready(*st)) {
-    perror("KBC not ready.");
-    return 1;
-  }
-
   return 0;
 }
 
@@ -42,6 +37,11 @@ int(kbc_read_data)(uint8_t *data) {
       return 1;
     }
 
+    if (!kbc_ready(st)) {
+      perror("KBC not ready.");
+      return 1;
+    }
+
     return 0;
   }
 
@@ -60,6 +60,11 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
   while (attempts > 0) {
     if (kbc_read_st(&st) != 0) { // reads the kbc status
       perror("Failed to read the kbc status.");
+      return 1;
+    }
+
+    if (!kbc_ready(st)) {
+      perror("KBC not ready.");
       return 1;
     }
 
