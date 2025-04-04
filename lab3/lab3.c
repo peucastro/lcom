@@ -43,7 +43,6 @@ int(kbd_test_scan)() {
   message msg;
 
   if (kbd_subscribe_int(&bit_no) != 0) { // subscribes for the kbd interrupts
-    perror("Failed to subscribe kbd interrupts.");
     return 1;
   }
   irq_set = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
@@ -80,12 +79,10 @@ int(kbd_test_scan)() {
   }
 
   if (kbd_unsubscribe_int() != 0) { // unsubscribes the kbd interrupt
-    perror("Failed to unsubscribe kbd interrupts.");
     return 1;
   }
 
   if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
-    perror("Failed to print no_sysinb.");
     return 1;
   }
 
@@ -113,12 +110,10 @@ int(kbd_test_poll)() {
   }
 
   if (kbd_enable_int() != 0) { // re-enables kbd interrupts after polling
-    perror("Failed to enable kbd interrupts.");
     return 1;
   }
 
   if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
-    perror("Failed to print no_sysinb.");
     return 1;
   }
 
@@ -131,13 +126,11 @@ int(kbd_test_timed_scan)(uint8_t n) {
   message msg;
 
   if (timer_subscribe_int(&bit_no) != 0) { // subscribes for the timer interrupts
-    perror("Failed to subscribe timer interrupts.");
     return 1;
   }
   irq_set_timer = BIT(bit_no);
 
   if (kbd_subscribe_int(&bit_no) != 0) { // subscribes for the kbd interrupts
-    perror("Failed to subscribe kbd interrupts.");
     return 1;
   }
   irq_set_kbd = BIT(bit_no);
@@ -153,7 +146,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
         case HARDWARE: /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set_timer) {
             timer_int_handler();
-            if (counter % 60 == 0) {
+            if (counter % sys_hz() == 0) {
               time++;
             }
           }
@@ -182,16 +175,13 @@ int(kbd_test_timed_scan)(uint8_t n) {
   }
 
   if (timer_unsubscribe_int() != 0) { // unsubscribes the timer interrupt
-    perror("Failed to unsubscribe timer interrupts.");
     return 1;
   }
   if (kbd_unsubscribe_int() != 0) { // unsubscribes the kbd interrupt
-    perror("Failed to unsubscribe kbd interrupts.");
     return 1;
   }
 
   if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
-    perror("Failed to print no_sysinb.");
     return 1;
   }
 

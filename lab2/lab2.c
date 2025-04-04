@@ -69,7 +69,7 @@ int(timer_test_int)(uint8_t time) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
             timer_int_handler();                   /* process it */
-            if (counter % 60 == 0) {               // timer frequency = 60 Hz
+            if (counter % sys_hz() == 0) {         // timer frequency (60 Hz)
               timer_print_elapsed_time();
               time--;
             }
