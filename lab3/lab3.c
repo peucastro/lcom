@@ -156,7 +156,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
         case HARDWARE: /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set_timer) {
             timer_int_handler();
-            if (counter % 60 == 0) {
+            if (counter % sys_hz() == 0) {
               time++;
             }
           }
