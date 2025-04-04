@@ -14,19 +14,19 @@ uint32_t counter = 0; // global counter (in seconds)
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
   // timers index goes from 0 to 2
-  if (timer < 0 || timer > 2) {
-    perror("Invalid timer index.");
+  if (timer > 2) {
+    perror("timer_set_frequency: invalid timer index.");
     return 1;
   }
   // MINIX does not support frequencies below 19 (it causes overflow). TIMER_FREQ / 2^16 = 18.2
   if (freq < 19 || freq > TIMER_FREQ) {
-    perror("Invalid frequency.");
+    perror("timer_set_frequency: invalid frequency.");
     return 1;
   }
 
   uint8_t ctrl_word;
   if (timer_get_conf(timer, &ctrl_word) != 0) { // get the timer config
-    perror("Failed to get the timer config.");
+    perror("timer_set_frequency: failed to get the timer config.");
     return 1;
   }
 
@@ -50,31 +50,31 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
       ctrl_word |= TIMER_SEL2;
       break;
     default:
-      perror("Invalid timer index.");
+      perror("timer_set_frequency: invalid timer index.");
       return 1;
   }
 
   uint16_t count = TIMER_FREQ / freq; // calculate the internal value
   uint8_t lsb, msb;
   if (util_get_LSB(count, &lsb) != 0) { // get the LSB of the count
-    perror("Failed to get the LSB of the count.");
+    perror("timer_set_frequency: failed to get the LSB of the count.");
     return 1;
   }
   if (util_get_MSB(count, &msb) != 0) { // get the MSB of the count
-    perror("Failed to get the MSB of the count.");
+    perror("timer_set_frequency: failed to get the MSB of the count.");
     return 1;
   }
 
   if (sys_outb(TIMER_CTRL, ctrl_word) != 0) { // tell the timer we are going to change its config
-    perror("Failed to write the timer control word.");
+    perror("timer_set_frequency: failed to write the timer control word.");
     return 1;
   }
   if (sys_outb(TIMER_0 + timer, lsb) != 0) { // write the LSB
-    perror("Failed to write the counter LSB.");
+    perror("timer_set_frequency: failed to write the counter LSB.");
     return 1;
   }
   if (sys_outb(TIMER_0 + timer, msb) != 0) { // followed by the MSB
-    perror("Failed to write the counter MSB.");
+    perror("timer_set_frequency: failed to write the counter MSB.");
     return 1;
   }
 
@@ -83,13 +83,13 @@ int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
 
 int(timer_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
-    perror("bit_no pointer cannot be null.");
+    perror("timer_subscribe_int: bit_no pointer cannot be null.");
     return 1;
   }
   *bit_no = hook_id; // sets the bit_no to be the bit position in the mask returned upon an interrupt
 
   if (sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != 0) { // subscribes the interrupt notification
-    perror("Failed to set the timer interrupt subscription policy.");
+    perror("timer_subscribe_int: failed to set the timer interrupt subscription policy.");
     return 1;
   }
 
@@ -98,7 +98,7 @@ int(timer_subscribe_int)(uint8_t *bit_no) {
 
 int(timer_unsubscribe_int)() {
   if (sys_irqrmpolicy(&hook_id) != 0) { // unsubscribes the notification
-    perror("Failed to remove the timer interrupt subscription policy.");
+    perror("timer_unsubscribe_int: failed to remove the timer interrupt subscription policy.");
     return 1;
   }
 
@@ -111,11 +111,11 @@ void(timer_int_handler)() {
 
 int(timer_get_conf)(uint8_t timer, uint8_t *st) {
   if (st == NULL) {
-    perror("st pointer cannot be null.");
+    perror("timer_get_conf: st pointer cannot be null.");
     return 1;
   }
-  if (timer < 0 || timer > 2) {
-    perror("Invalid timer index.");
+  if (timer > 2) {
+    perror("timer_get_conf: invalid timer index.");
     return 1;
   }
 
@@ -127,13 +127,13 @@ int(timer_get_conf)(uint8_t timer, uint8_t *st) {
    */
   uint8_t rdb_cmd = TIMER_RB_CMD | TIMER_RB_COUNT_ | TIMER_RB_SEL(timer);
   if ((sys_outb(TIMER_CTRL, rdb_cmd)) != 0) { // writes the rdb_cmd to the control register
-    perror("Failed to send the timer read-back command.");
+    perror("timer_get_conf: failed to send the timer read-back command.");
     return 1;
   }
 
   // TIMER_0 [0x40] + timer [0, 1 or 2]: specifies the desired port
   if ((util_sys_inb(TIMER_0 + timer, st)) != 0) { // efectivelly reads the timer's configuration
-    perror("Failed to read the timer configuration");
+    perror("timer_get_conf: failed to read the timer configuration");
     return 1;
   }
 
@@ -141,8 +141,8 @@ int(timer_get_conf)(uint8_t timer, uint8_t *st) {
 }
 
 int(timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field) {
-  if (timer < 0 || timer > 2) {
-    perror("Invalid timer index.");
+  if (timer > 2) {
+    perror("timer_display_conf: invalid timer index.");
     return 1;
   }
 
@@ -187,12 +187,12 @@ int(timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field
       break;
 
     default:
-      perror("Failed to construct the timer_status_field_val.");
+      perror("timer_display_conf: failed to construct the timer_status_field_val.");
       return 1;
   }
 
   if ((timer_print_config(timer, field, val)) != 0) { // print the timer configuration
-    perror("Failed to print the timer configuration.");
+    perror("timer_display_conf: failed to print the timer configuration.");
     return 1;
   }
 
