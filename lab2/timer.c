@@ -154,33 +154,25 @@ int(timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field
       break;
 
     case tsf_initial:
-      st = ((st >> 4) & 0x3); // extract the initialization mode (bits 4 and 5)
-      if (st == 1) {
-        val.in_mode = LSB_only;
-      }
-      else if (st == 2) {
-        val.in_mode = MSB_only;
-      }
-      else if (st == 3) {
-        val.in_mode = MSB_after_LSB;
-      }
-      else {
-        val.in_mode = INVAL_val;
+      switch ((st >> 3) & 0x3) { // extract the initialization mode (bits 4 and 5)
+        case 1:
+          val.in_mode = LSB_only;
+          break;
+        case 2:
+          val.in_mode = MSB_only;
+          break;
+        case 3:
+          val.in_mode = MSB_after_LSB;
+          break;
+        default:
+          val.in_mode = INVAL_val;
+          perror("timer_display_conf: invalid initialization mode.");
+          return 1;
       }
       break;
 
     case tsf_mode:
-      st = ((st >> 1) & 0x7); // extract the counting mode (bits 1, 2, and 3)
-      if (st == 6) {
-        val.count_mode = 2;
-      }
-      else if (st == 7) {
-        val.count_mode = 3;
-      }
-      else {
-        val.count_mode = st;
-      }
-      break;
+      val.count_mode = (st >> 1) & 0x7; // extract the counting mode (bits 1, 2, and 3)
 
     case tsf_base:
       val.bcd = (st & TIMER_BCD); // extract the counting base (bit 0)
