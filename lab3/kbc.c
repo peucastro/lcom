@@ -25,9 +25,9 @@ int(kbc_read_data)(uint8_t *data) {
     return 1;
   }
 
-  uint8_t st = 0, attemps = 5;
+  uint8_t st = 0, attempts = KBC_MAX_ATTEMPTS;
 
-  while (attemps > 0) {
+  while (attempts > 0) {
     if (kbc_read_st(&st) != 0) { // reads the KBC status
       perror("kbc_read_data: failed to read the kbc status.");
       return 1;
@@ -46,7 +46,7 @@ int(kbc_read_data)(uint8_t *data) {
     }
 
     tickdelay(micros_to_ticks(DELAY_US));
-    attemps--;
+    attempts--;
   }
 
   perror("kbc_read_data: failed to read the kbc data.");
@@ -54,7 +54,7 @@ int(kbc_read_data)(uint8_t *data) {
 }
 
 int(kbc_write_cmd)(int port, uint8_t cmd) {
-  uint8_t st = 0, attempts = 5;
+  uint8_t st = 0, attempts = KBC_MAX_ATTEMPTS;
 
   /*
    * both the KBC and the keyboard may take some time to respond to a command

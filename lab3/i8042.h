@@ -9,6 +9,8 @@
 
 #define KBD_IRQ 1 /**< @brief Keyboard IRQ line */
 
+#define KBC_MAX_ATTEMPTS 5 /**< @brief Maximum amount of attempts to read KBC data */
+
 #define DELAY_US 20000 /**< @brief Keyboard response time */
 
 /* I/O port addresses */

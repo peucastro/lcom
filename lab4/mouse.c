@@ -29,7 +29,7 @@ int(mouse_subscribe_int)(uint8_t *bit_no) {
 
 int(mouse_unsubscribe_int)(void) {
   if (sys_irqrmpolicy(&hook_id_mouse) != 0) {
-    perror("mouse_unsubscribe_int: failed to set the kbd interrupt subscription policy.");
+    perror("mouse_unsubscribe_int: failed to set the mouse interrupt subscription policy.");
     return 1;
   }
 
@@ -37,7 +37,7 @@ int(mouse_unsubscribe_int)(void) {
 }
 
 int(mouse_write_cmd)(uint8_t cmd) {
-  int attempts = 5;
+  int attempts = KBC_MAX_ATTEMPTS;
   uint8_t response;
 
   while (attempts > 0) {
@@ -58,7 +58,7 @@ int(mouse_write_cmd)(uint8_t cmd) {
     }
     if (response == MOUSE_ACK) {
       perror("mouse_write_cmd: kbc ACK.");
-      return 0;
+      return 1;
     }
     attempts--;
   }

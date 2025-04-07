@@ -11,6 +11,8 @@
 
 #define MOUSE_IRQ 12 /**< @brief Mouse IRQ line */
 
+#define KBC_MAX_ATTEMPTS 5 /**< @brief Maximum amount of attempts to read KBC data */
+
 #define DELAY_US 20000 /**< @brief Keyboard response time */
 
 /* I/O port addresses */
