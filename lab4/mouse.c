@@ -13,35 +13,57 @@ uint8_t(mouse_get_index)() {
 
 int(mouse_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
+    perror("mouse_subscribe_int: bit_no cannot be null.");
     return 1;
   }
 
   *bit_no = hook_id_mouse;
 
-  return sys_irqsetpolicy(MOUSE_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_mouse);
+  if (sys_irqsetpolicy(MOUSE_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_mouse) != 0) {
+    perror("mouse_subscribe_int: failed to set the mouse interrupt subscription policy.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(mouse_unsubscribe_int)(void) {
-  return sys_irqrmpolicy(&hook_id_mouse);
+  if (sys_irqrmpolicy(&hook_id_mouse) != 0) {
+    perror("mouse_unsubscribe_int: failed to set the kbd interrupt subscription policy.");
+    return 1;
+  }
+
+  return 0;
 }
 
 int(mouse_write_cmd)(uint8_t cmd) {
-  int attempts = 10;
+  int attempts = 5;
   uint8_t response;
 
-  do {
-    attempts--;
-    if (kbc_write_cmd(KBC_IN, MOUSE_WRITE_BYTE) != 0)
+  while (attempts > 0) {
+    if (kbc_write_cmd(KBC_IN, MOUSE_WRITE_BYTE) != 0) {
+      perror("mouse_write_cmd: failed to write MOUSE_WRITE_BYTE to the kbc.");
       return 1;
-    if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0)
+    }
+    if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0) {
+      perror("mouse_write_cmd: failed to write the mouse command to the kbc.");
       return 1;
-    micro_delay(micros_to_ticks(20000));
-    if (util_sys_inb(KBC_OUT, &response) != 0)
-      return 1;
-    if (response == MOUSE_ACK)
-      return 0;
-  } while (attempts > 0);
+    }
 
+    micro_delay(micros_to_ticks(20000));
+
+    if (util_sys_inb(KBC_OUT, &response) != 0) {
+      perror("mouse_write_cmd: failed to read the kbc response.");
+      return 1;
+    }
+    if (response == MOUSE_ACK) {
+      perror("mouse_write_cmd: kbc ACK.");
+      return 0;
+    }
+    attempts--;
+  }
+
+  perror("mouse_write_cmd: failed to write the mouse command.");
   return 1;
 }
 
@@ -59,7 +81,7 @@ struct packet(mouse_parse_packet)(void) {
   struct packet p;
 
   if (mouse_index != 0) {
-    perror("couldn't assemble the mouse packet");
+    perror("mouse_parse_packet: couldn't assemble the mouse packet");
     return p;
   }
 
