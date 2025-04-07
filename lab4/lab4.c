@@ -15,56 +15,98 @@ typedef enum {
   END
 } drawing_state;
 
-void(update_drawing_state)(drawing_state *state, struct packet *pp, uint8_t tolerance, uint8_t x_len, uint16_t *x_delta, uint16_t *y_delta) {
+void(update_drawing_state)(drawing_state *state, struct mouse_ev *ev, uint8_t tolerance, uint8_t x_len, int16_t *x_delta, int16_t *y_delta) {
   switch (*state) {
     case START:
-      if (pp->lb && !pp->mb && !pp->rb) {
+      *x_delta = 0;
+      *y_delta = 0;
+      if (ev->type == LB_PRESSED) {
         *state = RIGHT_UP;
-        *x_delta = 0;
-        *y_delta = 0;
       }
       break;
 
     case RIGHT_UP:
-      if (pp->delta_x < -tolerance || pp->delta_y < -tolerance || pp->rb || pp->mb) {
-        *state = START;
-        *x_delta = 0;
-        *y_delta = 0;
+      if (ev->type == LB_RELEASED) {
+        if ((*x_delta >= x_len) && (*y_delta / *x_delta) >= 1) {
+          *x_delta = 0;
+          *y_delta = 0;
+          *state = VERTEX;
+        }
+        else {
+          *state = START;
+        }
       }
-      else if (!pp->lb && !pp->mb && !pp->rb && *x_delta > x_len && abs(*x_delta / *y_delta) > 1) {
-        *state = VERTEX;
+      else if (ev->type == MOUSE_MOV) {
+        if (ev->delta_x <= 0 || ev->delta_y <= 0) {
+          if (abs(ev->delta_x) > tolerance || abs(ev->delta_y) > tolerance) {
+            *state = START;
+            break;
+          }
+          if (ev->delta_x != 0 && (ev->delta_y) / (ev->delta_x) <= 1) {
+            *state = START;
+          }
+        }
+        else {
+          *x_delta += ev->delta_x;
+          *y_delta += ev->delta_y;
+        }
       }
       else {
-        *x_delta += pp->delta_x;
-        *y_delta += pp->delta_y;
+        *state = START;
       }
       break;
 
     case VERTEX:
-      *x_delta = 0;
-      *y_delta = 0;
-      if (!pp->lb && !pp->mb && pp->rb) {
-        *state = RIGHT_DOWN;
+      if (ev->type == RB_PRESSED) {
+        if (abs(*x_delta) > tolerance || abs(*y_delta) > tolerance) {
+          *state = START;
+        }
+        else {
+          *x_delta = 0;
+          *y_delta = 0;
+          *state = RIGHT_DOWN;
+        }
       }
-      else if (pp->delta_x < -tolerance || pp->delta_x > tolerance || pp->delta_y < -tolerance || pp->delta_y > tolerance) {
-        *state = START;
+      else if (ev->type == MOUSE_MOV) {
+        *x_delta += ev->delta_x;
+        *y_delta += ev->delta_y;
+      }
+      else if (ev->type == LB_PRESSED) {
         *x_delta = 0;
         *y_delta = 0;
+        *state = RIGHT_UP;
+      }
+      else {
+        *state = START;
       }
       break;
 
     case RIGHT_DOWN:
-      if (pp->delta_x < -tolerance || pp->delta_y > tolerance || pp->lb || pp->mb) {
-        *state = START;
-        *x_delta = 0;
-        *y_delta = 0;
+      if (ev->type == RB_RELEASED) {
+        if ((*x_delta >= x_len) && (*y_delta / *x_delta) <= -1) {
+          *state = END;
+          return;
+        }
+        else
+          *state = START;
       }
-      else if (!pp->lb && !pp->mb && !pp->rb && *x_delta > x_len && abs(*x_delta / *y_delta) > 1) {
-        *state = END;
+      else if (ev->type == MOUSE_MOV) {
+        if (ev->delta_x <= 0 || ev->delta_y >= 0) {
+          if (abs(ev->delta_x) > tolerance || abs(ev->delta_y) > tolerance) {
+            *state = START;
+            break;
+          }
+          if (ev->delta_x != 0 && (ev->delta_y) / (ev->delta_x) >= -1) {
+            *state = START;
+          }
+        }
+        else {
+          *x_delta += ev->delta_x;
+          *y_delta += ev->delta_y;
+        }
       }
       else {
-        *x_delta += pp->delta_x;
-        *y_delta += pp->delta_y;
+        *state = START;
       }
       break;
 
@@ -226,8 +268,9 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
   message msg;
 
   struct packet pp;
+  struct mouse_ev *ev;
   drawing_state state = START;
-  uint16_t x_delta, y_delta = 0;
+  int16_t x_delta, y_delta = 0;
 
   if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
     return 1;
@@ -251,8 +294,9 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
 
             if (mouse_get_index() == 0) {
               pp = mouse_parse_packet();
-              update_drawing_state(&state, &pp, tolerance, x_len, &x_delta, &y_delta);
-              printf("drawing state: %d\n", state);
+              ev = mouse_detect_event(&pp);
+              update_drawing_state(&state, ev, tolerance, x_len, &x_delta, &y_delta);
+              // printf("drawing state: %d\n", state);
             }
           }
           break;
@@ -270,8 +314,6 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
 
   if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
     return 1;
-
-  return 0;
 
   return 0;
 }
