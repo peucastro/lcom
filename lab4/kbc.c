@@ -8,11 +8,11 @@ int(kbc_ready)(uint8_t st) {
 
 int(kbc_read_st)(uint8_t *st) {
   if (st == NULL) {
-    perror("st pointer cannot be null.");
+    perror("kbc_read_st: st pointer cannot be null.");
     return 1;
   }
   if (util_sys_inb(KBC_ST, st) != 0) { // reads the value stored at the status register
-    perror("Failed to read the value stored at the status register.");
+    perror("kbc_read_st: failed to read the value stored at the status register.");
     return 1;
   }
 
@@ -21,21 +21,21 @@ int(kbc_read_st)(uint8_t *st) {
 
 int(kbc_read_data)(uint8_t *data) {
   if (data == NULL) {
-    perror("data pointer cannot be null.");
+    perror("kbc_read_data: data pointer cannot be null.");
     return 1;
   }
 
   uint8_t st = 0, attemps = 5;
 
   while (attemps > 0) {
-    if (kbc_read_st(&st) != 0) {
-      perror("Failed to read the kbc status.");
+    if (kbc_read_st(&st) != 0) { // reads the KBC status
+      perror("kbc_read_data: failed to read the kbc status.");
       return 1;
     }
 
-    if (st & KBC_FULL_OBF) {
-      if (util_sys_inb(KBC_OUT, data) != 0) {
-        perror("Failed to read the kbc buffer.");
+    if (st & KBC_FULL_OBF) {                  // checks if the "output buffer full" bit is set to 1
+      if (util_sys_inb(KBC_OUT, data) != 0) { // effectivelly reads the value stored at the output buffer
+        perror("kbc_read_data: failed to read the kbc buffer.");
         return 1;
       }
       if (!kbc_ready(st)) {
@@ -49,7 +49,7 @@ int(kbc_read_data)(uint8_t *data) {
     attemps--;
   }
 
-  perror("Failed to read the kbc data.");
+  perror("kbc_read_data: failed to read the kbc data.");
   return 1;
 }
 
@@ -63,7 +63,7 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
    */
   while (attempts > 0) {
     if (kbc_read_st(&st) != 0) { // reads the kbc status
-      perror("Failed to read the kbc status.");
+      perror("kbc_write_cmd: failed to read the kbc status.");
       return 1;
     }
 
@@ -74,7 +74,7 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
 
     if (!(st & KBC_FULL_IBF)) {       // checks if the input buffer is NOT alredy full
       if (sys_outb(port, cmd) != 0) { // effectivelly sends the command byte to the specified port
-        perror("Failed to read the kbc port.");
+        perror("kbc_write_cmd: failed to read the kbc port.");
         return 1;
       }
 
@@ -85,6 +85,6 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
     attempts--;                           // increases the timeout counter
   }
 
-  perror("Failed to write the kbc command.");
+  perror("kbc_write_cmd: failed to write the kbc command.");
   return 1;
 }
