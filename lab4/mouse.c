@@ -56,9 +56,16 @@ int(mouse_write_cmd)(uint8_t cmd) {
       perror("mouse_write_cmd: failed to read the kbc response.");
       return 1;
     }
-    if (response == MOUSE_ACK) {
-      perror("mouse_write_cmd: kbc ACK.");
+    if (response == MOUSE_NACK) {
+      perror("mouse_write_cmd: mouse NACK");
       return 1;
+    }
+    if (response == MOUSE_ERR) {
+      perror("mouse_write_cmd: mouse ERROR");
+      return 1;
+    }
+    if (response == MOUSE_ACK) {
+      return 0;
     }
     attempts--;
   }
