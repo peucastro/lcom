@@ -7,6 +7,8 @@
  * Constants for using the Video Electronics Standards Association (VESA) Basic Input/Output System (BIOS) Extensions (VBE)
  */
 
+#define VBE_INT 0x10
+
 /* VBE functions */
 
 #define VBE_FUNCTION 0x4F
