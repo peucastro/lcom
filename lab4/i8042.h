@@ -63,53 +63,53 @@
 
 /* Mouse-Related KBC Commands */
 
-#define MOUSE_READ_CMD 0x20
+#define MOUSE_READ_CMD 0x20 /**< @brief Read Command Byte */
 
-#define MOUSE_WRITE_CMD 0x60
+#define MOUSE_WRITE_CMD 0x60 /**< @brief Write Command Byte */
 
-#define MOUSE_DIS 0xA7
+#define MOUSE_DIS 0xA7 /**< @brief Disable Mouse */
 
-#define MOUSE_EN 0xA8
+#define MOUSE_EN 0xA8 /**< @brief Enable Mouse */
 
-#define MOUSE_CHECK
+#define MOUSE_CHECK 0xA9 /**< @brief Check Mouse Interface */
 
-#define MOUSE_WRITE_BYTE 0xD4
+#define MOUSE_WRITE_BYTE 0xD4 /**< @brief Write Byte to Mouse */
 
 /* Arguments of Write Byte to Mouse Command */
 
-#define MOUSE_RESET 0XFF
+#define MOUSE_RESET 0xFF /**< @brief Mouse reset */
 
-#define MOUSE_RESEND 0xFE
+#define MOUSE_RESEND 0xFE /**< @brief For serial communications errors */
 
-#define MOUSE_SET_DEFAULTS 0xF6
+#define MOUSE_SET_DEFAULTS 0xF6 /**< @brief Set default values */
 
-#define MOUSE_DIS_DATA_REPORTS 0xF5
+#define MOUSE_DIS_DATA_REPORTS 0xF5 /**< @brief Disable data reporting (in stream mode, should be sent before any other command) */
 
-#define MOUSE_EN_DATA_REPORTS 0xF4
+#define MOUSE_EN_DATA_REPORTS 0xF4 /**< @brief Enable data reporting (in stream mode only) */
 
-#define MOUSE_SET_SAMPLE_RATE 0xF3
+#define MOUSE_SET_SAMPLE_RATE 0xF3 /**< @brief Set state sampling rate */
 
-#define MOUSE_SET_REMOTE_MODE 0xF0
+#define MOUSE_SET_REMOTE_MODE 0xF0 /**< @brief Set remote mode (send data on request only) */
 
-#define MOUSE_READ_DATA 0xEB
+#define MOUSE_READ_DATA 0xEB /**< @brief Send data packet request */
 
-#define MOUSE_SET_STREAM_MODE 0xEA
+#define MOUSE_SET_STREAM_MODE 0xEA /**< @brief Set stream mode (send data on events) */
 
-#define MOUSE_ST_REQ 0xE9
+#define MOUSE_ST_REQ 0xE9 /**< @brief Get mouse configuration (3 bytes) */
 
-#define MOUSE_SET_RES 0xE8
+#define MOUSE_SET_RES 0xE8 /**< @brief Set resolution */
 
-#define MOUSE_SET_SCALING_ACC 0xE7
+#define MOUSE_SET_SCALING_ACC 0xE7 /**< @brief Set scaling 2:1 (acceleration mode) */
 
-#define MOUSE_SET_SCALING_LIN 0xE6
+#define MOUSE_SET_SCALING_LIN 0xE6 /**< @brief Set scaling 1:1 (linear mode) */
 
 /* Mouse acknowledgment bytes */
 
-#define MOUSE_ACK 0xFA
+#define MOUSE_ACK 0xFA /**< @brief Everything OK */
 
-#define MOUSE_NACK 0xFE
+#define MOUSE_NACK 0xFE /**< @brief Invalid byte */
 
-#define MOUSE_ERR 0xFC
+#define MOUSE_ERR 0xFC /**< @brief Second consecutive invalid byte */
 
 /* KBC Command Byte */
 
@@ -123,18 +123,20 @@
 
 /* Mouse Data Packet bytes */
 
-#define MOUSE_LB BIT(0)
+#define MOUSE_LB BIT(0) /**< @brief Left button pressed */
 
-#define MOUSE_RB BIT(1)
+#define MOUSE_RB BIT(1) /**< @brief Right button pressed */
 
-#define MOUSE_MB BIT(2)
+#define MOUSE_MB BIT(2) /**< @brief Middle button pressed */
 
-#define MOUSE_XSIGN BIT(4)
+#define MOUSE_XSIGN BIT(4) /**< @brief Relative displacement MSBit X axis */
 
-#define MOUSE_YSIGN BIT(5)
+#define MOUSE_YSIGN BIT(5) /**< @brief Relative displacement MSBit Y axis */
 
-#define MOUSE_XOV BIT(6)
+#define MOUSE_XOV BIT(6) /**< @brief Flag that the mouse X displacement is too large to \
+be represented as a 9-bit 2-complement integer */
 
-#define MOUSE_YOV BIT(7)
+#define MOUSE_YOV BIT(7) /**< @brief Flag that the mouseY displacement is too large to \
+be represented as a 9-bit 2-complement integer */
 
 #endif /* _LCOM_I8042_H_ */
