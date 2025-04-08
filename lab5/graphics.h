@@ -7,4 +7,6 @@
 
 int(set_video_mode)(uint16_t mode);
 
+int(map_graphics_vram)(uint16_t mode);
+
 #endif
