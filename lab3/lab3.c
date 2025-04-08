@@ -103,9 +103,6 @@ int(kbd_test_poll)() {
         continue;
       }
 
-      kbc_read_data(&data); // reads the next byte of the scancode
-      set_scancode(data);   // sets the scancode using the setter function
-
       kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode using the provided function
       i = 0;                                                           // increase index for the next byte
     }
