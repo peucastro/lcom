@@ -85,18 +85,32 @@ int(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   return 0;
 }
 
+int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+  if (x > h_res || y > v_res || len > v_res) {
+    perror("invalid coordinate.");
+    return 1;
+  }
+
+  for (uint16_t i = x; i < x + len; i++) {
+    if (draw_pixel(i, y, color) != 0) {
+      perror("draw_rectangle: failed to paint pixel.");
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 int(draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   if (x > h_res || y > v_res || width > h_res || height > v_res) {
     perror("draw_rectangle: invalid dimensions.");
     return 1;
   }
 
-  for (uint16_t i = x; i < x + width; i++) {
-    for (uint16_t j = y; j < y + height; j++) {
-      if (draw_pixel(i, j, color) != 0) {
-        perror("draw_rectangle: failed to paint pixel.");
-        return 1;
-      }
+  for (uint16_t j = y; j < y + height; j++) {
+    if (vg_draw_hline(x, j, width, color) != 0) {
+      perror("draw_rectangle: failed to paint line.");
+      return 1;
     }
   }
 
