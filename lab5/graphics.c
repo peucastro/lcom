@@ -4,6 +4,9 @@
 
 static vbe_mode_info_t mode_info;
 static uint8_t *video_mem;
+static uint16_t h_res;
+static uint16_t v_res;
+static uint8_t bits_per_pixel;
 
 int(set_video_mode)(uint16_t mode) {
   struct reg86 args;
@@ -41,10 +44,14 @@ int(map_graphics_vram)(uint16_t mode) {
     return 1;
   }
 
+  h_res = mode_info.XResolution;
+  v_res = mode_info.YResolution;
+  bits_per_pixel = mode_info.BitsPerPixel;
+
   struct minix_mem_range mr;
   memset(&mr, 0, sizeof(mr));
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
-  mr.mr_limit = mr.mr_base + mode_info.XResolution * mode_info.YResolution * mode_info.BitsPerPixel;
+  mr.mr_limit = mr.mr_base + h_res * v_res * bits_per_pixel;
 
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
     perror("map_graphics_vram: failed to request permission.");
@@ -54,4 +61,16 @@ int(map_graphics_vram)(uint16_t mode) {
   video_mem = vm_map_phys(SELF, (void *) mr.mr_base, mr.mr_limit - mr.mr_base);
 
   return 0;
+}
+
+uint16_t(get_h_res)(void) {
+  return h_res;
+}
+
+uint16_t(get_v_res)(void) {
+  return v_res;
+}
+
+uint8_t(get_bits_per_pixel)(void) {
+  return bits_per_pixel;
 }
