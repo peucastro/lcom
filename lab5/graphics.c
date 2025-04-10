@@ -7,6 +7,7 @@ static uint8_t *video_mem;
 static uint16_t h_res;
 static uint16_t v_res;
 static uint8_t bits_per_pixel;
+static uint16_t bytes_per_scanline;
 
 int(set_video_mode)(uint16_t mode) {
   struct reg86 args;
@@ -47,6 +48,7 @@ int(map_graphics_vram)(uint16_t mode) {
   h_res = mode_info.XResolution;
   v_res = mode_info.YResolution;
   bits_per_pixel = mode_info.BitsPerPixel;
+  bytes_per_scanline = mode_info.BytesPerScanLine;
 
   struct minix_mem_range mr;
   memset(&mr, 0, sizeof(mr));
@@ -60,7 +62,22 @@ int(map_graphics_vram)(uint16_t mode) {
 
   video_mem = vm_map_phys(SELF, (void *) mr.mr_base, mr.mr_limit - mr.mr_base);
 
+  if (video_mem == MAP_FAILED) {
+    perror("map_graphics_vram: map failed");
+    return 1;
+  }
+
   return 0;
+}
+
+int(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
+  if (x >= h_res || y > v_res) {
+    perror("draw_pixel: invalid coordinate.");
+    return 1;
+  }
+
+  uint8_t *pixel = video_mem + (y * bytes_per_scanline) + (x * bytes_per_scanline / h_res);
+  memcpy(pixel, &color, (bits_per_pixel + 7) / 8);
 }
 
 uint16_t(get_h_res)(void) {
