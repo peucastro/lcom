@@ -54,7 +54,9 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width,
     return 1;
   }
 
-  // draw a rectangle
+  if (draw_rectangle(x, y, height, width, color) != 0) {
+    return 1;
+  }
 
   if (vg_exit() != 0) {
     return 1;
