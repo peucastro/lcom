@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 }
 
 int(video_test_init)(uint16_t mode, uint8_t delay) {
-  if (set_video_mode(mode) != 0) {
+  if (graphics_set_video_mode(mode) != 0) {
     return 1;
   }
 
@@ -47,15 +47,15 @@ int(video_test_init)(uint16_t mode, uint8_t delay) {
 }
 
 int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
-  if (map_graphics_vram(mode) != 0) {
+  if (graphics_map_vram(mode) != 0) {
     return 1;
   }
 
-  if (set_video_mode(mode) != 0) {
+  if (graphics_set_video_mode(mode) != 0) {
     return 1;
   }
 
-  if (draw_rectangle(x, y, height, width, color) != 0) {
+  if (graphics_draw_rectangle(x, y, height, width, color) != 0) {
     return 1;
   }
 

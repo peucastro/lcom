@@ -9,7 +9,7 @@ static uint16_t v_res;
 static uint16_t bytes_per_pixel;
 static uint32_t vram_size;
 
-int(set_video_mode)(uint16_t mode) {
+int(graphics_set_video_mode)(uint16_t mode) {
   struct reg86 args;
   memset(&args, 0, sizeof(args));
 
@@ -19,19 +19,19 @@ int(set_video_mode)(uint16_t mode) {
   args.intno = VBE_INT;
 
   if (sys_int86(&args) != 0) {
-    perror("set_video_mode: failed to call sys_int86.");
+    perror("graphics_set_video_mode: failed to call sys_int86.");
     return 1;
   }
 
   if (args.ah != VBE_CALL_SUCCESS || args.al != VBE_FUNCTION) {
     if (args.ah == VBE_CALL_FAIL) {
-      perror("set_video_mode: vbe call fail.");
+      perror("graphics_set_video_mode: vbe call fail.");
     }
     if (args.ah == VBE_CALL_NOT_SUPPORTED) {
-      perror("set_video_mode: vbe call not supported.");
+      perror("graphics_set_video_mode: vbe call not supported.");
     }
     if (args.ah == VBE_CALL_INVALID) {
-      perror("set_video_mode: vbe call invalid.");
+      perror("graphics_set_video_mode: vbe call invalid.");
     }
     return 1;
   }
@@ -39,10 +39,10 @@ int(set_video_mode)(uint16_t mode) {
   return 0;
 }
 
-int(map_graphics_vram)(uint16_t mode) {
+int(graphics_map_vram)(uint16_t mode) {
   memset(&mode_info, 0, sizeof(mode_info));
   if (vbe_get_mode_info(mode, &mode_info) != 0) {
-    perror("map_graphics_vram: failed to get mode info.");
+    perror("graphics_map_vram: failed to get mode info.");
     return 1;
   }
 
@@ -57,23 +57,23 @@ int(map_graphics_vram)(uint16_t mode) {
   mr.mr_limit = mr.mr_base + vram_size;
 
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
-    perror("map_graphics_vram: failed to request permission.");
+    perror("graphics_map_vram: failed to request permission.");
     return 1;
   }
 
   video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
 
   if (video_mem == MAP_FAILED) {
-    perror("map_graphics_vram: map failed");
+    perror("graphics_map_vram: map failed");
     return 1;
   }
 
   return 0;
 }
 
-int(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
+int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   if (x > h_res || y > v_res) {
-    perror("draw_pixel: invalid coordinate.");
+    perror("graphics_draw_pixel: invalid coordinate.");
     return 1;
   }
 
@@ -83,15 +83,15 @@ int(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   return 0;
 }
 
-int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   if (x > h_res || y > v_res || len > v_res) {
-    perror("invalid coordinate.");
+    perror("graphics_draw_hline: invalid coordinate.");
     return 1;
   }
 
   for (uint16_t i = x; i < x + len; i++) {
-    if (draw_pixel(i, y, color) != 0) {
-      perror("draw_rectangle: failed to paint pixel.");
+    if (graphics_draw_pixel(i, y, color) != 0) {
+      perror("graphics_draw_hline: failed to paint pixel.");
       return 1;
     }
   }
@@ -99,15 +99,15 @@ int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   return 0;
 }
 
-int(draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   if (x > h_res || y > v_res || width > h_res || height > v_res) {
-    perror("draw_rectangle: invalid dimensions.");
+    perror("graphics_draw_rectangle: invalid dimensions.");
     return 1;
   }
 
   for (uint16_t j = y; j < y + height; j++) {
-    if (vg_draw_hline(x, j, width, color) != 0) {
-      perror("draw_rectangle: failed to paint line.");
+    if (graphics_draw_hline(x, j, width, color) != 0) {
+      perror("graphics_draw_rectangle: failed to paint line.");
       return 1;
     }
   }
