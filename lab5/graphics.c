@@ -6,9 +6,8 @@ static vbe_mode_info_t mode_info;
 static uint8_t *video_mem;
 static uint16_t h_res;
 static uint16_t v_res;
-static uint8_t bits_per_pixel;
 static uint16_t bytes_per_pixel;
-static uint8_t vram_size;
+static uint32_t vram_size;
 
 int(set_video_mode)(uint16_t mode) {
   struct reg86 args;
@@ -49,8 +48,7 @@ int(map_graphics_vram)(uint16_t mode) {
 
   h_res = mode_info.XResolution;
   v_res = mode_info.YResolution;
-  bits_per_pixel = mode_info.BitsPerPixel;
-  bytes_per_pixel = (bits_per_pixel + 7) / 8;
+  bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
   vram_size = h_res * v_res * bytes_per_pixel;
 
   struct minix_mem_range mr;
@@ -79,7 +77,7 @@ int(draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
     return 1;
   }
 
-  uint8_t *pixel = video_mem + mode_info.BytesPerScanLine * y + bytes_per_pixel * x;
+  uint8_t *pixel = video_mem + (y * h_res + x) * bytes_per_pixel;
   memcpy(pixel, &color, bytes_per_pixel);
 
   return 0;
@@ -115,20 +113,4 @@ int(draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uin
   }
 
   return 0;
-}
-
-uint16_t(get_h_res)(void) {
-  return h_res;
-}
-
-uint16_t(get_v_res)(void) {
-  return v_res;
-}
-
-uint8_t(get_bits_per_pixel)(void) {
-  return bits_per_pixel;
-}
-
-uint16_t(get_bytes_per_pixel)(void) {
-  return bytes_per_pixel;
 }
