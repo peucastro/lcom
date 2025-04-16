@@ -11,7 +11,10 @@ static uint32_t vram_size;
 
 int(graphics_set_video_mode)(uint16_t mode) {
   struct reg86 args;
-  memset(&args, 0, sizeof(args));
+  if (memset(&args, 0, sizeof(args)) == NULL) {
+    perror("graphics_set_video_mode: failed to clear reg86.");
+    return 1;
+  }
 
   args.ah = VBE_FUNCTION;
   args.al = VBE_SET_MODE;
@@ -40,7 +43,10 @@ int(graphics_set_video_mode)(uint16_t mode) {
 }
 
 int(graphics_map_vram)(uint16_t mode) {
-  memset(&mode_info, 0, sizeof(mode_info));
+  if (memset(&mode_info, 0, sizeof(mode_info)) == NULL) {
+    perror("graphics_map_vram: failed to clear mode_info.");
+    return 1;
+  }
   if (vbe_get_mode_info(mode, &mode_info) != 0) {
     perror("graphics_map_vram: failed to get mode info.");
     return 1;
@@ -52,7 +58,10 @@ int(graphics_map_vram)(uint16_t mode) {
   vram_size = h_res * v_res * bytes_per_pixel;
 
   struct minix_mem_range mr;
-  memset(&mr, 0, sizeof(mr));
+  if (memset(&mr, 0, sizeof(mr)) == NULL) {
+    perror("graphics_map_vram: failed to clear minix_mem_range.");
+    return 1;
+  }
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
   mr.mr_limit = mr.mr_base + vram_size;
 
@@ -61,7 +70,7 @@ int(graphics_map_vram)(uint16_t mode) {
     return 1;
   }
 
-  video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
+  video_mem = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
 
   if (video_mem == MAP_FAILED) {
     perror("graphics_map_vram: map failed");
@@ -78,20 +87,23 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   }
 
   uint8_t *pixel = video_mem + (y * h_res + x) * bytes_per_pixel;
-  memcpy(pixel, &color, bytes_per_pixel);
+  if (memcpy(pixel, &color, bytes_per_pixel) == NULL) {
+    perror("graphics_draw_pixel: failed to draw pixel.");
+    return 1;
+  }
 
   return 0;
 }
 
 int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
-  if (x > h_res || y > v_res || len > v_res) {
+  if (x > h_res || y > v_res || x + len > h_res) {
     perror("graphics_draw_hline: invalid coordinate.");
     return 1;
   }
 
   for (uint16_t i = x; i < x + len; i++) {
     if (graphics_draw_pixel(i, y, color) != 0) {
-      perror("graphics_draw_hline: failed to paint pixel.");
+      perror("graphics_draw_hline: failed to draw pixel.");
       return 1;
     }
   }
@@ -100,14 +112,14 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 }
 
 int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
-  if (x > h_res || y > v_res || width > h_res || height > v_res) {
+  if (x > h_res || y > v_res || x + width > h_res || y + height > v_res) {
     perror("graphics_draw_rectangle: invalid dimensions.");
     return 1;
   }
 
   for (uint16_t j = y; j < y + height; j++) {
     if (graphics_draw_hline(x, j, width, color) != 0) {
-      perror("graphics_draw_rectangle: failed to paint line.");
+      perror("graphics_draw_rectangle: failed to draw line.");
       return 1;
     }
   }
