@@ -45,8 +45,6 @@
 
 #define VBE_MODE_1152x864 0x14C /**< @brief 1152x864 resolution, 32-bit direct color (8:8:8:8) */
 
-#define VBE_MODE_80x25_TEXT 0x03 /**< @brief 80x25 text mode (Minix default text mode) */
-
 #define VBE_LINEAR_MODE BIT(14) /**< @brief Linear frame buffer mode bit */
 
 #endif

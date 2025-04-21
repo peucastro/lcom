@@ -12,13 +12,6 @@
  */
 
 /**
- * @brief Set default MINIX text mode
- *
- * @return Return 0 upon success, non-zero otherwise
- */
-int(graphics_exit)(void);
-
-/**
  * @brief Initializes the video card in graphics mode
  *
  * @param mode 16-bit VBE mode to set
