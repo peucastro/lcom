@@ -121,12 +121,20 @@ int(graphics_map_vram)(uint16_t mode) {
 }
 
 int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
+  /* check if the given pixel coordinates (x, y) are outside the screen boundaries
+   * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
   if (x > h_res || y > v_res) {
     perror("graphics_draw_pixel: invalid coordinate.");
     return 1;
   }
 
+  /* calculate the memory address of the pixel to be drawn
+   each row has h_res pixels, so we move y rows down by doing (y * h_res).
+   we then move x pixels right within that row.
+   then we multiply by bytes_per_pixel to account for the color depth */
   uint8_t *pixel = video_mem + (y * h_res + x) * bytes_per_pixel;
+
+  // write the given color value to the calculated pixel location in memory
   if (memcpy(pixel, &color, bytes_per_pixel) == NULL) {
     perror("graphics_draw_pixel: failed to draw pixel.");
     return 1;
@@ -136,12 +144,16 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 }
 
 int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+  // check if the starting point or the line length goes beyond the screen width
   if (x > h_res || y > v_res || x + len > h_res) {
     perror("graphics_draw_hline: invalid coordinate.");
     return 1;
   }
 
+  /* draw the horizontal line pixel by pixel.
+   * we iterate from the start position x up to (x + len), keeping the same y */
   for (uint16_t i = x; i < x + len; i++) {
+    // draw each pixel along the horizontal direction
     if (graphics_draw_pixel(i, y, color) != 0) {
       perror("graphics_draw_hline: failed to draw pixel.");
       return 1;
@@ -152,12 +164,17 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 }
 
 int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+  /* check if the rectangle’s starting point or size would cause it to exceed screen bounds.
+   * ensures both bottom and right edges of the rectangle stay within the screen */
   if (x > h_res || y > v_res || x + width > h_res || y + height > v_res) {
     perror("graphics_draw_rectangle: invalid dimensions.");
     return 1;
   }
 
+  /* draw the rectangle row by row using horizontal lines.
+   * for each vertical position from y to (y + height - 1), draw a full horizontal line */
   for (uint16_t j = y; j < y + height; j++) {
+    // draw a horizontal line of 'width' pixels starting at (x, j)
     if (graphics_draw_hline(x, j, width, color) != 0) {
       perror("graphics_draw_rectangle: failed to draw line.");
       return 1;
