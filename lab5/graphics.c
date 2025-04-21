@@ -6,6 +6,7 @@ static vbe_mode_info_t mode_info;
 static uint8_t *video_mem;
 static uint16_t h_res;
 static uint16_t v_res;
+static uint8_t bits_per_pixel;
 static uint16_t bytes_per_pixel;
 static uint32_t vram_size;
 
@@ -57,7 +58,8 @@ int(graphics_map_vram)(uint16_t mode) {
 
   h_res = mode_info.XResolution;
   v_res = mode_info.YResolution;
-  bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
+  bits_per_pixel = mode_info.BitsPerPixel;
+  bytes_per_pixel = (bits_per_pixel + 7) / 8;
   vram_size = h_res * v_res * bytes_per_pixel;
 
   struct minix_mem_range mr;
@@ -124,6 +126,30 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
     if (graphics_draw_hline(x, j, width, color) != 0) {
       perror("graphics_draw_rectangle: failed to draw line.");
       return 1;
+    }
+  }
+
+  return 0;
+}
+
+int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
+  uint16_t width = h_res / no_rectangles;
+  uint16_t height = v_res / no_rectangles;
+  uint32_t color;
+
+  for (uint8_t row = 0; row < no_rectangles; row++) {
+    for (uint8_t col = 0; col < no_rectangles; col++) {
+      if (mode == VBE_MODE_1024x768) {
+        color = (first + (row * no_rectangles + col) * step) % (1 << bits_per_pixel);
+      }
+      else {
+        // TODO
+      }
+
+      if (graphics_draw_rectangle(width * col, height * row, width, height, color) != 0) {
+        perror("graphics_draw_matrix: failed to draw rectangle");
+        return 1;
+      }
     }
   }
 

@@ -102,11 +102,56 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width,
 }
 
 int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
-  /* To be completed */
-  printf("%s(0x%03x, %u, 0x%08x, %d): under construction\n", __func__,
-         mode, no_rectangles, first, step);
+  if (graphics_map_vram(mode) != 0) {
+    return 1;
+  }
 
-  return 1;
+  if (graphics_set_video_mode(mode) != 0) {
+    return 1;
+  }
+
+  graphics_draw_matrix(mode, no_rectangles, first, step);
+
+  int ipc_status, r;
+  uint8_t bit_no, irq_set;
+  message msg;
+
+  if (kbd_subscribe_int(&bit_no) != 0) { // subscribes for the kbd interrupts
+    return 1;
+  }
+  irq_set = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
+
+  while (get_scancode() != BREAK_ESC) { // use getter to access scancode
+    /* get a request message. */
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:                             /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+            kbc_ih();                              // Calls the interrupt handler once
+          }
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+    else { /* received a standard message, not a notification */
+      /* no standard messages expected: do nothing */
+    }
+  }
+
+  if (kbd_unsubscribe_int() != 0) { // unsubscribes the kbd interrupt
+    return 1;
+  }
+
+  if (vg_exit() != 0) {
+    return 1;
+  }
+
+  return 0;
 }
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
