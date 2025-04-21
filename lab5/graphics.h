@@ -5,6 +5,8 @@
 
 #include "vbe.h"
 
+int(graphics_exit)(void);
+
 int(graphics_set_video_mode)(uint16_t mode);
 
 int(graphics_map_vram)(uint16_t mode);

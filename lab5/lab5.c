@@ -39,7 +39,7 @@ int(video_test_init)(uint16_t mode, uint8_t delay) {
 
   sleep(delay);
 
-  if (vg_exit() != 0) {
+  if (graphics_exit() != 0) {
     return 1;
   }
 
@@ -94,7 +94,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width,
     return 1;
   }
 
-  if (vg_exit() != 0) {
+  if (graphics_exit() != 0) {
     return 1;
   }
 

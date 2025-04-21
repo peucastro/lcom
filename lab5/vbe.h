@@ -45,6 +45,8 @@
 
 #define VBE_MODE_1280x1024 0x11A
 
+#define VBE_MODE_80x25_TEXT 0x03
+
 #define VBE_LINEAR_MODE BIT(14)
 
 #endif

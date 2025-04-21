@@ -9,6 +9,25 @@ static uint16_t v_res;
 static uint16_t bytes_per_pixel;
 static uint32_t vram_size;
 
+int(graphics_exit)(void) {
+  reg86_t args;
+  if (memset(&args, 0, sizeof(args)) == NULL) {
+    perror("graphics_exit: failed to clear reg86.");
+    return 1;
+  }
+
+  args.ah = VBE_SET_VIDEO_MODE;
+  args.al = VBE_MODE_80x25_TEXT;
+  args.intno = VBE_INT;
+
+  if (sys_int86(&args) != OK) {
+    perror("graphics_exit: failed to call sys_int86.");
+    return 1;
+  }
+
+  return 0;
+}
+
 int(graphics_set_video_mode)(uint16_t mode) {
   struct reg86 args;
   if (memset(&args, 0, sizeof(args)) == NULL) {
