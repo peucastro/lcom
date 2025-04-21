@@ -70,36 +70,48 @@ int(graphics_set_video_mode)(uint16_t mode) {
 }
 
 int(graphics_map_vram)(uint16_t mode) {
+  /* check if setting the memory of the mode_info structure to zero fails.
+   * mode_info will store the video mode information */
   if (memset(&mode_info, 0, sizeof(mode_info)) == NULL) {
     perror("graphics_map_vram: failed to clear mode_info.");
     return 1;
   }
+  /* call the vbe_get_mode_info function to retrieve information about the specified video mode.
+   * this function is provided by the lcf */
   if (vbe_get_mode_info(mode, &mode_info) != 0) {
     perror("graphics_map_vram: failed to get mode info.");
     return 1;
   }
 
+  // initialize the static global variables with the values retrieved from the vbe_get_mode_info call
   h_res = mode_info.XResolution;
   v_res = mode_info.YResolution;
   bits_per_pixel = mode_info.BitsPerPixel;
   bytes_per_pixel = (bits_per_pixel + 7) / 8;
   vram_size = h_res * v_res * bytes_per_pixel;
 
+  // declare a struct minix_mem_range to define the physical memory range
   struct minix_mem_range mr;
+  // check if setting the memory of the minix_mem_range structure to zero fails
   if (memset(&mr, 0, sizeof(mr)) == NULL) {
     perror("graphics_map_vram: failed to clear minix_mem_range.");
     return 1;
   }
+  // set the base physical address of the memory range to the physical base pointer obtained from mode_info.
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
+  // set the limit of the memory range to the base address plus the total vram size.
   mr.mr_limit = mr.mr_base + vram_size;
 
+  // request permission to map the specified physical memory range into the process's address space using the sys_privctl kernel call
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
     perror("graphics_map_vram: failed to request permission.");
     return 1;
   }
 
+  // map the physical memory region into the process's virtual address space using the vm_map_phys kernel call.
   video_mem = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
 
+  // check if the memory mapping failed.
   if (video_mem == MAP_FAILED) {
     perror("graphics_map_vram: map failed");
     return 1;
