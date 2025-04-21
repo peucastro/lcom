@@ -2,41 +2,64 @@
 
 #include "graphics.h"
 
+/* static global variable to store vbe mode information.
+ * this structure holds details about the selected video mode */
 static vbe_mode_info_t mode_info;
+/* static global pointer to the mapped video memory in the process's address space.
+ * in minix 3, vram is not directly accessible and needs to be mapped */
 static uint8_t *video_mem;
+// static global variable to store the horizontal resolution of the current graphics mode in pixels
 static uint16_t h_res;
+// static global variable to store the vertical resolution of the current graphics mode in pixels
 static uint16_t v_res;
+// static global variable to store the number of bits per pixel for the current graphics mode
 static uint8_t bits_per_pixel;
+// static global variable to store the number of bytes per pixel, derived from bits per pixel
 static uint16_t bytes_per_pixel;
+// static global variable to store the size of the video ram in bytes for the current graphics mode
 static uint32_t vram_size;
 
 int(graphics_set_video_mode)(uint16_t mode) {
+  // holds the arguments for the bios interrupt call
   struct reg86 args;
+  // clear the reg86 structure to avoid unexpected behavior
   if (memset(&args, 0, sizeof(args)) == NULL) {
     perror("graphics_set_video_mode: failed to clear reg86.");
     return 1;
   }
 
+  // set ah register to VBE_FUNCTION (0x4f) to indicate a vbe function call
   args.ah = VBE_FUNCTION;
+  // set al register to VBE_SET_MODE (0x02) to select the "set vbe mode" function
   args.al = VBE_SET_MODE;
+  /* set bx register to the desired video mode number ored with vbe_linear_mode.
+   * setting bit 14 of bx enables the linear frame buffer model for easier vram access */
   args.bx = mode | VBE_LINEAR_MODE;
+  // set intno member to vbe_int (0x10) to specify the bios video services interrupt
   args.intno = VBE_INT;
 
+  // call the sys_int86 kernel function to invoke the bios interrupt with the specified register values
   if (sys_int86(&args) != 0) {
     perror("graphics_set_video_mode: failed to call sys_int86.");
     return 1;
   }
 
+  /* check the return status in ah and al registers after the vbe call.
+   * al should be 0x4f if the vbe function is supported, and ah should be 0x00 for success */
   if (args.ah != VBE_CALL_SUCCESS || args.al != VBE_FUNCTION) {
+    // check if ah indicates a failed function call (0x01).
     if (args.ah == VBE_CALL_FAIL) {
       perror("graphics_set_video_mode: vbe call fail.");
     }
+    // check if ah indicates the function is not supported in the current hardware configuration (0x02)
     else if (args.ah == VBE_CALL_NOT_SUPPORTED) {
       perror("graphics_set_video_mode: vbe call not supported.");
     }
+    // check if ah indicates the function is invalid in the current video mode (0x03)
     else if (args.ah == VBE_CALL_INVALID) {
       perror("graphics_set_video_mode: vbe call invalid.");
     }
+    // handle other non-success return codes in ah
     else {
       perror("graphics_set_video_mode: function not supported.");
     }
