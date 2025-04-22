@@ -128,7 +128,7 @@ int(graphics_map_vram)(uint16_t mode) {
 
   // check if the memory mapping failed.
   if (video_mem == MAP_FAILED) {
-    perror("graphics_map_vram: map failed");
+    perror("graphics_map_vram: map failed.");
     return 1;
   }
 
@@ -167,9 +167,9 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 
   /* draw the horizontal line pixel by pixel.
    * we iterate from the start position x up to (x + len), keeping the same y */
-  for (uint16_t i = x; i < x + len; i++) {
+  for (uint16_t col = x; col < x + len; col++) {
     // draw each pixel along the horizontal direction
-    if (graphics_draw_pixel(i, y, color) != 0) {
+    if (graphics_draw_pixel(col, y, color) != 0) {
       perror("graphics_draw_hline: failed to draw pixel.");
       return 1;
     }
@@ -188,9 +188,9 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
 
   /* draw the rectangle row by row using horizontal lines.
    * for each vertical position from y to (y + height - 1), draw a full horizontal line */
-  for (uint16_t j = y; j < y + height; j++) {
-    // draw a horizontal line of 'width' pixels starting at (x, j)
-    if (graphics_draw_hline(x, j, width, color) != 0) {
+  for (uint16_t row = y; row < y + height; row++) {
+    // draw a horizontal line of 'width' pixels starting at (x, row)
+    if (graphics_draw_hline(x, row, width, color) != 0) {
       perror("graphics_draw_rectangle: failed to draw line.");
       return 1;
     }
@@ -221,7 +221,36 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
       }
 
       if (graphics_draw_rectangle(width * col, height * row, width, height, color) != 0) {
-        perror("graphics_draw_matrix: failed to draw rectangle");
+        perror("graphics_draw_matrix: failed to draw rectangle.");
+        return 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
+int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
+  if (x > h_res || y > v_res) {
+    perror("graphics_draw_xpm: invalid coordinates.");
+    return 1;
+  }
+  xpm_image_t img;
+  uint8_t *map = xpm_load(xpm, XPM_INDEXED, &img);
+
+  if (map == NULL) {
+    perror("graphics_draw_xpm: xpm map address is null.");
+    return 1;
+  }
+  else if (x + img.width > h_res || y + img.height > v_res) {
+    perror("graphics_draw_xpm: invalid dimensions.");
+    return 1;
+  }
+
+  for (uint16_t row = 0; row < img.height; row++) {
+    for (uint16_t col = 0; col < img.width; col++) {
+      if (graphics_draw_pixel(x + col, y + row, *(map + (row * img.width + col))) != 0) {
+        perror("graphics_draw_xpm: failed to draw pixel.");
         return 1;
       }
     }
