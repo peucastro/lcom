@@ -11,6 +11,12 @@
  * Functions for using the PC's video card in Graphics Mode.
  */
 
+uint32_t(R)(uint32_t color);
+
+uint32_t(G)(uint32_t color);
+
+uint32_t(B)(uint32_t color);
+
 /**
  * @brief Initializes the video card in graphics mode
  *

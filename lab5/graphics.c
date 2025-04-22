@@ -19,6 +19,21 @@ static uint16_t bytes_per_pixel;
 // static global variable to store the size of the video ram in bytes for the current graphics mode
 static uint32_t vram_size;
 
+uint32_t(R)(uint32_t color) {
+  uint32_t mask = BIT(mode_info.RedMaskSize) - 1;
+  return (color >> mode_info.RedFieldPosition) & mask;
+}
+
+uint32_t(G)(uint32_t color) {
+  uint32_t mask = BIT(mode_info.GreenMaskSize) - 1;
+  return (color >> mode_info.GreenFieldPosition) & mask;
+}
+
+uint32_t(B)(uint32_t color) {
+  uint32_t mask = BIT(mode_info.BlueMaskSize) - 1;
+  return (color >> mode_info.BlueFieldPosition) & mask;
+}
+
 int(graphics_set_video_mode)(uint16_t mode) {
   // holds the arguments for the bios interrupt call
   struct reg86 args;
