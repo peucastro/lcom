@@ -202,7 +202,11 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
 int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
   uint16_t width = h_res / no_rectangles;
   uint16_t height = v_res / no_rectangles;
-  uint32_t color;
+  uint32_t color, r, g, b;
+
+  uint32_t r_first = R(first);
+  uint32_t g_first = G(first);
+  uint32_t b_first = B(first);
 
   for (uint8_t row = 0; row < no_rectangles; row++) {
     for (uint8_t col = 0; col < no_rectangles; col++) {
@@ -210,7 +214,10 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
         color = (first + (row * no_rectangles + col) * step) % (1 << bits_per_pixel);
       }
       else {
-        // TODO
+        r = (r_first + col * step) % (1 << mode_info.RedMaskSize);
+        g = (g_first + row * step) % (1 << mode_info.GreenMaskSize);
+        b = (b_first + (col + row) * step) % (1 << mode_info.BlueMaskSize);
+        color = (r << mode_info.RedFieldPosition) | (g << mode_info.GreenFieldPosition) | (b << mode_info.BlueFieldPosition);
       }
 
       if (graphics_draw_rectangle(width * col, height * row, width, height, color) != 0) {
