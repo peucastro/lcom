@@ -150,11 +150,13 @@ int(mouse_test_packet)(uint32_t cnt) {
 
   struct packet pp;
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
     return 1;
+  }
 
-  if (mouse_subscribe_int(&bit_no) != 0)
+  if (mouse_subscribe_int(&bit_no) != 0) {
     return 1;
+  }
   irq_set = BIT(bit_no);
 
   while (cnt) {
@@ -167,13 +169,16 @@ int(mouse_test_packet)(uint32_t cnt) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            mouse_ih();
-            mouse_sync();
+            mouse_ih();                            // calls the interrupt handler
+            mouse_sync();                          // sync the mouse index
 
+            /* when the index is reset to 0, it indicates that a complete
+             * mouse packet has been successfully read. at this point,
+             * the packet should be processed and printed. */
             if (mouse_get_index() == 0) {
               pp = mouse_parse_packet();
               mouse_print_packet(&pp);
-              cnt--;
+              cnt--; // decrease the number of packets parsed
             }
           }
           break;
@@ -186,11 +191,13 @@ int(mouse_test_packet)(uint32_t cnt) {
     }
   }
 
-  if (mouse_unsubscribe_int() != 0)
+  if (mouse_unsubscribe_int() != 0) {
     return 1;
+  }
 
-  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
     return 1;
+  }
 
   return 0;
 }
@@ -203,15 +210,18 @@ int(mouse_test_async)(uint8_t idle_time) {
   uint8_t time = 0;
   struct packet pp;
 
-  if (timer_subscribe_int(&bit_no) != 0)
+  if (timer_subscribe_int(&bit_no) != 0) {
     return 1;
+  }
   irq_set_timer = BIT(bit_no);
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
     return 1;
+  }
 
-  if (mouse_subscribe_int(&bit_no) != 0)
+  if (mouse_subscribe_int(&bit_no) != 0) {
     return 1;
+  }
   irq_set_mouse = BIT(bit_no);
 
   while (time < idle_time) {
@@ -250,14 +260,17 @@ int(mouse_test_async)(uint8_t idle_time) {
     }
   }
 
-  if (mouse_unsubscribe_int() != 0)
+  if (mouse_unsubscribe_int() != 0) {
     return 1;
+  }
 
-  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
     return 1;
+  }
 
-  if (timer_unsubscribe_int() != 0)
+  if (timer_unsubscribe_int() != 0) {
     return 1;
+  }
 
   return 0;
 }
@@ -272,11 +285,13 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
   drawing_state state = START;
   int16_t x_delta, y_delta = 0;
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0)
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
     return 1;
+  }
 
-  if (mouse_subscribe_int(&bit_no) != 0)
+  if (mouse_subscribe_int(&bit_no) != 0) {
     return 1;
+  }
   irq_set = BIT(bit_no);
 
   while (state != END) {
@@ -294,9 +309,9 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
 
             if (mouse_get_index() == 0) {
               pp = mouse_parse_packet();
+              mouse_print_packet(&pp);
               ev = mouse_detect_event(&pp);
               update_drawing_state(&state, ev, tolerance, x_len, &x_delta, &y_delta);
-              // printf("drawing state: %d\n", state);
             }
           }
           break;
@@ -309,11 +324,13 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
     }
   }
 
-  if (mouse_unsubscribe_int() != 0)
+  if (mouse_unsubscribe_int() != 0) {
     return 1;
+  }
 
-  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0)
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
     return 1;
+  }
 
   return 0;
 }
