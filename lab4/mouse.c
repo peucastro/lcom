@@ -82,12 +82,19 @@ int(mouse_write_cmd)(uint8_t cmd) {
   return 1;
 }
 
-void(mouse_sync)() {
+void(mouse_sync)(void) {
+  // check if the driver is expecting the first byte of a packet
   if ((mouse_index == 0) && !(byte & BIT(3))) {
+    /* if bit 3 of the received byte is 0, the driver is not in sync.
+     * ignore the byte and return */
     return;
   }
   else {
+    // store the received byte in the packet buffer
     mouse_packet_bytes[mouse_index] = byte;
+
+    /* update the index to track the next byte.
+     * use modular arithmetic to cycle the index through 0, 1, and 2 */
     mouse_index = (mouse_index + 1) % 3;
   }
 }

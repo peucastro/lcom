@@ -37,6 +37,9 @@ int(mouse_unsubscribe_int)(void);
  */
 int(mouse_write_cmd)(uint8_t cmd);
 
+/**
+ * @brief Synchronizes the driver with the mouse packet stream
+ */
 void(mouse_sync)(void);
 
 struct packet(mouse_parse_packet)(void);
