@@ -41,32 +41,40 @@ int(mouse_write_cmd)(uint8_t cmd) {
   uint8_t response;
 
   while (attempts > 0) {
-    if (kbc_write_cmd(KBC_IN, MOUSE_WRITE_BYTE) != 0) {
+    // request forwarding of the byte (command) to the mouse
+    if (kbc_write_cmd(KBC_IN, MOUSE_WRITE_BYTE) != 0) { // write 0xD4 to port 0x64
       perror("mouse_write_cmd: failed to write MOUSE_WRITE_BYTE to the kbc.");
       return 1;
     }
-    if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0) {
+
+    // write the actual mouse command to port 0x60
+    if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0) { // write the command to port 0x60
       perror("mouse_write_cmd: failed to write the mouse command to the kbc.");
       return 1;
     }
 
-    micro_delay(micros_to_ticks(20000));
+    // wait for the acknowledgment byte from the mouse
+    micro_delay(micros_to_ticks(20000)); // delay to allow the mouse to process the command
 
-    if (util_sys_inb(KBC_OUT, &response) != 0) {
+    if (util_sys_inb(KBC_OUT, &response) != 0) { // read the acknowledgment byte from port 0x60
       perror("mouse_write_cmd: failed to read the kbc response.");
       return 1;
     }
-    if (response == MOUSE_NACK) {
+
+    // check the acknowledgment byte
+    if (response == MOUSE_NACK) { // 0xFE: command was not acknowledged, retry
       perror("mouse_write_cmd: mouse NACK");
       return 1;
     }
-    if (response == MOUSE_ERR) {
+    if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
       perror("mouse_write_cmd: mouse ERROR");
       return 1;
     }
-    if (response == MOUSE_ACK) {
+    if (response == MOUSE_ACK) { // 0xFA: command was successfully acknowledged
       return 0;
     }
+
+    // decrement the number of attempts left
     attempts--;
   }
 
