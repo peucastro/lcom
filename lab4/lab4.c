@@ -20,93 +20,110 @@ void(update_drawing_state)(drawing_state *state, struct mouse_ev *ev, uint8_t to
     case START:
       *x_delta = 0;
       *y_delta = 0;
+      // the start of the first line is marked by the pressing down of the left button
       if (ev->type == LB_PRESSED) {
         *state = RIGHT_UP;
+        break;
       }
       break;
 
     case RIGHT_UP:
       if (ev->type == LB_RELEASED) {
+        /* we can only transition to the VERTEX state if the first line meets 2 conditions:
+         * 1. the value of the displacement along the x-direction must be at least x_len.
+         * 2. the absolute value of the slope must be at least 1. */
         if ((*x_delta >= x_len) && (*y_delta / *x_delta) >= 1) {
           *x_delta = 0;
           *y_delta = 0;
           *state = VERTEX;
+          break;
         }
         else {
           *state = START;
+          break;
         }
       }
       else if (ev->type == MOUSE_MOV) {
-        if (ev->delta_x <= 0 || ev->delta_y <= 0) {
-          if (abs(ev->delta_x) > tolerance || abs(ev->delta_y) > tolerance) {
-            *state = START;
-            break;
-          }
-          if (ev->delta_x != 0 && (ev->delta_y) / (ev->delta_x) <= 1) {
-            *state = START;
-          }
+        // negative displacements are only allowed within the specified tolerance
+        if ((ev->delta_x <= 0 || ev->delta_y <= 0) &&
+            (abs(ev->delta_x) > tolerance || abs(ev->delta_y) > tolerance)) {
+          *state = START;
+          break;
         }
         else {
+          // update our x_delta and y_delta
           *x_delta += ev->delta_x;
           *y_delta += ev->delta_y;
         }
       }
       else {
         *state = START;
+        break;
       }
       break;
 
     case VERTEX:
+      // the start of the second line is marked by the pressing down of the right button
       if (ev->type == RB_PRESSED) {
+        // the absolute value in both the x and the y directions cannot be larger than the tolerance
         if (abs(*x_delta) > tolerance || abs(*y_delta) > tolerance) {
           *state = START;
+          break;
         }
         else {
           *x_delta = 0;
           *y_delta = 0;
           *state = RIGHT_DOWN;
+          break;
         }
       }
       else if (ev->type == MOUSE_MOV) {
+        // update our x_delta and y_delta
         *x_delta += ev->delta_x;
         *y_delta += ev->delta_y;
       }
       else if (ev->type == LB_PRESSED) {
         *x_delta = 0;
         *y_delta = 0;
+        // skip the START state in case of a left-button event
         *state = RIGHT_UP;
+        break;
       }
       else {
         *state = START;
+        break;
       }
       break;
 
     case RIGHT_DOWN:
       if (ev->type == RB_RELEASED) {
+        /* we can only transition to the END state if the seconf line meets 2 conditions:
+         * 1. the value of the displacement along the x-direction must be at least x_len.
+         * 2. the absolute value of the slope must be at least 1. */
         if ((*x_delta >= x_len) && (*y_delta / *x_delta) <= -1) {
           *state = END;
           return;
         }
-        else
+        else {
           *state = START;
+          break;
+        }
       }
       else if (ev->type == MOUSE_MOV) {
-        if (ev->delta_x <= 0 || ev->delta_y >= 0) {
-          if (abs(ev->delta_x) > tolerance || abs(ev->delta_y) > tolerance) {
-            *state = START;
-            break;
-          }
-          if (ev->delta_x != 0 && (ev->delta_y) / (ev->delta_x) >= -1) {
-            *state = START;
-          }
+        if ((ev->delta_x <= 0 || ev->delta_y >= 0) &&
+            (abs(ev->delta_x) > tolerance || abs(ev->delta_y) > tolerance)) {
+          *state = START;
+          break;
         }
         else {
+          // update our x_delta and y_delta
           *x_delta += ev->delta_x;
           *y_delta += ev->delta_y;
         }
       }
       else {
         *state = START;
+        break;
       }
       break;
 
