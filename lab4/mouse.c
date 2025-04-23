@@ -108,28 +108,30 @@ void(mouse_sync)(void) {
 }
 
 struct packet(mouse_parse_packet)(void) {
-  struct packet p;
+  struct packet pp;
 
   if (mouse_index != 0) {
     perror("mouse_parse_packet: couldn't assemble the mouse packet");
-    return p;
+    return pp;
   }
 
   for (int i = 0; i < 3; i++) {
-    p.bytes[i] = mouse_packet_bytes[i];
+    pp.bytes[i] = mouse_packet_bytes[i];
   }
 
-  p.rb = p.bytes[0] & MOUSE_RB;
-  p.mb = p.bytes[0] & MOUSE_MB;
-  p.lb = p.bytes[0] & MOUSE_LB;
+  pp.rb = pp.bytes[0] & MOUSE_RB;
+  pp.mb = pp.bytes[0] & MOUSE_MB;
+  pp.lb = pp.bytes[0] & MOUSE_LB;
 
-  p.delta_x = (p.bytes[0] & MOUSE_XSIGN) ? (0xFF00 | p.bytes[1]) : (p.bytes[1]);
-  p.delta_y = (p.bytes[0] & MOUSE_YSIGN) ? (0xFF00 | p.bytes[2]) : (p.bytes[2]);
+  /* since the x_delta and y_delta are represented as a 9-bit 2's complement integer,
+   * we need extend the signal if the MSB is set */
+  pp.delta_x = (pp.bytes[0] & MOUSE_XSIGN) ? (0xFF00 | pp.bytes[1]) : (pp.bytes[1]);
+  pp.delta_y = (pp.bytes[0] & MOUSE_YSIGN) ? (0xFF00 | pp.bytes[2]) : (pp.bytes[2]);
 
-  p.x_ov = p.bytes[0] & MOUSE_XOV;
-  p.y_ov = p.bytes[0] & MOUSE_YOV;
+  pp.x_ov = pp.bytes[0] & MOUSE_XOV;
+  pp.y_ov = pp.bytes[0] & MOUSE_YOV;
 
-  return p;
+  return pp;
 }
 
 void(mouse_ih)(void) {

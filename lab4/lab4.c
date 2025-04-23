@@ -246,9 +246,10 @@ int(mouse_test_async)(uint8_t idle_time) {
             if (mouse_get_index() == 0) {
               pp = mouse_parse_packet();
               mouse_print_packet(&pp);
+              // reset the timer couter and our program counter
+              time = 0;
+              counter = 0;
             }
-            time = 0;
-            counter = 0;
           }
           break;
         default:
@@ -281,7 +282,7 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
   message msg;
 
   struct packet pp;
-  struct mouse_ev *ev;
+  struct mouse_ev ev;
   drawing_state state = START;
   int16_t x_delta, y_delta = 0;
 
@@ -294,6 +295,7 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
   }
   irq_set = BIT(bit_no);
 
+  // loop while we're not at the desired state
   while (state != END) {
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
@@ -310,8 +312,8 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
             if (mouse_get_index() == 0) {
               pp = mouse_parse_packet();
               mouse_print_packet(&pp);
-              ev = mouse_detect_event(&pp);
-              update_drawing_state(&state, ev, tolerance, x_len, &x_delta, &y_delta);
+              ev = *mouse_detect_event(&pp); // use the provided function to detect the mouse event
+              update_drawing_state(&state, &ev, tolerance, x_len, &x_delta, &y_delta);
             }
           }
           break;

@@ -4,6 +4,12 @@
 #include "i8042.h"
 #include "kbc.h"
 
+/** @defgroup mouse mouse
+ * @{
+ *
+ * Functions for interacting with the Mouse.
+ */
+
 /**
  * @brief Getter for the mouse index
  *
@@ -42,6 +48,11 @@ int(mouse_write_cmd)(uint8_t cmd);
  */
 void(mouse_sync)(void);
 
+/**
+ * @brief Parses a mouse packet accoarding to the documentation
+ *
+ * @return Returns the parsed struct mouse packet
+ */
 struct packet(mouse_parse_packet)(void);
 
 /**
