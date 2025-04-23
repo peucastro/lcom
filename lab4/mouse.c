@@ -54,7 +54,7 @@ int(mouse_write_cmd)(uint8_t cmd) {
     }
 
     // wait for the acknowledgment byte from the mouse
-    micro_delay(micros_to_ticks(20000)); // delay to allow the mouse to process the command
+    micro_delay(micros_to_ticks(DELAY_US)); // delay to allow the mouse to process the command
 
     if (util_sys_inb(KBC_OUT, &response) != 0) { // read the acknowledgment byte from port 0x60
       perror("mouse_write_cmd: failed to read the kbc response.");
@@ -62,20 +62,21 @@ int(mouse_write_cmd)(uint8_t cmd) {
     }
 
     // check the acknowledgment byte
-    if (response == MOUSE_NACK) { // 0xFE: command was not acknowledged, retry
-      perror("mouse_write_cmd: mouse NACK");
-      return 1;
-    }
-    if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
-      perror("mouse_write_cmd: mouse ERROR");
-      return 1;
-    }
     if (response == MOUSE_ACK) { // 0xFA: command was successfully acknowledged
       return 0;
     }
-
-    // decrement the number of attempts left
-    attempts--;
+    else if (response == MOUSE_NACK) { // 0xFE: command was not acknowledged, retry
+      // decrement the number of attempts left and skip to the next iteration
+      attempts--;
+      continue;
+    }
+    else if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
+      perror("mouse_write_cmd: mouse ERROR");
+    }
+    else {
+      perror("mouse_write_cmd: unexpected error.");
+    }
+    return 1;
   }
 
   perror("mouse_write_cmd: failed to write the mouse command.");
