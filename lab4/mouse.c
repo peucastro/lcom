@@ -2,12 +2,16 @@
 
 #include "mouse.h"
 
+// hook id used for subscribing and unsubscribing mouse interrupts.
 static int hook_id_mouse = 7;
+// buffer to store the 3 bytes of a mouse packet.
 static uint8_t mouse_packet_bytes[3] = {0, 0, 0};
+// index to track the current byte in the mouse packet.
 static uint8_t mouse_index = 0;
+// variable to store the byte read from the KBC output buffer.
 static uint8_t byte = 0;
 
-uint8_t(mouse_get_index)() {
+uint8_t(mouse_get_index)(void) {
   return mouse_index;
 }
 
@@ -17,8 +21,11 @@ int(mouse_subscribe_int)(uint8_t *bit_no) {
     return 1;
   }
 
+  // saves the hook_id value so we can use it as a mask with the msg.m_notify.interrupts
   *bit_no = hook_id_mouse;
 
+  /* the subscription should specify not only the IRQ_REENABLE policy but also the IRQ_EXCLUSIVE
+   * policy to prevent Minix's default IH from "stealing" mouse packets */
   if (sys_irqsetpolicy(MOUSE_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id_mouse) != 0) {
     perror("mouse_subscribe_int: failed to set the mouse interrupt subscription policy.");
     return 1;
@@ -28,7 +35,7 @@ int(mouse_subscribe_int)(uint8_t *bit_no) {
 }
 
 int(mouse_unsubscribe_int)(void) {
-  if (sys_irqrmpolicy(&hook_id_mouse) != 0) {
+  if (sys_irqrmpolicy(&hook_id_mouse) != 0) { // unsubscribes the notification
     perror("mouse_unsubscribe_int: failed to set the mouse interrupt subscription policy.");
     return 1;
   }
@@ -73,7 +80,7 @@ int(mouse_write_cmd)(uint8_t cmd) {
     else if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
       perror("mouse_write_cmd: mouse ERROR");
     }
-    else {
+    else { // unknown error
       perror("mouse_write_cmd: unexpected error.");
     }
     return 1;
@@ -126,5 +133,5 @@ struct packet(mouse_parse_packet)(void) {
 }
 
 void(mouse_ih)(void) {
-  kbc_read_data(&byte);
+  kbc_read_data(&byte); // reads the value stored in the output buffer
 }

@@ -9,7 +9,7 @@
  *
  * @return Return the current mouse index
  */
-uint8_t(mouse_get_index)();
+uint8_t(mouse_get_index)(void);
 
 /**
  * @brief Subscribes mouse interrupts
@@ -44,6 +44,11 @@ void(mouse_sync)(void);
 
 struct packet(mouse_parse_packet)(void);
 
+/**
+ * @brief Mouse interrupt handler
+ *
+ * Reads the byte from the KBC output buffer
+ */
 void(mouse_ih)(void);
 
 #endif /* __MOUSE_H */
