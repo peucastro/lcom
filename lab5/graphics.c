@@ -50,10 +50,10 @@ int(graphics_set_video_mode)(uint16_t mode) {
   /* set bx register to the desired video mode number ored with vbe_linear_mode.
    * setting bit 14 of bx enables the linear frame buffer model for easier vram access */
   args.bx = mode | VBE_LINEAR_MODE;
-  // set intno member to vbe_int (0x10) to specify the bios video services interrupt
+  // set intno to VBE_INT (0x10) to specify the bios video services interrupt
   args.intno = VBE_INT;
 
-  // call the sys_int86 kernel function to invoke the bios interrupt with the specified register values
+  // call sys_int86 to invoke the bios interrupt with the specified register values
   if (sys_int86(&args) != 0) {
     perror("graphics_set_video_mode: failed to call sys_int86.");
     return 1;
@@ -127,7 +127,7 @@ int(graphics_map_vram)(uint16_t mode) {
   video_mem = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
 
   // check if the memory mapping failed.
-  if (video_mem == MAP_FAILED) {
+  if ((void *) video_mem == MAP_FAILED) {
     perror("graphics_map_vram: map failed.");
     return 1;
   }

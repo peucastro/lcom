@@ -11,14 +11,32 @@
  * Functions for using the PC's video card in Graphics Mode.
  */
 
+/**
+ * @brief Extracts the Red component from a 32 bit color.
+ *
+ * @param color a 32 bit color
+ * @return The Red component of the color
+ */
 uint32_t(R)(uint32_t color);
 
+/**
+ * @brief Extracts the Green component from a 32 bit color.
+ *
+ * @param color a 32 bit color
+ * @return The Green component of the color
+ */
 uint32_t(G)(uint32_t color);
 
+/**
+ * @brief Extracts the Blue component from a 32 bit color.
+ *
+ * @param color a 32 bit color
+ * @return The Blue component of the color
+ */
 uint32_t(B)(uint32_t color);
 
 /**
- * @brief Initializes the video card in graphics mode
+ * @brief Initializes the video card in graphics mode.
  *
  * @param mode 16-bit VBE mode to set
  * @return Return 0 upon sucess, non-zero otherwise
@@ -26,7 +44,7 @@ uint32_t(B)(uint32_t color);
 int(graphics_set_video_mode)(uint16_t mode);
 
 /**
- * @brief Maps the video card VRAM to the program's address space
+ * @brief Maps the video card VRAM to the program's address space.
  *
  * @param mode 16-bit VBE mode to set
  * @return Return 0 upon success, non-zero otherwise
@@ -34,7 +52,7 @@ int(graphics_set_video_mode)(uint16_t mode);
 int(graphics_map_vram)(uint16_t mode);
 
 /**
- * @brief Draws a pixel in the screen
+ * @brief Draws a pixel in the screen.
  *
  * @param x Horizontal axis coordinate
  * @param y Vertial axis coordinate
@@ -44,7 +62,7 @@ int(graphics_map_vram)(uint16_t mode);
 int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 
 /**
- * @brief Draws a horizontal line on the screen
+ * @brief Draws a horizontal line on the screen.
  *
  * @param x Horizontal axis coordinate of the initial point
  * @param y Vertical axis coordinate of the initial point
@@ -55,7 +73,7 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color);
 
 /**
- * @brief Draws a filled rectangle on the screen
+ * @brief Draws a filled rectangle on the screen.
  *
  * @param x Horizontal axis coordinate of the initial point
  * @param y Vertical axis coordinate of the initial point
@@ -66,8 +84,25 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color);
  */
 int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color);
 
+/**
+ * @brief Draws a matrix of colored rectangles on the screen.
+ *
+ * @param mode Video mode to set
+ * @param no_rectangles Number of rectangles per row and column
+ * @param first Color of the first rectangle
+ * @param step Step value to calculate the color of subsequent rectangles
+ * @return Return 0 upon success, non-zero otherwise
+ */
 int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step);
 
+/**
+ * @brief Draws a pixmap (XPM image) on the screen at the specified coordinates.
+ *
+ * @param xpm Pixmap to be drawn
+ * @param x Horizontal axis coordinate of the upper left corner of the pixmap
+ * @param y Vertical axis coordinate of the upper left corner of the pixmap
+ * @return Return 0 upon success, non-zero otherwise
+ */
 int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y);
 
-#endif
+#endif /* __GRAPHICS_H */

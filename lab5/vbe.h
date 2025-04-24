@@ -47,4 +47,4 @@
 
 #define VBE_LINEAR_MODE BIT(14) /**< @brief Linear frame buffer mode bit */
 
-#endif
+#endif /* _LCOM_VBE_H_ */
