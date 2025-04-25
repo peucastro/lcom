@@ -213,11 +213,89 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) {
-  /* To be completed */
-  printf("%s(%8p, %u, %u, %u, %u, %d, %u): under construction\n",
-         __func__, xpm, xi, yi, xf, yf, speed, fr_rate);
+  if (graphics_map_vram(VBE_MODE_1024x768) != 0) {
+    return 1;
+  }
 
-  return 1;
+  if (graphics_set_video_mode(VBE_MODE_1024x768) != 0) {
+    return 1;
+  }
+
+  if (graphics_draw_xpm(xpm, xi, yi) != 0) {
+    return 1;
+  }
+
+  int ipc_status, r;
+  uint8_t bit_no, irq_set_timer, irq_set_kbd;
+  message msg;
+
+  if (timer_subscribe_int(&bit_no) != 0) { // subscribes for the timerkbd interrupts
+    return 1;
+  }
+  irq_set_timer = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
+
+  if (kbd_subscribe_int(&bit_no) != 0) { // subscribes for the kbd interrupts
+    return 1;
+  }
+  irq_set_kbd = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
+
+  bool horizontal = (yi == yf);
+  xpm_image_t img;
+  if (xpm_load(xpm, XPM_INDEXED, &img) == NULL) {
+    return 1;
+  }
+
+  while ((get_scancode() != BREAK_ESC) && (xi < xf || yi < yf)) {
+    /* get a request message. */
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:                                   /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & irq_set_timer) { /* timer interrupt */
+            timer_int_handler();
+            if (graphics_clear_xpm(img, xi, yi) != 0) {
+              return 1;
+            }
+            if (horizontal) {
+              xi += speed;
+            }
+            else {
+              yi += speed;
+            }
+
+            if (graphics_draw_xpm(xpm, xi, yi) != 0) {
+              return 1;
+            }
+          }
+          if (msg.m_notify.interrupts & irq_set_kbd) { /* kbd interrupt */
+            kbc_ih();
+          }
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+    else { /* received a standard message, not a notification */
+      /* no standard messages expected: do nothing */
+    }
+  }
+
+  if (timer_unsubscribe_int() != 0) { // unsubscribes the timer interrupt
+    return 1;
+  }
+
+  if (kbd_unsubscribe_int() != 0) { // unsubscribes the kbd interrupt
+    return 1;
+  }
+
+  if (vg_exit() != 0) {
+    return 1;
+  }
+
+  return 0;
 }
 
 int(video_test_controller)() {
