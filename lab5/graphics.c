@@ -20,17 +20,28 @@ static uint16_t bytes_per_pixel;
 static uint32_t vram_size;
 
 uint32_t(R)(uint32_t color) {
+  /* compute a bitmask with RedMaskSize bits set to 1.
+   * BIT(n) is assumed to return 2^n, so BIT(n) - 1 gives a mask of n bits */
   uint32_t mask = BIT(mode_info.RedMaskSize) - 1;
+
+  /* shift the input color to the right by the red field position.
+   * then apply the mask to isolate the red component */
   return (color >> mode_info.RedFieldPosition) & mask;
 }
 
 uint32_t(G)(uint32_t color) {
+  // create a mask with GreenMaskSize bits set to 1
   uint32_t mask = BIT(mode_info.GreenMaskSize) - 1;
+
+  // extract the green component by shifting and masking
   return (color >> mode_info.GreenFieldPosition) & mask;
 }
 
 uint32_t(B)(uint32_t color) {
+  // create a mask with BlueMaskSize bits set to 1
   uint32_t mask = BIT(mode_info.BlueMaskSize) - 1;
+
+  // extract the blue component by shifting and masking
   return (color >> mode_info.BlueFieldPosition) & mask;
 }
 
@@ -200,26 +211,37 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
 }
 
 int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
+  // calculate the width and height of each rectangle in the grid
   uint16_t width = h_res / no_rectangles;
   uint16_t height = v_res / no_rectangles;
   uint32_t color, r, g, b;
 
+  // extract R, G, B components from the base color in case of direct color mode
   uint32_t r_first = R(first);
   uint32_t g_first = G(first);
   uint32_t b_first = B(first);
 
+  // iterate over all grid positions
   for (uint8_t row = 0; row < no_rectangles; row++) {
     for (uint8_t col = 0; col < no_rectangles; col++) {
+      // check if mode is indexed
       if (mode == VBE_MODE_1024x768) {
+        // compute the color index for indexed mode
         color = (first + (row * no_rectangles + col) * step) % (1 << bits_per_pixel);
       }
       else {
+        // compute RGB components for direct color mode
         r = (r_first + col * step) % (1 << mode_info.RedMaskSize);
         g = (g_first + row * step) % (1 << mode_info.GreenMaskSize);
         b = (b_first + (col + row) * step) % (1 << mode_info.BlueMaskSize);
-        color = (r << mode_info.RedFieldPosition) | (g << mode_info.GreenFieldPosition) | (b << mode_info.BlueFieldPosition);
+
+        // build the final color by shifting components to their proper positions
+        color = (r << mode_info.RedFieldPosition) |
+                (g << mode_info.GreenFieldPosition) |
+                (b << mode_info.BlueFieldPosition);
       }
 
+      // draw the filled rectangle at the appropriate screen location
       if (graphics_draw_rectangle(width * col, height * row, width, height, color) != 0) {
         perror("graphics_draw_matrix: failed to draw rectangle.");
         return 1;
@@ -231,25 +253,42 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
 }
 
 int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
+  /* check if the given pixel coordinates (x, y) are outside the screen boundaries
+   * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
   if (x > h_res || y > v_res) {
     perror("graphics_draw_xpm: invalid coordinates.");
     return 1;
   }
+
+  // declare an xpm_image_t struct to hold metadata (e.g. type, width, height) of the loaded xpm
   xpm_image_t img;
+
+  /* convert the input XPM into a pixel map using the lcf-provided xpm_load function.
+   * we use XPM_INDEXED assuming the color mode is indexed for mode 0x105 */
   uint8_t *map = xpm_load(xpm, XPM_INDEXED, &img);
 
+  // check if the image loading failed
   if (map == NULL) {
     perror("graphics_draw_xpm: xpm map address is null.");
     return 1;
   }
+
+  /* check if the full image would go beyond the screen limits when drawn from (x, y).
+   * prevents drawing outside of VRAM which would cause memory errors */
   else if (x + img.width > h_res || y + img.height > v_res) {
     perror("graphics_draw_xpm: invalid dimensions.");
     return 1;
   }
 
+  /* iterate over every pixel in the loaded image.
+   * each row is drawn top-down from the starting y coordinate, and each column left-right from x */
   for (uint16_t row = 0; row < img.height; row++) {
     for (uint16_t col = 0; col < img.width; col++) {
-      if (graphics_draw_pixel(x + col, y + row, *(map + (row * img.width + col))) != 0) {
+      // compute the address of the pixel color in the map (row-major order)
+      uint32_t color = *(map + (row * img.width + col));
+
+      // draw the pixel at the corresponding position on screen
+      if (graphics_draw_pixel(x + col, y + row, color) != 0) {
         perror("graphics_draw_xpm: failed to draw pixel.");
         return 1;
       }
