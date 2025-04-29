@@ -106,13 +106,8 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
 int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y);
 
 /**
- * @brief Clears a pixmap (XPM image) on the screen at the specified coordinates.
- *
- * @param img Image to be cleared
- * @param x Horizontal axis coordinate of the upper left corner of the image
- * @param y Vertical axis coordinate of the upper left corner of the image
- * @return Return 0 upon success, non-zero otherwise
+ * @brief Clears the entire screen.
  */
-int(graphics_clear_xpm)(xpm_image_t img, uint16_t x, uint16_t y);
+int(graphics_clear_screen)();
 
 #endif /* __GRAPHICS_H */

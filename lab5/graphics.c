@@ -298,18 +298,9 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   return 0;
 }
 
-int(graphics_clear_xpm)(xpm_image_t img, uint16_t x, uint16_t y) {
-  if (x > h_res || y > v_res) {
-    perror("graphics_clear_xpm: invalid coordinates.");
-    return 1;
-  }
-  else if (x + img.width > h_res || y + img.height > v_res) {
-    perror("graphics_clear_xpm: invalid dimensions.");
-    return 1;
-  }
-
-  if (graphics_draw_rectangle(x, y, img.width, img.height, 0x00000000) != 0) {
-    perror("graphics_clear_xpm: failed to clear the image.");
+int(graphics_clear_screen)() {
+  if (memset(video_mem, 0, vram_size) == NULL) {
+    perror("graphics_clear_screen: failed to clear vram frame.");
     return 1;
   }
 
