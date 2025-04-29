@@ -107,6 +107,8 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y);
 
 /**
  * @brief Clears the entire screen.
+ *
+ * @return Return 0 upon success, non-zero otherwise
  */
 int(graphics_clear_screen)();
 
