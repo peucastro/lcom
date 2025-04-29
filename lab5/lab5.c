@@ -8,6 +8,8 @@
 #include "graphics.h"
 #include "kbd.h"
 
+extern uint32_t counter;
+
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -229,7 +231,7 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   uint8_t bit_no, irq_set_timer, irq_set_kbd;
   message msg;
 
-  if (timer_subscribe_int(&bit_no) != 0) { // subscribes for the timerkbd interrupts
+  if (timer_subscribe_int(&bit_no) != 0) { // subscribes for the timer interrupts
     return 1;
   }
   irq_set_timer = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
@@ -240,12 +242,13 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   irq_set_kbd = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
   bool horizontal = (yi == yf);
+  uint8_t frames_left = speed;
   xpm_image_t img;
   if (xpm_load(xpm, XPM_INDEXED, &img) == NULL) {
     return 1;
   }
 
-  while ((get_scancode() != BREAK_ESC) && (xi < xf || yi < yf)) {
+  while ((get_scancode() != BREAK_ESC)) {
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
@@ -256,18 +259,46 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
         case HARDWARE:                                   /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set_timer) { /* timer interrupt */
             timer_int_handler();
-            if (graphics_clear_xpm(img, xi, yi) != 0) {
-              return 1;
-            }
-            if (horizontal) {
-              xi += speed;
-            }
-            else {
-              yi += speed;
+
+            if ((xi == xf) && (yi == yf)) {
+              break;
             }
 
-            if (graphics_draw_xpm(xpm, xi, yi) != 0) {
-              return 1;
+            if (counter % (60 / fr_rate) == 0) {
+              if (speed > 0) {
+                if (graphics_clear_screen() != 0) {
+                  return 1;
+                }
+                if (horizontal) {
+                  xi += speed;
+                }
+                else {
+                  yi += speed;
+                }
+
+                if (graphics_draw_xpm(xpm, xi, yi) != 0) {
+                  return 1;
+                }
+              }
+              else {
+                if (frames_left == 0) {
+                  if (graphics_clear_screen() != 0) {
+                    return 1;
+                  }
+                  if (horizontal) {
+                    xi += 1;
+                  }
+                  else {
+                    yi += 1;
+                  }
+
+                  if (graphics_draw_xpm(xpm, xi, yi) != 0) {
+                    return 1;
+                  }
+                  frames_left = speed;
+                }
+                frames_left--;
+              }
             }
           }
           if (msg.m_notify.interrupts & irq_set_kbd) { /* kbd interrupt */
