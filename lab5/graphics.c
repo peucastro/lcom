@@ -299,6 +299,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 }
 
 int(graphics_clear_screen)() {
+  // clears out the video mem
   if (memset(video_mem, 0, vram_size) == NULL) {
     perror("graphics_clear_screen: failed to clear vram frame.");
     return 1;

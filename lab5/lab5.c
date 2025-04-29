@@ -35,12 +35,15 @@ int main(int argc, char *argv[]) {
 }
 
 int(video_test_init)(uint16_t mode, uint8_t delay) {
+  // switch the video adapter to the graphics mode specified
   if (graphics_set_video_mode(mode) != 0) {
     return 1;
   }
 
+  // waits...
   sleep(delay);
 
+  // go back to Minix's default text mode
   if (vg_exit() != 0) {
     return 1;
   }
@@ -49,14 +52,17 @@ int(video_test_init)(uint16_t mode, uint8_t delay) {
 }
 
 int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+  // map the video memory to the process' address space
   if (graphics_map_vram(mode) != 0) {
     return 1;
   }
 
+  // switch the video adapter to the graphics mode specified
   if (graphics_set_video_mode(mode) != 0) {
     return 1;
   }
 
+  // draws a rectangle
   if (graphics_draw_rectangle(x, y, width, height, color) != 0) {
     return 1;
   }
@@ -96,6 +102,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width,
     return 1;
   }
 
+  // go back to Minix's default text mode
   if (vg_exit() != 0) {
     return 1;
   }
@@ -104,14 +111,17 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width,
 }
 
 int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
+  // map the video memory to the process' address space
   if (graphics_map_vram(mode) != 0) {
     return 1;
   }
 
+  // switch the video adapter to the graphics mode specified
   if (graphics_set_video_mode(mode) != 0) {
     return 1;
   }
 
+  // draws a matrix
   if (graphics_draw_matrix(mode, no_rectangles, first, step) != 0) {
     return 1;
   }
@@ -151,6 +161,7 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
     return 1;
   }
 
+  // go back to Minix's default text mode
   if (vg_exit() != 0) {
     return 1;
   }
@@ -159,14 +170,17 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
 }
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
+  // map the video memory to the process' address space
   if (graphics_map_vram(VBE_MODE_1024x768) != 0) {
     return 1;
   }
 
+  // switch the video adapter to the graphics mode specified
   if (graphics_set_video_mode(VBE_MODE_1024x768) != 0) {
     return 1;
   }
 
+  // draws a xpm image
   if (graphics_draw_xpm(xpm, x, y) != 0) {
     return 1;
   }
@@ -206,6 +220,7 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
     return 1;
   }
 
+  // go back to Minix's default text mode
   if (vg_exit() != 0) {
     return 1;
   }
@@ -215,14 +230,17 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) {
+  // map the video memory to the process' address space
   if (graphics_map_vram(VBE_MODE_1024x768) != 0) {
     return 1;
   }
 
+  // switch the video adapter to the graphics mode specified
   if (graphics_set_video_mode(VBE_MODE_1024x768) != 0) {
     return 1;
   }
 
+  // draws a xpm image
   if (graphics_draw_xpm(xpm, xi, yi) != 0) {
     return 1;
   }
@@ -241,12 +259,10 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   }
   irq_set_kbd = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
+  // tells if the movement is either horizontal or vertical
   bool horizontal = (yi == yf);
+  // aux variable to count how many frames are left in the case where the speed is negative
   uint8_t frames_left = -speed;
-  xpm_image_t img;
-  if (xpm_load(xpm, XPM_INDEXED, &img) == NULL) {
-    return 1;
-  }
 
   while ((get_scancode() != BREAK_ESC)) {
     /* get a request message. */
@@ -260,6 +276,10 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
           if (msg.m_notify.interrupts & irq_set_timer) { /* timer interrupt */
             timer_int_handler();
 
+            /* skip current iteration if:
+             * 1. target position (xf, yf) has been reached, or
+             * 2. current frame doesn't align with the specified frame rate
+             * (60 Hz system timer / user-defined frame rate) */
             if (((xi == xf) && (yi == yf)) || (counter % (60 / fr_rate) != 0)) {
               continue;
             }
@@ -288,9 +308,11 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
               }
             }
 
+            // clears the screen
             if (graphics_clear_screen() != 0) {
               return 1;
             }
+            // draws the xpm image at the updated position
             if (graphics_draw_xpm(xpm, xi, yi) != 0) {
               return 1;
             }
@@ -316,6 +338,7 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
     return 1;
   }
 
+  // go back to Minix's default text mode
   if (vg_exit() != 0) {
     return 1;
   }
