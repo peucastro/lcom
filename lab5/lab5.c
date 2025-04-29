@@ -242,7 +242,7 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
   irq_set_kbd = BIT(bit_no); // create a bitmask to "filter" the interrupt messages
 
   bool horizontal = (yi == yf);
-  uint8_t frames_left = speed;
+  uint8_t frames_left = -speed;
   xpm_image_t img;
   if (xpm_load(xpm, XPM_INDEXED, &img) == NULL) {
     return 1;
@@ -260,45 +260,39 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
           if (msg.m_notify.interrupts & irq_set_timer) { /* timer interrupt */
             timer_int_handler();
 
-            if ((xi == xf) && (yi == yf)) {
-              break;
+            if (((xi == xf) && (yi == yf)) || (counter % (60 / fr_rate) != 0)) {
+              continue;
             }
 
-            if (counter % (60 / fr_rate) == 0) {
-              if (speed > 0) {
-                if (graphics_clear_screen() != 0) {
-                  return 1;
-                }
-                if (horizontal) {
-                  xi += speed;
-                }
-                else {
-                  yi += speed;
-                }
-
-                if (graphics_draw_xpm(xpm, xi, yi) != 0) {
-                  return 1;
-                }
+            if (speed > 0) {
+              if (horizontal) {
+                xi += speed;
               }
               else {
-                if (frames_left == 0) {
-                  if (graphics_clear_screen() != 0) {
-                    return 1;
-                  }
-                  if (horizontal) {
-                    xi += 1;
-                  }
-                  else {
-                    yi += 1;
-                  }
-
-                  if (graphics_draw_xpm(xpm, xi, yi) != 0) {
-                    return 1;
-                  }
-                  frames_left = speed;
-                }
-                frames_left--;
+                yi += speed;
               }
+            }
+            else {
+              frames_left--;
+              if (frames_left == 0) {
+                if (horizontal) {
+                  xi += 1;
+                }
+                else {
+                  yi += 1;
+                }
+                frames_left = -speed;
+              }
+              else {
+                continue;
+              }
+            }
+
+            if (graphics_clear_screen() != 0) {
+              return 1;
+            }
+            if (graphics_draw_xpm(xpm, xi, yi) != 0) {
+              return 1;
             }
           }
           if (msg.m_notify.interrupts & irq_set_kbd) { /* kbd interrupt */
