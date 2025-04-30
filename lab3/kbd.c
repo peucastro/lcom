@@ -57,7 +57,7 @@ int(kbd_enable_int)(void) {
 
   cmd |= KBC_INT; // masks the cmd with the kbd interrupt bit
 
-  //"tells" the KBC we want to change it's command byte
+  // "tells" the KBC we want to change it's command byte
   if (kbc_write_cmd(KBC_IN, KBC_WRITE_CMD) != 0) {
     fprintf(stderr, "kbd_enable_int: failed to write the KBC_WRITE_CMD.");
     return 1;

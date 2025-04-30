@@ -72,12 +72,12 @@ int(mouse_write_cmd)(uint8_t cmd) {
     if (response == MOUSE_ACK) { // 0xFA: command was successfully acknowledged
       return 0;
     }
-    else if (response == MOUSE_NACK) { // 0xFE: command was not acknowledged, retry
+    if (response == MOUSE_NACK) { // 0xFE: command was not acknowledged, retry
       // decrement the number of attempts left and skip to the next iteration
       attempts--;
       continue;
     }
-    else if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
+    if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
       fprintf(stderr, "mouse_write_cmd: mouse ERROR.");
     }
     else { // unknown error

@@ -75,19 +75,19 @@ int(graphics_set_video_mode)(uint16_t mode) {
   if (args.ah != VBE_CALL_SUCCESS || args.al != VBE_FUNCTION) {
     // check if ah indicates a failed function call (0x01).
     if (args.ah == VBE_CALL_FAIL) {
-      perror("graphics_set_video_mode: vbe call fail.");
+      fprintf(stderr, "graphics_set_video_mode: vbe call fail.");
     }
     // check if ah indicates the function is not supported in the current hardware configuration (0x02)
     else if (args.ah == VBE_CALL_NOT_SUPPORTED) {
-      perror("graphics_set_video_mode: vbe call not supported.");
+      fprintf(stderr, "graphics_set_video_mode: vbe call not supported.");
     }
     // check if ah indicates the function is invalid in the current video mode (0x03)
     else if (args.ah == VBE_CALL_INVALID) {
-      perror("graphics_set_video_mode: vbe call invalid.");
+      fprintf(stderr, "graphics_set_video_mode: vbe call invalid.");
     }
     // handle other non-success return codes in ah
     else {
-      perror("graphics_set_video_mode: function not supported.");
+      fprintf(stderr, "graphics_set_video_mode: function not supported.");
     }
     return 1;
   }
@@ -105,7 +105,7 @@ int(graphics_map_vram)(uint16_t mode) {
   /* call the vbe_get_mode_info function to retrieve information about the specified video mode.
    * this function is provided by the lcf */
   if (vbe_get_mode_info(mode, &mode_info) != 0) {
-    perror("graphics_map_vram: failed to get mode info.");
+    fprintf(stderr, "graphics_map_vram: failed to get mode info.");
     return 1;
   }
 
@@ -139,7 +139,7 @@ int(graphics_map_vram)(uint16_t mode) {
 
   // check if the memory mapping failed.
   if ((void *) video_mem == MAP_FAILED) {
-    perror("graphics_map_vram: map failed.");
+    fprintf(stderr, "graphics_map_vram: map failed.");
     return 1;
   }
 
@@ -149,8 +149,8 @@ int(graphics_map_vram)(uint16_t mode) {
 int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   /* check if the given pixel coordinates (x, y) are outside the screen boundaries
    * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
-  if (x > h_res || y > v_res) {
-    perror("graphics_draw_pixel: invalid coordinate.");
+  if (x >= h_res || y >= v_res) {
+    fprintf(stderr, "graphics_draw_pixel: invalid coordinate.");
     return 1;
   }
 
@@ -171,8 +171,8 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
 int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   // check if the starting point or the line length goes beyond the screen width
-  if (x > h_res || y > v_res || x + len > h_res) {
-    perror("graphics_draw_hline: invalid coordinate.");
+  if (x >= h_res || y >= v_res || x + len > h_res) {
+    fprintf(stderr, "graphics_draw_hline: invalid coordinate.");
     return 1;
   }
 
@@ -181,7 +181,7 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   for (uint16_t col = x; col < x + len; col++) {
     // draw each pixel along the horizontal direction
     if (graphics_draw_pixel(col, y, color) != 0) {
-      perror("graphics_draw_hline: failed to draw pixel.");
+      fprintf(stderr, "graphics_draw_hline: failed to draw pixel.");
       return 1;
     }
   }
@@ -192,8 +192,8 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   /* check if the rectangle’s starting point or size would cause it to exceed screen bounds.
    * ensures both bottom and right edges of the rectangle stay within the screen */
-  if (x > h_res || y > v_res || x + width > h_res || y + height > v_res) {
-    perror("graphics_draw_rectangle: invalid dimensions.");
+  if (x >= h_res || y >= v_res || x + width > h_res || y + height > v_res) {
+    fprintf(stderr, "graphics_draw_rectangle: invalid dimensions.");
     return 1;
   }
 
@@ -202,7 +202,7 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
   for (uint16_t row = y; row < y + height; row++) {
     // draw a horizontal line of 'width' pixels starting at (x, row)
     if (graphics_draw_hline(x, row, width, color) != 0) {
-      perror("graphics_draw_rectangle: failed to draw line.");
+      fprintf(stderr, "graphics_draw_rectangle: failed to draw line.");
       return 1;
     }
   }
@@ -243,7 +243,7 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
 
       // draw the filled rectangle at the appropriate screen location
       if (graphics_draw_rectangle(width * col, height * row, width, height, color) != 0) {
-        perror("graphics_draw_matrix: failed to draw rectangle.");
+        fprintf(stderr, "graphics_draw_matrix: failed to draw rectangle.");
         return 1;
       }
     }
@@ -255,8 +255,8 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
 int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   /* check if the given pixel coordinates (x, y) are outside the screen boundaries
    * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
-  if (x > h_res || y > v_res) {
-    perror("graphics_draw_xpm: invalid coordinates.");
+  if (x >= h_res || y >= v_res) {
+    fprintf(stderr, "graphics_draw_xpm: invalid coordinates.");
     return 1;
   }
 
@@ -269,14 +269,14 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
   // check if the image loading failed
   if (map == NULL) {
-    perror("graphics_draw_xpm: xpm map address is null.");
+    fprintf(stderr, "graphics_draw_xpm: xpm map address is null.");
     return 1;
   }
 
   /* check if the full image would go beyond the screen limits when drawn from (x, y).
    * prevents drawing outside of VRAM which would cause memory errors */
-  else if (x + img.width > h_res || y + img.height > v_res) {
-    perror("graphics_draw_xpm: invalid dimensions.");
+  if (x + img.width > h_res || y + img.height > v_res) {
+    fprintf(stderr, "graphics_draw_xpm: invalid dimensions.");
     return 1;
   }
 
@@ -292,7 +292,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
       // draw the pixel at the corresponding position on screen
       if (graphics_draw_pixel(x + col, y + row, color) != 0) {
-        perror("graphics_draw_xpm: failed to draw pixel.");
+        fprintf(stderr, "graphics_draw_xpm: failed to draw pixel.");
         return 1;
       }
     }
@@ -301,7 +301,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   return 0;
 }
 
-int(graphics_clear_screen)() {
+int(graphics_clear_screen)(void) {
   // clears out the video mem
   if (memset(video_mem, 0, vram_size) == NULL) {
     perror("graphics_clear_screen: failed to clear vram frame.");

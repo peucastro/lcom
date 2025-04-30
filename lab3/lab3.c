@@ -100,7 +100,9 @@ int(kbd_test_poll)() {
   while (get_scancode() != BREAK_ESC) { // loop until the ESC breakcode is detected
     if (kbc_read_data(&data) == 0) {    // reads data from the KBC output buffer
       set_scancode(data);               // sets the scancode using the setter function
-      bytes[i] = get_scancode();        // stores the scancode (or the second scancode, in the case where the first one was a header)
+      /* stores the scancode (or the second scancode,
+       * in the case where the first one was a header) */
+      bytes[i] = get_scancode();
 
       // checks if the scancode is a header (indicating a two-byte scancode)
       if (get_scancode() == CODE_HEADER) {

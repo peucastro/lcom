@@ -86,7 +86,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y, uint16_t width,
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            kbc_ih();                              // Calls the interrupt handler once
+            kbc_ih();                              // calls the interrupt handler once
           }
           break;
         default:
@@ -145,7 +145,7 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            kbc_ih();                              // Calls the interrupt handler once
+            kbc_ih();                              // calls the interrupt handler once
           }
           break;
         default:
@@ -204,7 +204,7 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            kbc_ih();                              // Calls the interrupt handler once
+            kbc_ih();                              // calls the interrupt handler once
           }
           break;
         default:
@@ -324,7 +324,7 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
             }
           }
           if (msg.m_notify.interrupts & irq_set_kbd) { /* kbd interrupt */
-            kbc_ih();
+            kbc_ih();                                  // calls the interrupt handler once
           }
           break;
         default:
