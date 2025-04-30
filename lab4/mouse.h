@@ -1,7 +1,6 @@
 #ifndef __MOUSE_H
 #define __MOUSE_H
 
-#include "i8042.h"
 #include "kbc.h"
 
 /** @defgroup mouse mouse
@@ -61,5 +60,7 @@ struct packet(mouse_parse_packet)(void);
  * Reads the byte from the KBC output buffer
  */
 void(mouse_ih)(void);
+
+/**@}*/
 
 #endif /* __MOUSE_H */

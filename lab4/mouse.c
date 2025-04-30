@@ -17,7 +17,7 @@ uint8_t(mouse_get_index)(void) {
 
 int(mouse_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
-    perror("mouse_subscribe_int: bit_no cannot be null.");
+    fprintf(stderr, "mouse_subscribe_int: bit_no cannot be null.");
     return 1;
   }
 
@@ -50,13 +50,13 @@ int(mouse_write_cmd)(uint8_t cmd) {
   while (attempts > 0) {
     // request forwarding of the byte (command) to the mouse
     if (kbc_write_cmd(KBC_IN, MOUSE_WRITE_BYTE) != 0) { // write 0xD4 to port 0x64
-      perror("mouse_write_cmd: failed to write MOUSE_WRITE_BYTE to the kbc.");
+      fprintf(stderr, "mouse_write_cmd: failed to write MOUSE_WRITE_BYTE to the kbc.");
       return 1;
     }
 
     // write the actual mouse command to port 0x60
     if (kbc_write_cmd(KBC_WRITE_CMD, cmd) != 0) { // write the command to port 0x60
-      perror("mouse_write_cmd: failed to write the mouse command to the kbc.");
+      fprintf(stderr, "mouse_write_cmd: failed to write the mouse command to the kbc.");
       return 1;
     }
 
@@ -64,7 +64,7 @@ int(mouse_write_cmd)(uint8_t cmd) {
     micro_delay(micros_to_ticks(DELAY_US)); // delay to allow the mouse to process the command
 
     if (util_sys_inb(KBC_OUT, &response) != 0) { // read the acknowledgment byte from port 0x60
-      perror("mouse_write_cmd: failed to read the kbc response.");
+      fprintf(stderr, "mouse_write_cmd: failed to read the kbc response.");
       return 1;
     }
 
@@ -78,15 +78,15 @@ int(mouse_write_cmd)(uint8_t cmd) {
       continue;
     }
     else if (response == MOUSE_ERR) { // 0xFC: command resulted in an error
-      perror("mouse_write_cmd: mouse ERROR");
+      fprintf(stderr, "mouse_write_cmd: mouse ERROR.");
     }
     else { // unknown error
-      perror("mouse_write_cmd: unexpected error.");
+      fprintf(stderr, "mouse_write_cmd: unexpected error.");
     }
     return 1;
   }
 
-  perror("mouse_write_cmd: failed to write the mouse command.");
+  fprintf(stderr, "mouse_write_cmd: failed to write the mouse command.");
   return 1;
 }
 
@@ -111,7 +111,7 @@ struct packet(mouse_parse_packet)(void) {
   struct packet pp;
 
   if (mouse_index != 0) {
-    perror("mouse_parse_packet: couldn't assemble the mouse packet");
+    fprintf(stderr, "mouse_parse_packet: couldn't assemble the mouse packet.");
     return pp;
   }
 
