@@ -280,12 +280,15 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
     return 1;
   }
 
+  // aux variable to store the color of each pixel
+  uint32_t color;
+
   /* iterate over every pixel in the loaded image.
    * each row is drawn top-down from the starting y coordinate, and each column left-right from x */
   for (uint16_t row = 0; row < img.height; row++) {
     for (uint16_t col = 0; col < img.width; col++) {
       // compute the address of the pixel color in the map (row-major order)
-      uint32_t color = *(map + (row * img.width + col));
+      color = *(map + (row * img.width + col));
 
       // draw the pixel at the corresponding position on screen
       if (graphics_draw_pixel(x + col, y + row, color) != 0) {
