@@ -4,7 +4,7 @@
 
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
   if (lsb == NULL) {
-    perror("util_get_LSB: lsb pointer cannot be null.");
+    fprintf(stderr, "util_get_LSB: lsb pointer cannot be null.");
     return 1;
   }
 
@@ -14,7 +14,7 @@ int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
 
 int(util_get_MSB)(uint16_t val, uint8_t *msb) {
   if (msb == NULL) {
-    perror("util_get_MSB: msb pointer cannot be null.");
+    fprintf(stderr, "util_get_MSB: msb pointer cannot be null.");
     return 1;
   }
 
@@ -25,7 +25,7 @@ int(util_get_MSB)(uint16_t val, uint8_t *msb) {
 
 int(util_sys_inb)(int port, uint8_t *value) {
   if (value == NULL) {
-    perror("util_sys_inb: value pointer cannot be null.");
+    fprintf(stderr, "util_sys_inb: value pointer cannot be null.");
     return 1;
   }
 
@@ -35,11 +35,9 @@ int(util_sys_inb)(int port, uint8_t *value) {
     return 1;
   }
 
-  /*
-   * since the timer's configuration only occupies 8 bits (the status byte),
+  /* since the timer's configuration only occupies 8 bits (the status byte),
    * if we try to read it using the normal sys_inb with a uint8_t, we would get a seg fault,
-   * because we are trying to acces a non-valid memory position
-   */
+   * because we are trying to acces a non-valid memory position */
   *value = val & 0xFF; // extract the least significant byte from the 4-byte value
 
   return 0;
