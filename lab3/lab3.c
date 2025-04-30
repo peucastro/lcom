@@ -8,7 +8,8 @@
 #include "kbd.h"
 
 static uint8_t bytes[2];
-extern uint32_t cnt_sys_inb;
+uint32_t cnt_sys_inb = 0;
+
 extern uint32_t counter;
 
 int main(int argc, char *argv[]) {

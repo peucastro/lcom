@@ -2,7 +2,9 @@
 
 #include <stdint.h>
 
-uint32_t cnt_sys_inb = 0;
+#ifdef LAB3
+extern uint32_t cnt_sys_inb;
+#endif
 
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
   if (lsb == NULL) {
@@ -38,7 +40,9 @@ int(util_sys_inb)(int port, uint8_t *value) {
   }
 
   // count the number of sys_inb calls
+  #ifdef LAB3
   cnt_sys_inb++;
+  #endif
 
   /* since the timer's configuration only occupies 8 bits (the status byte),
    * if we try to read it using the normal sys_inb with a uint8_t, we would get a seg fault,
