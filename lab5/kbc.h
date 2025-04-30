@@ -1,8 +1,6 @@
 #ifndef __KBC_H
 #define __KBC_H
 
-#include <stdint.h>
-
 #include "i8042.h"
 
 /** @defgroup kbc kbc
@@ -43,5 +41,7 @@ int(kbc_read_data)(uint8_t *data);
  * @return Return 0 upon success and non-zero otherwise
  */
 int(kbc_write_cmd)(int port, uint8_t cmd);
+
+/**@}*/
 
 #endif /* __KBC_H */

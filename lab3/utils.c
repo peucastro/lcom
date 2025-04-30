@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+uint32_t cnt_sys_inb = 0;
+
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
   if (lsb == NULL) {
     fprintf(stderr, "util_get_LSB: lsb pointer cannot be null.");
@@ -34,6 +36,9 @@ int(util_sys_inb)(int port, uint8_t *value) {
     perror("util_sys_inb: failed to read the specified port.");
     return 1;
   }
+
+  // count the number of sys_inb calls
+  cnt_sys_inb++;
 
   /* since the timer's configuration only occupies 8 bits (the status byte),
    * if we try to read it using the normal sys_inb with a uint8_t, we would get a seg fault,

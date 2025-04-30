@@ -5,8 +5,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "i8042.h"
-#include "kbc.h"
 #include "kbd.h"
 
 static uint8_t bytes[2];
@@ -57,16 +55,21 @@ int(kbd_test_scan)() {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
           if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-            kbc_ih();                              // Calls the interrupt handler once
-            bytes[i] = get_scancode();             // stores the scancode (or the second scancode, in the case where the first one was a header)
+            kbc_ih();                              // calls the interrupt handler once
+            /* stores the scancode (or the second scancode,
+             * in the case where the first one was a header) */
+            bytes[i] = get_scancode();
 
-            if (get_scancode() == CODE_HEADER) { // check if it's a header
-              i++;                               // increase index for the next byte
+            // checks if the scancode is a header (indicating a two-byte scancode)
+            if (get_scancode() == CODE_HEADER) {
+              i++; // increase index for the next byte
               continue;
             }
 
-            kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode
-            i = 0;                                                           // resets the index for the next iteration
+            // prints the scancode using the provided function
+            kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes);
+            // resets the index for the next iteration
+            i = 0;
           }
           break;
         default:
@@ -82,7 +85,8 @@ int(kbd_test_scan)() {
     return 1;
   }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
+  // prints the nr of sys_inb calls using the provided function
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
     return 1;
   }
 
@@ -98,13 +102,15 @@ int(kbd_test_poll)() {
       set_scancode(data);               // sets the scancode using the setter function
       bytes[i] = get_scancode();        // stores the scancode (or the second scancode, in the case where the first one was a header)
 
-      if (get_scancode() == CODE_HEADER) { // checks if the scancode is a header (indicating a two-byte scancode)
-        i++;                               // increments the size to prepare for the next byte
+      // checks if the scancode is a header (indicating a two-byte scancode)
+      if (get_scancode() == CODE_HEADER) {
+        i++; // increments the size to prepare for the next byte
         continue;
       }
 
-      kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode using the provided function
-      i = 0;                                                           // increase index for the next byte
+      // prints the scancode using the provided function
+      kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes);
+      i = 0; // increase index for the next byte
     }
     tickdelay(micros_to_ticks(DELAY_US)); // delay to prevent excessive polling
   }
@@ -113,7 +119,8 @@ int(kbd_test_poll)() {
     return 1;
   }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
+  // prints the nr of sys_inb calls using the provided function
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
     return 1;
   }
 
@@ -151,15 +158,19 @@ int(kbd_test_timed_scan)(uint8_t n) {
             }
           }
           if (msg.m_notify.interrupts & irq_set_kbd) { /* subscribed interrupt */
-            kbc_ih();                                  // Calls the interrupt handler once
-            bytes[i] = get_scancode();                 // stores the scancode (or the second scancode, in the case where the first one was a header)
+            kbc_ih();                                  // calls the interrupt handler once
+            /* stores the scancode (or the second scancode,
+             * in the case where the first one was a header) */
+            bytes[i] = get_scancode();
 
-            if (get_scancode() == CODE_HEADER) { // check if it's a header
-              i++;                               // increase index for the next byte
+            // checks if the scancode is a header (indicating a two-byte scancode)
+            if (get_scancode() == CODE_HEADER) {
+              i++; // increase index for the next byte
               continue;
             }
 
-            kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes); // prints the scancode
+            // prints the scancode using the provided function
+            kbd_print_scancode(!(get_scancode() & MAKE_CODE), i + 1, bytes);
             time = 0;
             counter = 0; // clear out the timer's counter
             i = 0;       // resets the index for the next iteration
@@ -181,7 +192,8 @@ int(kbd_test_timed_scan)(uint8_t n) {
     return 1;
   }
 
-  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) { // calls the provided function
+  // prints the nr of sys_inb calls using the provided function
+  if (kbd_print_no_sysinb(cnt_sys_inb) != 0) {
     return 1;
   }
 
