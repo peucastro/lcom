@@ -29,9 +29,10 @@ int(kbc_read_st)(uint8_t *st);
  * @brief Reads data from the KBC
  *
  * @param data Address of memory position to be filled with the data
+ * @param expect_mouse_data Boolean indicating whether the expected data is from the mouse (true) or from the keyboard (false).
  * @return Return 0 upon success and non-zero otherwise
  */
-int(kbc_read_data)(uint8_t *data);
+int(kbc_read_data)(uint8_t *data, bool expect_mouse_data);
 
 /**
  * @brief Writes a command to the KBC

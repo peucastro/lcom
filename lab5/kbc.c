@@ -20,7 +20,7 @@ int(kbc_read_st)(uint8_t *st) {
   return 0;
 }
 
-int(kbc_read_data)(uint8_t *data) {
+int(kbc_read_data)(uint8_t *data, bool expect_mouse_data) {
   if (data == NULL) {
     fprintf(stderr, "kbc_read_data: data pointer cannot be null.");
     return 1;
@@ -34,13 +34,21 @@ int(kbc_read_data)(uint8_t *data) {
       return 1;
     }
 
-    if (st & KBC_FULL_OBF) {                  // checks if the "output buffer full" bit is set to 1
-      if (util_sys_inb(KBC_OUT, data) != 0) { // effectivelly reads the value stored at the output buffer
+    // checks if the "output buffer full" bit is set to 1
+    if (st & KBC_FULL_OBF) {
+      // effectivelly reads the value stored at the output buffer
+      if (util_sys_inb(KBC_OUT, data) != 0) {
         fprintf(stderr, "kbc_read_data: failed to read the kbc buffer.");
         return 1;
       }
+      // checks for erros in the KBC
       if (!kbc_ready(st)) {
         fprintf(stderr, "kbc_read_data: KBC not ready.");
+        return 1;
+      }
+      // when not expecting mouse data, bit 5 must NOT be set
+      if (!expect_mouse_data && (*data & KBC_AUX)) {
+        fprintf(stderr, "kbc_read_data: expected keyboard data, but received data from the mouse.");
         return 1;
       }
       return 0;
@@ -71,8 +79,10 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
       return 1;
     }
 
-    if (!(st & KBC_FULL_IBF)) {       // checks if the input buffer is NOT alredy full
-      if (sys_outb(port, cmd) != 0) { // effectivelly sends the command byte to the specified port
+    // checks if the input buffer is NOT alredy full
+    if (!(st & KBC_FULL_IBF)) {
+      // effectivelly sends the command byte to the specified port
+      if (sys_outb(port, cmd) != 0) {
         fprintf(stderr, "kbc_write_cmd: failed to read the kbc port.");
         return 1;
       }
@@ -80,8 +90,9 @@ int(kbc_write_cmd)(int port, uint8_t cmd) {
       return 0;
     }
 
-    tickdelay(micros_to_ticks(DELAY_US)); // waits (the cpu is way faster than the kbc)
-    attempts--;                           // decreases the timeout counter
+    // waits (the cpu is way faster than the kbc)
+    tickdelay(micros_to_ticks(DELAY_US));
+    attempts--; // decreases the timeout counter
   }
 
   fprintf(stderr, "kbc_write_cmd: failed to write the kbc command.");

@@ -50,7 +50,7 @@ int(kbd_enable_int)(void) {
     fprintf(stderr, "kbd_enable_int: failed to write the KBC_READ_CMD.");
     return 1;
   }
-  if (kbc_read_data(&cmd) != 0) { // effectivelly reads the command byte
+  if (kbc_read_data(&cmd, false) != 0) { // effectivelly reads the command byte
     fprintf(stderr, "kbd_enable_int: failed to read the kbc command.");
     return 1;
   }
@@ -71,5 +71,5 @@ int(kbd_enable_int)(void) {
 }
 
 void(kbc_ih)(void) {
-  kbc_read_data(&scancode); // reads the value stored on the output buffer
+  kbc_read_data(&scancode, false); // reads the value stored on the output buffer
 }
