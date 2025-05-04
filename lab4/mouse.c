@@ -135,5 +135,5 @@ struct packet(mouse_parse_packet)(void) {
 }
 
 void(mouse_ih)(void) {
-  kbc_read_data(&byte); // reads the value stored in the output buffer
+  kbc_read_data(&byte, true); // reads the value stored in the output buffer
 }
