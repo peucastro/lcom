@@ -357,36 +357,40 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
 int(mouse_test_remote)(uint16_t period, uint8_t cnt) {
   struct packet pp;
 
-  if (mouse_write_cmd(MOUSE_SET_REMOTE_MODE) != 0) {
-    return 1;
-  }
-
   while (cnt > 0) {
+    // request a data packet from the mouse
     if (mouse_write_cmd(MOUSE_READ_DATA) != 0) {
       return 1;
     }
 
+    // read all 3 bytes of the mouse packet
     for (int i = 0; i < 3; i++) {
-      mouse_ih();
-      mouse_sync();
+      mouse_ih();   // read a byte from the mouse
+      mouse_sync(); // synchronize the mouse packet
     }
 
+    /* when the index is reset to 0, it indicates that a complete
+     * mouse packet has been successfully read */
     if (mouse_get_index() == 0) {
-      pp = mouse_parse_packet();
-      mouse_print_packet(&pp);
-      cnt--;
+      pp = mouse_parse_packet(); // parse the mouse packet
+      mouse_print_packet(&pp);   // print the mouse packet
+      cnt--;                     // decrease the number of packets to process
 
+      // wait before requesting the next packet
       tickdelay(micros_to_ticks(period * 1000));
     }
   }
 
+  // restore the mouse to stream mode (default mode)
   if (mouse_write_cmd(MOUSE_SET_STREAM_MODE) != 0) {
     return 1;
   }
+  // disable data reporting in stream mode
   if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
     return 1;
   }
 
+  // restore the KBC command byte to its default value
   if (kbc_write_cmd(KBC_IN, KBC_WRITE_CMD) != 0) {
     return 1;
   }
