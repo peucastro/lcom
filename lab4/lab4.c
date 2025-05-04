@@ -355,7 +355,44 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
 }
 
 int(mouse_test_remote)(uint16_t period, uint8_t cnt) {
-  /* This year you need not implement this. */
-  printf("%s(%u, %u): under construction\n", __func__, period, cnt);
-  return 1;
+  struct packet pp;
+
+  if (mouse_write_cmd(MOUSE_SET_REMOTE_MODE) != 0) {
+    return 1;
+  }
+
+  while (cnt > 0) {
+    if (mouse_write_cmd(MOUSE_READ_DATA) != 0) {
+      return 1;
+    }
+
+    for (int i = 0; i < 3; i++) {
+      mouse_ih();
+      mouse_sync();
+    }
+
+    if (mouse_get_index() == 0) {
+      pp = mouse_parse_packet();
+      mouse_print_packet(&pp);
+      cnt--;
+
+      tickdelay(micros_to_ticks(period * 1000));
+    }
+  }
+
+  if (mouse_write_cmd(MOUSE_SET_STREAM_MODE) != 0) {
+    return 1;
+  }
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
+    return 1;
+  }
+
+  if (kbc_write_cmd(KBC_IN, KBC_WRITE_CMD) != 0) {
+    return 1;
+  }
+  if (kbc_write_cmd(KBC_ARG, minix_get_dflt_kbc_cmd_byte()) != 0) {
+    return 1;
+  }
+
+  return 0;
 }
