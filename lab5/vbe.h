@@ -44,6 +44,8 @@ vbe_mode_info_t(vbe_get_mode)(void);
 
 uint8_t *(vbe_get_video_mem) (void);
 
+int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi);
+
 /**
  * @brief Initializes the video card in graphics mode.
  *

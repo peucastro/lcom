@@ -17,6 +17,58 @@ uint8_t *(vbe_get_video_mem) (void) {
   return video_mem;
 }
 
+int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi) {
+  if (vmi == NULL) {
+    fprintf(stderr, "vbe_get_mode_information: vmi pointer cannot be null.");
+    return 1;
+  }
+
+  mmap_t map;
+  if (memset(&map, 0, sizeof(map)) == NULL) {
+    perror("vbe_get_mode_information: failed to clear mmap_t.");
+    return 1;
+  }
+  if (lm_alloc(sizeof(vbe_mode_info_t), &map) == NULL) {
+    perror("vbe_get_mode_information: failed to allocate memory.");
+    return 1;
+  }
+
+  struct reg86 args;
+  if (memset(&args, 0, sizeof(args)) == NULL) {
+    perror("vbe_get_mode_information: failed to clear reg86.");
+    lm_free(&map);
+    return 1;
+  }
+
+  args.ah = VBE_FUNCTION;      // indicate a vbe function call
+  args.al = VBE_RET_MODE;      // function 01h - return VBE mode information
+  args.cx = mode;              // mode number
+  args.es = PB2BASE(map.phys); // segment base address
+  args.di = PB2OFF(map.phys);  // offset within segment
+  args.intno = VBE_INT;        // video BIOS interrupt
+
+  // call sys_int86 to invoke the bios interrupt with the specified register values
+  if (sys_int86(&args) != 0) {
+    perror("vbe_get_mode_information: failed to call sys_int86.");
+    lm_free(&map);
+    return 1;
+  }
+
+  if (args.ax != VBE_FUNCTION) { // AH should be 0x4F if successful
+    fprintf(stderr, "vbe_get_mode_information: BIOS call failed");
+    lm_free(&map);
+    return 1;
+  }
+
+  *vmi = *(vbe_mode_info_t *) map.virt;
+
+  if (lm_free(&map) != true) {
+    perror("vbe_get_mode_information: failed to free map mem.");
+    return 1;
+  }
+  return 0;
+}
+
 int(vbe_set_video_mode)(uint16_t mode) {
   // holds the arguments for the bios interrupt call
   struct reg86 args;
@@ -76,7 +128,7 @@ int(vbe_map_vram)(uint16_t mode) {
   }
   /* call the vbe_get_mode_info function to retrieve information about the specified video mode.
    * this function is provided by the lcf */
-  if (vbe_get_mode_info(mode, &mode_info) != 0) {
+  if (vbe_get_mode_information(mode, &mode_info) != 0) {
     fprintf(stderr, "vbe_map_vram: failed to get mode info.");
     return 1;
   }
