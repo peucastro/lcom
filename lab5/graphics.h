@@ -17,7 +17,7 @@
  * @param color a 32 bit color
  * @return The Red component of the color
  */
-uint32_t(R)(uint32_t color);
+static uint32_t(extract_red)(uint32_t color);
 
 /**
  * @brief Extracts the Green component from a 32 bit color.
@@ -25,7 +25,7 @@ uint32_t(R)(uint32_t color);
  * @param color a 32 bit color
  * @return The Green component of the color
  */
-uint32_t(G)(uint32_t color);
+static uint32_t(extract_green)(uint32_t color);
 
 /**
  * @brief Extracts the Blue component from a 32 bit color.
@@ -33,7 +33,7 @@ uint32_t(G)(uint32_t color);
  * @param color a 32 bit color
  * @return The Blue component of the color
  */
-uint32_t(B)(uint32_t color);
+static uint32_t(extract_blue)(uint32_t color);
 
 /**
  * @brief Draws a pixel in the screen.

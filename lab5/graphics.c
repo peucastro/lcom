@@ -2,7 +2,7 @@
 
 #include "graphics.h"
 
-uint32_t(R)(uint32_t color) {
+static uint32_t(extract_red)(uint32_t color) {
   /* compute a bitmask with RedMaskSize bits set to 1.
    * BIT(n) is assumed to return 2^n, so BIT(n) - 1 gives a mask of n bits */
   uint32_t mask = BIT(vbe_get_mode().RedMaskSize) - 1;
@@ -12,7 +12,7 @@ uint32_t(R)(uint32_t color) {
   return (color >> vbe_get_mode().RedFieldPosition) & mask;
 }
 
-uint32_t(G)(uint32_t color) {
+static uint32_t(extract_green)(uint32_t color) {
   // create a mask with GreenMaskSize bits set to 1
   uint32_t mask = BIT(vbe_get_mode().GreenMaskSize) - 1;
 
@@ -20,7 +20,7 @@ uint32_t(G)(uint32_t color) {
   return (color >> vbe_get_mode().GreenFieldPosition) & mask;
 }
 
-uint32_t(B)(uint32_t color) {
+static uint32_t(extract_blue)(uint32_t color) {
   // create a mask with BlueMaskSize bits set to 1
   uint32_t mask = BIT(vbe_get_mode().BlueMaskSize) - 1;
 
@@ -99,9 +99,9 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
   uint32_t color, r, g, b;
 
   // extract R, G, B components from the base color in case of direct color mode
-  uint32_t r_first = R(first);
-  uint32_t g_first = G(first);
-  uint32_t b_first = B(first);
+  uint32_t r_first = extract_red(first);
+  uint32_t g_first = extract_green(first);
+  uint32_t b_first = extract_blue(first);
 
   // iterate over all grid positions
   for (uint8_t row = 0; row < no_rectangles; row++) {
