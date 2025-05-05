@@ -2,154 +2,36 @@
 
 #include "graphics.h"
 
-/* static global variable to store vbe mode information.
- * this structure holds details about the selected video mode */
-static vbe_mode_info_t mode_info;
-/* static global pointer to the mapped video memory in the process's address space.
- * in minix 3, vram is not directly accessible and needs to be mapped */
-static uint8_t *video_mem;
-// static global variable to store the horizontal resolution of the current graphics mode in pixels
-static uint16_t h_res;
-// static global variable to store the vertical resolution of the current graphics mode in pixels
-static uint16_t v_res;
-// static global variable to store the number of bits per pixel for the current graphics mode
-static uint8_t bits_per_pixel;
-// static global variable to store the number of bytes per pixel, derived from bits per pixel
-static uint16_t bytes_per_pixel;
-// static global variable to store the size of the video ram in bytes for the current graphics mode
-static uint32_t vram_size;
-
 uint32_t(R)(uint32_t color) {
   /* compute a bitmask with RedMaskSize bits set to 1.
    * BIT(n) is assumed to return 2^n, so BIT(n) - 1 gives a mask of n bits */
-  uint32_t mask = BIT(mode_info.RedMaskSize) - 1;
+  uint32_t mask = BIT(vbe_get_mode().RedMaskSize) - 1;
 
   /* shift the input color to the right by the red field position.
    * then apply the mask to isolate the red component */
-  return (color >> mode_info.RedFieldPosition) & mask;
+  return (color >> vbe_get_mode().RedFieldPosition) & mask;
 }
 
 uint32_t(G)(uint32_t color) {
   // create a mask with GreenMaskSize bits set to 1
-  uint32_t mask = BIT(mode_info.GreenMaskSize) - 1;
+  uint32_t mask = BIT(vbe_get_mode().GreenMaskSize) - 1;
 
   // extract the green component by shifting and masking
-  return (color >> mode_info.GreenFieldPosition) & mask;
+  return (color >> vbe_get_mode().GreenFieldPosition) & mask;
 }
 
 uint32_t(B)(uint32_t color) {
   // create a mask with BlueMaskSize bits set to 1
-  uint32_t mask = BIT(mode_info.BlueMaskSize) - 1;
+  uint32_t mask = BIT(vbe_get_mode().BlueMaskSize) - 1;
 
   // extract the blue component by shifting and masking
-  return (color >> mode_info.BlueFieldPosition) & mask;
-}
-
-int(graphics_set_video_mode)(uint16_t mode) {
-  // holds the arguments for the bios interrupt call
-  struct reg86 args;
-  // clear the reg86 structure to avoid unexpected behavior
-  if (memset(&args, 0, sizeof(args)) == NULL) {
-    perror("graphics_set_video_mode: failed to clear reg86.");
-    return 1;
-  }
-
-  // set ah register to VBE_FUNCTION (0x4f) to indicate a vbe function call
-  args.ah = VBE_FUNCTION;
-  // set al register to VBE_SET_MODE (0x02) to select the "set vbe mode" function
-  args.al = VBE_SET_MODE;
-  /* set bx register to the desired video mode number ored with vbe_linear_mode.
-   * setting bit 14 of bx enables the linear frame buffer model for easier vram access */
-  args.bx = mode | VBE_LINEAR_MODE;
-  // set intno to VBE_INT (0x10) to specify the bios video services interrupt
-  args.intno = VBE_INT;
-
-  // call sys_int86 to invoke the bios interrupt with the specified register values
-  if (sys_int86(&args) != 0) {
-    perror("graphics_set_video_mode: failed to call sys_int86.");
-    return 1;
-  }
-
-  /* check the return status in ah and al registers after the vbe call.
-   * al should be 0x4f if the vbe function is supported, and ah should be 0x00 for success */
-  if (args.ah != VBE_CALL_SUCCESS || args.al != VBE_FUNCTION) {
-    // check if ah indicates a failed function call (0x01).
-    if (args.ah == VBE_CALL_FAIL) {
-      fprintf(stderr, "graphics_set_video_mode: vbe call fail.");
-    }
-    // check if ah indicates the function is not supported in the current hardware configuration (0x02)
-    else if (args.ah == VBE_CALL_NOT_SUPPORTED) {
-      fprintf(stderr, "graphics_set_video_mode: vbe call not supported.");
-    }
-    // check if ah indicates the function is invalid in the current video mode (0x03)
-    else if (args.ah == VBE_CALL_INVALID) {
-      fprintf(stderr, "graphics_set_video_mode: vbe call invalid.");
-    }
-    // handle other non-success return codes in ah
-    else {
-      fprintf(stderr, "graphics_set_video_mode: function not supported.");
-    }
-    return 1;
-  }
-
-  return 0;
-}
-
-int(graphics_map_vram)(uint16_t mode) {
-  /* check if setting the memory of the mode_info structure to zero fails.
-   * mode_info will store the video mode information */
-  if (memset(&mode_info, 0, sizeof(mode_info)) == NULL) {
-    perror("graphics_map_vram: failed to clear mode_info.");
-    return 1;
-  }
-  /* call the vbe_get_mode_info function to retrieve information about the specified video mode.
-   * this function is provided by the lcf */
-  if (vbe_get_mode_info(mode, &mode_info) != 0) {
-    fprintf(stderr, "graphics_map_vram: failed to get mode info.");
-    return 1;
-  }
-
-  // initialize the static global variables with the values retrieved from the vbe_get_mode_info call
-  h_res = mode_info.XResolution;
-  v_res = mode_info.YResolution;
-  bits_per_pixel = mode_info.BitsPerPixel;
-  bytes_per_pixel = (bits_per_pixel + 7) / 8;
-  vram_size = h_res * v_res * bytes_per_pixel;
-
-  // declare a struct minix_mem_range to define the physical memory range
-  struct minix_mem_range mr;
-  // check if setting the memory of the minix_mem_range structure to zero fails
-  if (memset(&mr, 0, sizeof(mr)) == NULL) {
-    perror("graphics_map_vram: failed to clear minix_mem_range.");
-    return 1;
-  }
-  // set the base physical address of the memory range to the physical base pointer obtained from mode_info.
-  mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
-  // set the limit of the memory range to the base address plus the total vram size.
-  mr.mr_limit = mr.mr_base + vram_size;
-
-  // request permission to map the specified physical memory range into the process's address space using the sys_privctl kernel call
-  if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
-    perror("graphics_map_vram: failed to request permission.");
-    return 1;
-  }
-
-  // map the physical memory region into the process's virtual address space using the vm_map_phys kernel call.
-  video_mem = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
-
-  // check if the memory mapping failed.
-  if ((void *) video_mem == MAP_FAILED) {
-    fprintf(stderr, "graphics_map_vram: map failed.");
-    return 1;
-  }
-
-  return 0;
+  return (color >> vbe_get_mode().BlueFieldPosition) & mask;
 }
 
 int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   /* check if the given pixel coordinates (x, y) are outside the screen boundaries
    * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
-  if (x >= h_res || y >= v_res) {
+  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution) {
     fprintf(stderr, "graphics_draw_pixel: invalid coordinate.");
     return 1;
   }
@@ -158,10 +40,10 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
    each row has h_res pixels, so we move y rows down by doing (y * h_res).
    we then move x pixels right within that row.
    then we multiply by bytes_per_pixel to account for the color depth */
-  uint8_t *pixel = video_mem + (y * h_res + x) * bytes_per_pixel;
+  uint8_t *pixel = vbe_get_video_mem() + (y * vbe_get_mode().XResolution + x) * ((vbe_get_mode().BitsPerPixel + 7) / 8);
 
   // write the given color value to the calculated pixel location in memory
-  if (memcpy(pixel, &color, bytes_per_pixel) == NULL) {
+  if (memcpy(pixel, &color, (vbe_get_mode().BitsPerPixel + 7) / 8) == NULL) {
     perror("graphics_draw_pixel: failed to draw pixel.");
     return 1;
   }
@@ -171,7 +53,7 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
 int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   // check if the starting point or the line length goes beyond the screen width
-  if (x >= h_res || y >= v_res || x + len > h_res) {
+  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution || x + len > vbe_get_mode().XResolution) {
     fprintf(stderr, "graphics_draw_hline: invalid coordinate.");
     return 1;
   }
@@ -192,7 +74,7 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   /* check if the rectangle’s starting point or size would cause it to exceed screen bounds.
    * ensures both bottom and right edges of the rectangle stay within the screen */
-  if (x >= h_res || y >= v_res || x + width > h_res || y + height > v_res) {
+  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution || x + width > vbe_get_mode().XResolution || y + height > vbe_get_mode().YResolution) {
     fprintf(stderr, "graphics_draw_rectangle: invalid dimensions.");
     return 1;
   }
@@ -212,8 +94,8 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
 
 int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
   // calculate the width and height of each rectangle in the grid
-  uint16_t width = h_res / no_rectangles;
-  uint16_t height = v_res / no_rectangles;
+  uint16_t width = vbe_get_mode().XResolution / no_rectangles;
+  uint16_t height = vbe_get_mode().YResolution / no_rectangles;
   uint32_t color, r, g, b;
 
   // extract R, G, B components from the base color in case of direct color mode
@@ -227,18 +109,18 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
       // check if mode is indexed
       if (mode == VBE_MODE_1024x768) {
         // compute the color index for indexed mode
-        color = (first + (row * no_rectangles + col) * step) % (1 << bits_per_pixel);
+        color = (first + (row * no_rectangles + col) * step) % (1 << vbe_get_mode().BitsPerPixel);
       }
       else {
         // compute RGB components for direct color mode
-        r = (r_first + col * step) % (1 << mode_info.RedMaskSize);
-        g = (g_first + row * step) % (1 << mode_info.GreenMaskSize);
-        b = (b_first + (col + row) * step) % (1 << mode_info.BlueMaskSize);
+        r = (r_first + col * step) % (1 << vbe_get_mode().RedMaskSize);
+        g = (g_first + row * step) % (1 << vbe_get_mode().GreenMaskSize);
+        b = (b_first + (col + row) * step) % (1 << vbe_get_mode().BlueMaskSize);
 
         // build the final color by shifting components to their proper positions
-        color = (r << mode_info.RedFieldPosition) |
-                (g << mode_info.GreenFieldPosition) |
-                (b << mode_info.BlueFieldPosition);
+        color = (r << vbe_get_mode().RedFieldPosition) |
+                (g << vbe_get_mode().GreenFieldPosition) |
+                (b << vbe_get_mode().BlueFieldPosition);
       }
 
       // draw the filled rectangle at the appropriate screen location
@@ -255,7 +137,7 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
 int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   /* check if the given pixel coordinates (x, y) are outside the screen boundaries
    * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
-  if (x >= h_res || y >= v_res) {
+  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution) {
     fprintf(stderr, "graphics_draw_xpm: invalid coordinates.");
     return 1;
   }
@@ -275,7 +157,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
   /* check if the full image would go beyond the screen limits when drawn from (x, y).
    * prevents drawing outside of VRAM which would cause memory errors */
-  if (x + img.width > h_res || y + img.height > v_res) {
+  if (x + img.width > vbe_get_mode().XResolution || y + img.height > vbe_get_mode().YResolution) {
     fprintf(stderr, "graphics_draw_xpm: invalid dimensions.");
     return 1;
   }
@@ -303,7 +185,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(graphics_clear_screen)(void) {
   // clears out the video mem
-  if (memset(video_mem, 0, vram_size) == NULL) {
+  if (memset(vbe_get_video_mem(), 0, vbe_get_mode().XResolution * vbe_get_mode().YResolution * (vbe_get_mode().BitsPerPixel + 7) / 8) == NULL) {
     perror("graphics_clear_screen: failed to clear vram frame.");
     return 1;
   }

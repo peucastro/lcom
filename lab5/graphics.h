@@ -36,22 +36,6 @@ uint32_t(G)(uint32_t color);
 uint32_t(B)(uint32_t color);
 
 /**
- * @brief Initializes the video card in graphics mode.
- *
- * @param mode 16-bit VBE mode to set
- * @return Return 0 upon sucess, non-zero otherwise
- */
-int(graphics_set_video_mode)(uint16_t mode);
-
-/**
- * @brief Maps the video card VRAM to the program's address space.
- *
- * @param mode 16-bit VBE mode to set
- * @return Return 0 upon success, non-zero otherwise
- */
-int(graphics_map_vram)(uint16_t mode);
-
-/**
  * @brief Draws a pixel in the screen.
  *
  * @param x Horizontal axis coordinate
