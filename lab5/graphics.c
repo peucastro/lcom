@@ -2,7 +2,7 @@
 
 #include "graphics.h"
 
-static uint32_t(extract_red)(uint32_t color) {
+uint32_t(extract_red)(uint32_t color) {
   /* compute a bitmask with RedMaskSize bits set to 1.
    * BIT(n) is assumed to return 2^n, so BIT(n) - 1 gives a mask of n bits */
   uint32_t mask = BIT(vbe_get_mode().RedMaskSize) - 1;
@@ -12,7 +12,7 @@ static uint32_t(extract_red)(uint32_t color) {
   return (color >> vbe_get_mode().RedFieldPosition) & mask;
 }
 
-static uint32_t(extract_green)(uint32_t color) {
+uint32_t(extract_green)(uint32_t color) {
   // create a mask with GreenMaskSize bits set to 1
   uint32_t mask = BIT(vbe_get_mode().GreenMaskSize) - 1;
 
@@ -20,7 +20,7 @@ static uint32_t(extract_green)(uint32_t color) {
   return (color >> vbe_get_mode().GreenFieldPosition) & mask;
 }
 
-static uint32_t(extract_blue)(uint32_t color) {
+uint32_t(extract_blue)(uint32_t color) {
   // create a mask with BlueMaskSize bits set to 1
   uint32_t mask = BIT(vbe_get_mode().BlueMaskSize) - 1;
 

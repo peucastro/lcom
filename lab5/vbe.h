@@ -40,10 +40,27 @@
 
 /* Functions for using the VBE */
 
+/**
+ * @brief Returns the VBE mode information structure.
+ *
+ * @return The vbe_mode_info_t structure containing the current mode's information
+ */
 vbe_mode_info_t(vbe_get_mode)(void);
 
+/**
+ * @brief Returns a pointer to the mapped video memory.
+ *
+ * @return A pointer to the beginning of the mapped video memory
+ */
 uint8_t *(vbe_get_video_mem) (void);
 
+/**
+ * @brief Retrieves information about a specified VBE video mode.
+ *
+ * @param mode 16-bit VBE mode identifier
+ * @param vmi Pointer to a vbe_mode_info_t structure where the mode information will be stored
+ * @return Return 0 upon success, non-zero otherwise
+ */
 int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi);
 
 /**
