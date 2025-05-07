@@ -1,4 +1,4 @@
-#include <minix/syslib.h>
+#include <lcom/lcf.h>
 
 #include "utils/utils.h"
 

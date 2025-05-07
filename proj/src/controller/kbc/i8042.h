@@ -1,8 +1,6 @@
 #ifndef _PROJ_I8042_H_
 #define _PROJ_I8042_H_
 
-#include <lcom/lcf.h>
-
 /** @defgroup i8042 i8042
  * @{
  *

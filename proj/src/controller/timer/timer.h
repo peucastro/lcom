@@ -1,7 +1,6 @@
 #ifndef __PROJ_TIMER_H
 #define __PROJ_TIMER_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 #include "controller/timer/i8254.h"
