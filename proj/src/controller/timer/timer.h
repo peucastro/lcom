@@ -13,36 +13,6 @@
  */
 
 /**
- * @brief Enumerated type for specifying the timer value initialization
- */
-enum timer_init {
-  INVAL_val,    /*!< Invalid initialization mode */
-  LSB_only,     /*!< Initialization only of the LSB */
-  MSB_only,     /*!< Initialization only of the MSB */
-  MSB_after_LSB /*!< Initialization of LSB and MSB, in this order */
-};
-
-/**
- * @brief Enumerated type for identifying the timer status fields
- */
-enum timer_status_field {
-  tsf_all,     /*!< configuration/status */
-  tsf_initial, /*!< timer initialization mode */
-  tsf_mode,    /*!< timer counting mode */
-  tsf_base     /*!< timer counting base */
-};
-
-/**
- * @brief Union for storing values of timer status fields, including the full status byte
- */
-union timer_status_field_val {
-  uint8_t byte;            /*!< status */
-  enum timer_init in_mode; /*!< initialization mode */
-  uint8_t count_mode;      /*!< counting mode: 0, 1,.., 5 */
-  bool bcd;                /*!< counting base, true if BCD */
-};
-
-/**
  * @brief Changes the operating frequency of a timer
  *
  * Must use the read-back command so that it does not change
