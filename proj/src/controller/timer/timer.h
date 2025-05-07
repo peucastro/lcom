@@ -12,10 +12,27 @@
  */
 
 /**
+ * @brief Gets the current value of the timer counter
+ *
+ * Retrieves the number of timer interrupts that have occurred since
+ * the last reset or since the program started.
+ *
+ * @return The current value of the timer counter in seconds
+ */
+uint32_t(timer_get_counter)(void);
+
+/**
+ * @brief Resets the timer counter to zero
+ *
+ * Sets the global counter variable back to zero, effectively resetting the timer count.
+ */
+void(timer_reset)(void);
+
+/**
  * @brief Changes the operating frequency of a timer
  *
  * Must use the read-back command so that it does not change
- *   the 4 LSBs (mode and BCD/binary) of the timer's control word.
+ * the 4 LSBs (mode and BCD/binary) of the timer's control word.
  *
  * @param timer Timer to configure. (Ranges from 0 to 2)
  * @param freq Timer operating frequency

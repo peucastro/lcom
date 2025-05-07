@@ -6,7 +6,15 @@
  * it tells us which bit in msg.m_notify.interrupts corresponds to timer 0 interrupts
  * the value is arbitrary (but should be between 0 and 31) */
 static int timer_hook_id = 3;
-uint32_t counter = 0; // global counter (in seconds)
+static uint32_t counter = 0; // global counter (in seconds)
+
+uint32_t(timer_get_counter)(void) {
+  return counter;
+}
+
+void(timer_reset)(void) {
+  counter = 0;
+}
 
 int(timer_set_frequency)(uint8_t timer, uint32_t freq) {
   // timers index goes from 0 to 2
