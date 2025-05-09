@@ -43,5 +43,8 @@ controller/graphics/graphics.o: controller/graphics/graphics.c controller/graphi
 controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 # include LCOM's makefile that does all the "heavy lifting"
 .include <minix.lcom.mk>
