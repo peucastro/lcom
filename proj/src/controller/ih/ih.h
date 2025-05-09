@@ -25,4 +25,11 @@ int(subscribe_interrupts)(void);
  */
 int(unsubscribe_interrupts)(void);
 
+/**
+ * @brief Processes device interrupts based on the interrupt bitmask
+ *
+ * @param irq_mask Bitmask containing the pending interrupt flags
+ */
+void(process_interrupts)(uint64_t irq_mask);
+
 #endif /* __PROJ_IH */

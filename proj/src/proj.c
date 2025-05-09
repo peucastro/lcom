@@ -33,6 +33,9 @@ int(main)(int argc, char *argv[]) {
 }
 
 int(proj_main_loop)(int argc, char *argv[]) {
+  int ipc_status, r;
+  message msg;
+
   if (subscribe_interrupts() != 0) {
     fprintf(stderr, "proj_main_loop: failed to subscribe interrupts.");
     return 1;
@@ -41,6 +44,27 @@ int(proj_main_loop)(int argc, char *argv[]) {
     fprintf(stderr, "proj_main_loop: failed to set video mode.");
     return 1;
   }
+
+  while (get_scancode() != BREAK_ESC) {
+    /* get a request message. */
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE: /* hardware interrupt notification */
+          process_interrupts(msg.m_notify.interrupts);
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+    else { /* received a standard message, not a notification */
+      /* no standard messages expected: do nothing */
+    }
+  }
+
   if (unsubscribe_interrupts() != 0) {
     fprintf(stderr, "proj_main_loop: failed to unsubscribe interrupts.");
     return 1;

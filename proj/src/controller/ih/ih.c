@@ -54,3 +54,15 @@ int(unsubscribe_interrupts)(void) {
 
   return 0;
 }
+
+void(process_interrupts)(uint64_t irq_mask) {
+  if (irq_mask & irq_set_timer) {
+    timer_int_handler();
+  }
+  if (irq_mask & irq_set_kbd) {
+    kbc_ih();
+  }
+  if (irq_mask & irq_set_mouse) {
+    mouse_ih();
+  }
+}
