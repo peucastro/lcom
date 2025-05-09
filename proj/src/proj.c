@@ -37,8 +37,16 @@ int(proj_main_loop)(int argc, char *argv[]) {
     fprintf(stderr, "proj_main_loop: failed to subscribe interrupts.");
     return 1;
   }
+  if (vbe_set_video_mode(VBE_MODE_1152x864) != 0) {
+    fprintf(stderr, "proj_main_loop: failed to set video mode.");
+    return 1;
+  }
   if (unsubscribe_interrupts() != 0) {
     fprintf(stderr, "proj_main_loop: failed to unsubscribe interrupts.");
+    return 1;
+  }
+  if (vbe_exit() != 0) {
+    fprintf(stderr, "proj_main_loop: failed to reset video card.");
     return 1;
   }
 

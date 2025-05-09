@@ -69,6 +69,31 @@ int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi) {
   return 0;
 }
 
+int(vbe_exit)(void) {
+  // holds the arguments for the bios interrupt call
+  struct reg86 args;
+  // clear the reg86 structure to avoid unexpected behavior
+  if (memset(&args, 0, sizeof(args)) == NULL) {
+    perror("vbe_exit: failed to clear reg86.");
+    return 1;
+  }
+
+  // set video mode function
+  args.ah = VBE_SET_VIDEO_MODE;
+  // 80x25 text mode
+  args.al = VBE_MODE_80x25_TEXT;
+  // set intno to VBE_INT (0x10) to specify the bios video services interrupt
+  args.intno = VBE_INT;
+
+  // call sys_int86 to invoke the bios interrupt with the specified register values
+  if (sys_int86(&args) != 0) {
+    perror("vbe_exit: failed to call sys_int86.");
+    return 1;
+  }
+
+  return 0;
+}
+
 int(vbe_set_video_mode)(uint16_t mode) {
   // holds the arguments for the bios interrupt call
   struct reg86 args;

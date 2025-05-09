@@ -36,6 +36,7 @@
 #define VBE_MODE_1024x768 0x105  /**< @brief 1024x768 resolution, 8-bit indexed color */
 #define VBE_MODE_1280x1024 0x11A /**< @brief 1280x1024 resolution, 16-bit direct color (5:6:5) */
 #define VBE_MODE_1152x864 0x14C  /**< @brief 1152x864 resolution, 32-bit direct color (8:8:8:8) */
+#define VBE_MODE_80x25_TEXT 0x03 /**< @brief 80x25 Text mode (Minix3 Default) */
 #define VBE_LINEAR_MODE BIT(14)  /**< @brief Linear frame buffer mode bit */
 
 /* Functions for using the VBE */
@@ -62,6 +63,13 @@ uint8_t *(vbe_get_video_mem) (void);
  * @return Return 0 upon success, non-zero otherwise
  */
 int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi);
+
+/**
+ * @brief Resets the video card to Minix's default mode.
+ *
+ * @return Return 0 upon sucess, non-zero otherwise
+ */
+int(vbe_exit)(void);
 
 /**
  * @brief Initializes the video card in graphics mode.
