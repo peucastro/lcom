@@ -40,5 +40,8 @@ controller/graphics/vbe.o: controller/graphics/vbe.c controller/graphics/vbe.h
 controller/graphics/graphics.o: controller/graphics/graphics.c controller/graphics/graphics.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 # include LCOM's makefile that does all the "heavy lifting"
 .include <minix.lcom.mk>

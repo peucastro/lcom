@@ -1,6 +1,7 @@
 #include <lcom/lcf.h>
 
 #include "controller/graphics/graphics.h"
+#include "controller/ih/ih.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
@@ -32,5 +33,14 @@ int(main)(int argc, char *argv[]) {
 }
 
 int(proj_main_loop)(int argc, char *argv[]) {
+  if (subscribe_interrupts() != 0) {
+    fprintf(stderr, "proj_main_loop: failed to subscribe interrupts.");
+    return 1;
+  }
+  if (unsubscribe_interrupts() != 0) {
+    fprintf(stderr, "proj_main_loop: failed to unsubscribe interrupts.");
+    return 1;
+  }
+
   return 0;
 }
