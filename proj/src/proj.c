@@ -1,10 +1,13 @@
 #include <lcom/lcf.h>
 
+#include "controller/ev/ev.h"
 #include "controller/graphics/graphics.h"
 #include "controller/ih/ih.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
+#include "model/game/game.h"
+#include "model/sprite/sprite.h"
 #include "utils/utils.h"
 
 int(main)(int argc, char *argv[]) {
@@ -33,6 +36,9 @@ int(main)(int argc, char *argv[]) {
 }
 
 int(proj_main_loop)(int argc, char *argv[]) {
+  Game game;
+  init_game(&game);
+
   int ipc_status, r;
   message msg;
 
@@ -54,7 +60,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     if (is_ipc_notify(ipc_status)) { /* received notification */
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE: /* hardware interrupt notification */
-          process_interrupts(msg.m_notify.interrupts);
+          process_interrupts(msg.m_notify.interrupts, &game);
           break;
         default:
           break; /* no other notifications expected: do nothing */

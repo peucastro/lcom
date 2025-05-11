@@ -57,12 +57,13 @@ int(unsubscribe_interrupts)(void) {
   return 0;
 }
 
-void(timer_handler)(void) {
+void(timer_handler)(Game *game) {
   timer_int_handler();
+  draw_game(game);
   // TODO: handle events related to the timer
 }
 
-void(kbd_handler)(void) {
+void(kbd_handler)(Game *game) {
   kbd_ih();
   bytes[i] = get_scancode();
 
@@ -73,9 +74,10 @@ void(kbd_handler)(void) {
 
   i = 0;
   // TODO: handle events related to the kbd
+  handle_event(game, get_scancode());
 }
 
-void(mouse_handler)(void) {
+void(mouse_handler)(Game *game) {
   mouse_ih();
   mouse_sync();
 
@@ -85,14 +87,14 @@ void(mouse_handler)(void) {
   }
 }
 
-void(process_interrupts)(uint64_t irq_mask) {
+void(process_interrupts)(uint64_t irq_mask, Game *game) {
   if (irq_mask & irq_set_timer) {
-    timer_handler();
+    timer_handler(game);
   }
   if (irq_mask & irq_set_kbd) {
-    kbd_handler();
+    kbd_handler(game);
   }
   if (irq_mask & irq_set_mouse) {
-    mouse_handler();
+    mouse_handler(game);
   }
 }

@@ -1,9 +1,11 @@
 #ifndef __PROJ_IH_H
 #define __PROJ_IH_H
 
+#include "controller/ev/ev.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
+#include "model/game/game.h"
 
 /** @defgroup ih_handler ih_handler
  * @{
@@ -29,28 +31,35 @@ int(unsubscribe_interrupts)(void);
  * @brief Handles timer interrupts
  *
  * Calls the timer interrupt handler and processes any related events.
+ *
+ * @param game Pointer to the game instance to be updated
  */
-void(timer_handler)(void);
+void(timer_handler)(Game *game);
 
 /**
  * @brief Handles keyboard interrupts
  *
  * Reads scan codes from the keyboard controller and processes keyboard events.
+ *
+ * @param game Pointer to the game instance to be updated
  */
-void(kbd_handler)(void);
+void(kbd_handler)(Game *game);
 
 /**
  * @brief Handles mouse interrupts
  *
  * Processes mouse data packets and handles mouse-related events.
+ *
+ * @param game Pointer to the game instance to be updated
  */
-void(mouse_handler)(void);
+void(mouse_handler)(Game *game);
 
 /**
- * @brief Processes device interrupts based on the interrupt bitmask
+ * @brief Processes device interrupts based on the interrupt bitmask.
  *
  * @param irq_mask Bitmask containing the pending interrupt flags
+ * @param game Pointer to the game instance to be updated
  */
-void(process_interrupts)(uint64_t irq_mask);
+void(process_interrupts)(uint64_t irq_mask, Game *game);
 
-#endif /* __PROJ_IH */
+#endif /* __PROJ_IH_H */
