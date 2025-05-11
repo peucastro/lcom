@@ -1,6 +1,8 @@
 #ifndef __PROJ_GAME_H
 #define __PROJ_GAME_H
 
+#include "controller/graphics/graphics.h"
+
 /**
  * @brief Represents the different states the game can be in during execution.
  */
@@ -10,8 +12,12 @@ typedef enum game_state {
   EXIT   /**< @brief Final state when the game is ending */
 } game_state;
 
-game_state(get_game_state)(void);
+typedef struct {
+  game_state state;
+} Game;
 
-void(update_game_state)(game_state new_state);
+void(init_game)(Game *game);
 
-#endif
+void(draw_game)(Game *game);
+
+#endif /* __PROJ_GAME_H */

@@ -2,12 +2,15 @@
 
 #include "model/game/game.h"
 
-static game_state gs = START;
-
-game_state(get_game_state)(void) {
-  return gs;
+void(init_game)(Game *game) {
+  game->state = START;
 }
 
-void(update_game_state)(game_state new_state) {
-  gs = new_state;
+void(draw_game)(Game *game) {
+  if (game->state == START) {
+    graphics_draw_rectangle(0, 0, 1152, 864, 0xFF0000);
+  }
+  else if (game->state == GAME) {
+    graphics_draw_rectangle(0, 0, 1152, 864, 0x0000FF);
+  }
 }
