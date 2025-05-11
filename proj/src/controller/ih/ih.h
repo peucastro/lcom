@@ -7,7 +7,7 @@
 #include "controller/timer/timer.h"
 #include "model/game/game.h"
 
-/** @defgroup ih_handler ih_handler
+/** @defgroup ih ih
  * @{
  *
  * Functions for using the interrupt handlers
@@ -61,5 +61,7 @@ void(mouse_handler)(Game *game);
  * @param game Pointer to the game instance to be updated
  */
 void(process_interrupts)(uint64_t irq_mask, Game *game);
+
+/**@}*/
 
 #endif /* __PROJ_IH_H */
