@@ -2,7 +2,9 @@
 
 #include "controller/ih/ih.h"
 
-static uint32_t irq_set_timer, irq_set_kbd, irq_set_mouse;
+static uint32_t irq_set_timer = 0, irq_set_kbd = 0, irq_set_mouse = 0;
+static uint8_t i = 0, bytes[2] = {0, 0};
+static struct packet pp;
 
 int(subscribe_interrupts)(void) {
   uint8_t bit_no;
@@ -55,14 +57,42 @@ int(unsubscribe_interrupts)(void) {
   return 0;
 }
 
+void(timer_handler)(void) {
+  timer_int_handler();
+  // TODO: handle events related to the timer
+}
+
+void(kbd_handler)(void) {
+  kbd_ih();
+  bytes[i] = get_scancode();
+
+  if (get_scancode() == CODE_HEADER) {
+    i++;
+    return;
+  }
+
+  i = 0;
+  // TODO: handle events related to the kbd
+}
+
+void(mouse_handler)(void) {
+  mouse_ih();
+  mouse_sync();
+
+  if (mouse_get_index() == 0) {
+    pp = mouse_parse_packet();
+    // TODO: handle events related to the mouse
+  }
+}
+
 void(process_interrupts)(uint64_t irq_mask) {
   if (irq_mask & irq_set_timer) {
-    timer_int_handler();
+    timer_handler();
   }
   if (irq_mask & irq_set_kbd) {
-    kbc_ih();
+    kbd_handler();
   }
   if (irq_mask & irq_set_mouse) {
-    mouse_ih();
+    mouse_handler();
   }
 }

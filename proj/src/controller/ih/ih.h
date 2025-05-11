@@ -26,6 +26,27 @@ int(subscribe_interrupts)(void);
 int(unsubscribe_interrupts)(void);
 
 /**
+ * @brief Handles timer interrupts
+ *
+ * Calls the timer interrupt handler and processes any related events.
+ */
+void(timer_handler)(void);
+
+/**
+ * @brief Handles keyboard interrupts
+ *
+ * Reads scan codes from the keyboard controller and processes keyboard events.
+ */
+void(kbd_handler)(void);
+
+/**
+ * @brief Handles mouse interrupts
+ *
+ * Processes mouse data packets and handles mouse-related events.
+ */
+void(mouse_handler)(void);
+
+/**
  * @brief Processes device interrupts based on the interrupt bitmask
  *
  * @param irq_mask Bitmask containing the pending interrupt flags
