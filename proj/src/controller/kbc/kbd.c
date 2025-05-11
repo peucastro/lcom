@@ -70,6 +70,6 @@ int(kbd_enable_int)(void) {
   return 0;
 }
 
-void(kbc_ih)(void) {
+void(kbd_ih)(void) {
   kbc_read_data(&scancode, false); // reads the value stored on the output buffer
 }

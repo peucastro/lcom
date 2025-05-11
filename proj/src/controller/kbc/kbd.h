@@ -50,7 +50,7 @@ int(kbd_enable_int)(void);
  *
  * Reads the scancode from the KBC output buffer
  */
-void(kbc_ih)(void);
+void(kbd_ih)(void);
 
 /**@}*/
 
