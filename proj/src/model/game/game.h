@@ -3,6 +3,12 @@
 
 #include "controller/graphics/graphics.h"
 
+/** @defgroup game game
+ * @{
+ *
+ * Module for managing the game state and core gameplay functionality
+ */
+
 /**
  * @brief Represents the different states the game can be in during execution.
  */
@@ -19,5 +25,7 @@ typedef struct {
 void(init_game)(Game *game);
 
 void(draw_game)(Game *game);
+
+/**@}*/
 
 #endif /* __PROJ_GAME_H */

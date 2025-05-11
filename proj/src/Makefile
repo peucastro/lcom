@@ -11,15 +11,24 @@ LDADD += -llcf
 
 # define headers dependencies
 HDRS = utils/utils.h \
+			 model/sprite/sprite.h \
+			 model/game/game.h \
        controller/timer/i8254.h controller/timer/timer.h \
        controller/kbc/i8042.h controller/kbc/kbc.h controller/kbc/kbd.h controller/kbc/mouse.h \
-       controller/graphics/vbe.h controller/graphics/graphics.h
+       controller/graphics/vbe.h controller/graphics/graphics.h \
+			 controller/ih/ih.h controller/ev/ev.h
 
 # compilation rules for each source file
 proj.o: proj.c ${HDRS}
 	${CC} ${CFLAGS} -c $< -o $@
 
 utils/utils.o: utils/utils.c utils/utils.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/game/game.o: model/game/game.c model/game/game.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 controller/timer/timer.o: controller/timer/timer.c controller/timer/timer.h
@@ -44,12 +53,6 @@ controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 controller/ev/ev.o: controller/ev/ev.c controller/ev/ev.h
-	${CC} ${CFLAGS} -c $< -o $@
-
-model/game/game.o: model/game/game.c model/game/game.h
-	${CC} ${CFLAGS} -c $< -o $@
-
-model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 # include LCOM's makefile that does all the "heavy lifting"

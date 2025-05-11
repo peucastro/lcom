@@ -39,4 +39,4 @@ void(destroy_sprite)(Sprite *sp);
 
 /**@}*/
 
-#endif /* __PROJ_SPRITE */
+#endif /* __PROJ_SPRITE_H */
