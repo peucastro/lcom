@@ -1,5 +1,5 @@
-#ifndef __PROJ_IH
-#define __PROJ_IH
+#ifndef __PROJ_IH_H
+#define __PROJ_IH_H
 
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"

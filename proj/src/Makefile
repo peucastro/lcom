@@ -43,6 +43,12 @@ controller/graphics/graphics.o: controller/graphics/graphics.c controller/graphi
 controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+controller/ev/ev.o: controller/ev/ev.c controller/ev/ev.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/game/game.o: model/game/game.c model/game/game.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
 	${CC} ${CFLAGS} -c $< -o $@
 

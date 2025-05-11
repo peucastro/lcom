@@ -1,5 +1,5 @@
-#ifndef __PROJ_SPRITE
-#define __PROJ_SPRITE
+#ifndef __PROJ_SPRITE_H
+#define __PROJ_SPRITE_H
 
 #include "controller/graphics/graphics.h"
 
