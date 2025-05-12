@@ -2,14 +2,14 @@
 
 #include "model/resources/resources.h"
 
-Sprite *example;
+Sprite *niaefeup;
 
 int(create_resources)(void) {
-  example = create_sprite(example_xpm, 20, 20);
+  niaefeup = create_sprite(niaefeup_xpm, 20, 20);
 
   return 0;
 }
 
 void(destroy_resources)(void) {
-  destroy_sprite(example);
+  destroy_sprite(niaefeup);
 }

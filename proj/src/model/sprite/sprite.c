@@ -9,7 +9,7 @@ Sprite *(create_sprite) (const char *pic[], int16_t x, int16_t y) {
     return NULL;
   }
 
-  sp->map = (char *) xpm_load(pic, XPM_INDEXED, &img);
+  sp->map = (char *) xpm_load(pic, XPM_8_8_8_8, &img);
   if (sp->map == NULL) {
     free(sp);
     return NULL;
@@ -52,9 +52,10 @@ int(draw_sprite)(Sprite *sp) {
     for (uint16_t col = sp->x; col < sp->x + sp->width; col++) {
       color = *(sp->map + (row * sp->width + col));
 
-      if (color == 0xFFFFFF) {
+      // TODO: implement transparency
+      /* if (color == 0xFFFFFF) {
         continue;
-      }
+      } */
       if (graphics_draw_pixel(col, row, color) != 0) {
         fprintf(stderr, "draw_sprite: failed to draw pixel.");
         return 1;

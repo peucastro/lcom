@@ -48,8 +48,9 @@ int(kbc_read_data)(uint8_t *data, bool expect_mouse_data) {
       }
       // when not expecting mouse data, bit 5 must NOT be set
       if (!expect_mouse_data && (*data & KBC_AUX)) {
-        fprintf(stderr, "kbc_read_data: expected keyboard data, but received data from the mouse.");
-        return 1;
+        tickdelay(micros_to_ticks(DELAY_US));
+        attempts--;
+        continue;
       }
       return 0;
     }

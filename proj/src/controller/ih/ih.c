@@ -45,12 +45,12 @@ int(unsubscribe_interrupts)(void) {
     return 1;
   }
 
-  if (mouse_unsubscribe_int() != 0) {
-    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe mouse interrupts.");
-    return 1;
-  }
   if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
     fprintf(stderr, "unsubscribe_interrupts: failed to disable mouse data reporting.");
+    return 1;
+  }
+  if (mouse_unsubscribe_int() != 0) {
+    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe mouse interrupts.");
     return 1;
   }
 
@@ -59,8 +59,11 @@ int(unsubscribe_interrupts)(void) {
 
 void(timer_handler)(Game *game) {
   timer_int_handler();
-  draw_game(game);
-  // TODO: handle events related to the timer
+  if (timer_get_counter() % sys_hz() == 0) {
+    draw_game(game);
+    timer_reset();
+    // TODO: handle events related to the timer
+  }
 }
 
 void(kbd_handler)(Game *game) {
