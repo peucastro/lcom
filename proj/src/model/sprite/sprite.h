@@ -10,7 +10,7 @@
  */
 
 /**
- * @brief Struct representing a sprite
+ * @brief Struct representing a sprite.
  *
  * Contains the position, dimensions, and pixel data for a sprite
  */
@@ -21,7 +21,7 @@ typedef struct {
 } Sprite;
 
 /**
- * @brief Creates a new sprite from an XPM image
+ * @brief Creates a new sprite from an XPM image.
  *
  * @param pic Array of strings containing the XPM image data
  * @param x Initial x coordinate for the sprite
@@ -31,11 +31,29 @@ typedef struct {
 Sprite *(create_sprite) (const char *pic[], int16_t x, int16_t y);
 
 /**
- * @brief Destroys a sprite and frees its resources
+ * @brief Destroys a sprite and frees its resources.
  *
  * @param sp Pointer to the sprite to be destroyed
  */
 void(destroy_sprite)(Sprite *sp);
+
+/**
+ * @brief Renders a sprite to the screen at its current position.
+ *
+ * @param sp Pointer to the sprite to be drawn
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_sprite)(Sprite *sp);
+
+/**
+ * @brief Updates a sprite's position by the specified offsets.
+ *
+ * @param sp Pointer to the sprite to be moved
+ * @param xmov Horizontal offset to move the sprite by
+ * @param ymov Vertical offset to move the sprite by
+ * @return 0 upon success, non-zero otherwise
+ */
+int(move_sprite)(Sprite *sp, int16_t xmov, int16_t ymov);
 
 /**@}*/
 
