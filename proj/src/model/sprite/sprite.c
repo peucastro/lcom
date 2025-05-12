@@ -48,15 +48,15 @@ int(draw_sprite)(Sprite *sp) {
   }
 
   uint32_t color;
-  for (uint16_t row = sp->y; row < sp->y + sp->height; row++) {
-    for (uint16_t col = sp->x; col < sp->x + sp->width; col++) {
-      color = *(sp->map + (row * sp->width + col));
+  for (uint16_t row = 0; row < sp->height; row++) {
+    for (uint16_t col = 0; col < sp->width; col++) {
+      color = *((uint32_t *) (&sp->map[(row * sp->width + col) * 4]));
 
-      // TODO: implement transparency
-      /* if (color == 0xFFFFFF) {
+      if (color == xpm_transparency_color(XPM_8_8_8_8)) {
         continue;
-      } */
-      if (graphics_draw_pixel(col, row, color) != 0) {
+      }
+
+      if (graphics_draw_pixel(sp->x + col, sp->y + row, color) != 0) {
         fprintf(stderr, "draw_sprite: failed to draw pixel.");
         return 1;
       }

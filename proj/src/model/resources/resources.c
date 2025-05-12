@@ -5,7 +5,10 @@
 Sprite *example;
 
 int(create_resources)(void) {
-  example = create_sprite(example_xpm, 20, 20);
+  if ((example = create_sprite(example_xpm, 20, 20)) == NULL) {
+    fprintf(stderr, "create_resources: failed to load example sprite.");
+    return 1;
+  }
 
   return 0;
 }
