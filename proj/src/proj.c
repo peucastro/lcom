@@ -9,6 +9,7 @@
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
 #include "model/game/game.h"
+#include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
 #include "utils/utils.h"
 
@@ -39,10 +40,14 @@ int(main)(int argc, char *argv[]) {
 
 int(proj_main_loop)(int argc, char *argv[]) {
   Game game;
-  init_game(&game);
-
   int ipc_status, r;
   message msg;
+
+  init_game(&game);
+  if (create_resources() != 0) {
+    fprintf(stderr, "proj_main_loop: failed to create game resources.");
+    return 1;
+  }
 
   if (subscribe_interrupts() != 0) {
     fprintf(stderr, "proj_main_loop: failed to subscribe interrupts.");
@@ -85,6 +90,8 @@ int(proj_main_loop)(int argc, char *argv[]) {
     fprintf(stderr, "proj_main_loop: failed to reset video card.");
     return 1;
   }
+
+  destroy_resources();
 
   return 0;
 }

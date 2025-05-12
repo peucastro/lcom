@@ -12,6 +12,7 @@ LDADD += -llcf
 # define headers dependencies
 HDRS = utils/utils.h \
 			 model/sprite/sprite.h \
+			 model/resources/resources.h \
 			 model/game/game.h \
        controller/timer/i8254.h controller/timer/timer.h \
        controller/kbc/i8042.h controller/kbc/kbc.h controller/kbc/kbd.h controller/kbc/mouse.h \
@@ -26,6 +27,9 @@ utils/utils.o: utils/utils.c utils/utils.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/resources/resources.o: model/resources/resources.c model/resources/resources.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 model/game/game.o: model/game/game.c model/game/game.h
