@@ -8,7 +8,7 @@
  */
 
 #include "model/sprite/sprite.h"
-#include "view/xpm/niaefeup.xpm"
+#include "view/xpm/example.xpm"
 
 int(create_resources)(void);
 

@@ -3,7 +3,7 @@
 #include "model/game/game.h"
 #include "model/resources/resources.h"
 
-extern Sprite *niaefeup;
+extern Sprite *example;
 
 void(init_game)(Game *game) {
   game->state = START;
@@ -15,6 +15,6 @@ void(draw_game)(Game *game) {
   }
   else if (game->state == GAME) {
     graphics_draw_rectangle(0, 0, 1152, 864, 0x0000FF);
-    draw_sprite(niaefeup);
+    draw_sprite(example);
   }
 }
