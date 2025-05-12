@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
 
-#include "kbc.h"
+#include "controller/kbc/kbc.h"
 
 int(kbc_ready)(uint8_t st) {
   // checks if the parity err or timeour err bits are set to 1
