@@ -10,14 +10,7 @@ DPADD += ${LIBLCF}
 LDADD += -llcf
 
 # define headers dependencies
-HDRS = utils/utils.h \
-			 model/sprite/sprite.h \
-			 model/resources/resources.h \
-			 model/game/game.h \
-       controller/timer/i8254.h controller/timer/timer.h \
-       controller/kbc/i8042.h controller/kbc/kbc.h controller/kbc/kbd.h controller/kbc/mouse.h \
-       controller/graphics/vbe.h controller/graphics/graphics.h \
-			 controller/ih/ih.h controller/ev/ev.h
+HDRS = $(find . -name *.h)
 
 # compilation rules for each source file
 proj.o: proj.c ${HDRS}
@@ -51,7 +44,7 @@ controller/graphics/vbe.o: controller/graphics/vbe.c controller/graphics/vbe.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 controller/graphics/graphics.o: controller/graphics/graphics.c controller/graphics/graphics.h
-	${CC} ${CFLAGS} -c $< -o $@
+	${CC} -O0 -fno-inline -fno-unroll-loops ${CFLAGS} -c $< -o $@
 
 controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
 	${CC} ${CFLAGS} -c $< -o $@
