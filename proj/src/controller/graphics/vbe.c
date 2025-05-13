@@ -167,10 +167,13 @@ int(vbe_map_vram)(uint16_t mode) {
     perror("vbe_map_vram: failed to clear minix_mem_range.");
     return 1;
   }
+
+  uint32_t vram_size = mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8;
+
   // set the base physical address of the memory range to the physical base pointer obtained from mode_info.
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
   // set the limit of the memory range to the base address plus the total vram size.
-  mr.mr_limit = mr.mr_base + mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8;
+  mr.mr_limit = mr.mr_base + 2 * vram_size;
 
   // request permission to map the specified physical memory range into the process's address space using the sys_privctl kernel call
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
@@ -179,8 +182,8 @@ int(vbe_map_vram)(uint16_t mode) {
   }
 
   // map the physical memory region into the process's virtual address space using the vm_map_phys kernel call.
-  video_mem[0] = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8);
-  video_mem[1] = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8);
+  video_mem[0] = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
+  video_mem[1] = (uint8_t *) vm_map_phys(SELF, (void *) (mr.mr_base + vram_size), vram_size);
 
   // check if the memory mapping failed.
   if ((void *) video_mem[0] == MAP_FAILED || (void *) video_mem[1] == MAP_FAILED) {
@@ -203,6 +206,7 @@ int(vbe_flip_page)(void) {
   args.ah = VBE_FUNCTION;
   args.al = VBE_SET_DISPLAY_START_AL;
   args.bl = VBE_SET_DISPLAY_START_BL;
+  args.cx = 0;
   args.dx = buff_index * mode_info.YResolution;
   args.intno = VBE_INT;
 
