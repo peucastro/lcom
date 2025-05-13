@@ -58,6 +58,27 @@ vbe_mode_info_t(vbe_get_mode)(void);
 uint8_t *(vbe_get_video_mem) (void);
 
 /**
+ * @brief Gets the horizontal resolution of the current video mode.
+ *
+ * @return The width in pixels of the current video mode
+ */
+uint16_t(vbe_get_h_res)(void);
+
+/**
+ * @brief Gets the vertical resolution of the current video mode.
+ *
+ * @return The height in pixels of the current video mode
+ */
+uint16_t(vbe_get_v_res)(void);
+
+/**
+ * @brief Gets the number of bytes used to represent each pixel.
+ *
+ * @return The number of bytes per pixel in the current video mode
+ */
+uint8_t(vbe_get_bytes_per_pixel)(void);
+
+/**
  * @brief Retrieves information about a specified VBE video mode.
  *
  * @param mode 16-bit VBE mode identifier

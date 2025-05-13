@@ -12,10 +12,10 @@ static uint8_t buff_index = 0;
 static uint8_t *video_mem[2] = {NULL, NULL};
 
 // auxiliary global variables
-static uint16_t h_res;
-static uint16_t v_res;
-static uint8_t bytes_per_pixel;
-static uint32_t vram_size;
+static uint16_t h_res = 0;
+static uint16_t v_res = 0;
+static uint8_t bytes_per_pixel = 0;
+static uint32_t vram_size = 0;
 
 vbe_mode_info_t(vbe_get_mode)(void) {
   return mode_info;
@@ -23,6 +23,22 @@ vbe_mode_info_t(vbe_get_mode)(void) {
 
 uint8_t *(vbe_get_video_mem) (void) {
   return video_mem[buff_index];
+}
+
+uint16_t(vbe_get_h_res)(void) {
+  return h_res;
+}
+
+uint16_t(vbe_get_v_res)(void) {
+  return v_res;
+}
+
+uint8_t(vbe_get_bytes_per_pixel)(void) {
+  return bytes_per_pixel;
+}
+
+uint32_t(vbe_get_vram_size)(void) {
+  return vram_size;
 }
 
 int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi) {
