@@ -61,6 +61,7 @@ void(timer_handler)(Game *game) {
   timer_int_handler();
   if (timer_get_counter() % sys_hz() == 0) {
     draw_game(game);
+    vbe_flip_page();
     timer_reset();
     // TODO: handle events related to the timer
   }

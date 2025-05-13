@@ -5,16 +5,18 @@
 /* static global variable to store vbe mode information.
  * this structure holds details about the selected video mode */
 static vbe_mode_info_t mode_info;
+// double buffer index
+static uint8_t buff_index = 0;
 /* static global pointer to the mapped video memory in the process's address space.
  * in minix 3, vram is not directly accessible and needs to be mapped */
-static uint8_t *video_mem;
+static uint8_t *video_mem[2] = {NULL, NULL};
 
 vbe_mode_info_t(vbe_get_mode)(void) {
   return mode_info;
 }
 
 uint8_t *(vbe_get_video_mem) (void) {
-  return video_mem;
+  return video_mem[buff_index];
 }
 
 int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi) {
@@ -177,13 +179,45 @@ int(vbe_map_vram)(uint16_t mode) {
   }
 
   // map the physical memory region into the process's virtual address space using the vm_map_phys kernel call.
-  video_mem = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8);
+  video_mem[0] = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8);
+  video_mem[1] = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8);
 
   // check if the memory mapping failed.
-  if ((void *) video_mem == MAP_FAILED) {
+  if ((void *) video_mem[0] == MAP_FAILED || (void *) video_mem[1] == MAP_FAILED) {
     fprintf(stderr, "vbe_map_vram: map failed.");
     return 1;
   }
 
+  return 0;
+}
+
+int(vbe_flip_page)(void) {
+  // holds the arguments for the bios interrupt call
+  struct reg86 args;
+  // clear the reg86 structure to avoid unexpected behavior
+  if (memset(&args, 0, sizeof(args)) == NULL) {
+    perror("vbe_flip_page: failed to clear reg86.");
+    return 1;
+  }
+
+  args.ah = VBE_FUNCTION;
+  args.al = VBE_SET_DISPLAY_START_AL;
+  args.bl = VBE_SET_DISPLAY_START_BL;
+  args.dx = buff_index * mode_info.YResolution;
+  args.intno = VBE_INT;
+
+  // call sys_int86 to invoke the bios interrupt with the specified register values
+  if (sys_int86(&args) != 0) {
+    perror("vbe_flip_page: failed to call sys_int86.");
+    return 1;
+  }
+
+  if (args.ah != VBE_CALL_SUCCESS || args.al != VBE_FUNCTION) {
+    fprintf(stderr, "vbe_flip_page: function call error.");
+    return 1;
+  }
+
+  printf("buff index: %u\n", buff_index);
+  buff_index = (buff_index + 1) % 2;
   return 0;
 }

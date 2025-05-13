@@ -18,9 +18,11 @@
 
 /* VBE_FUNCTION arguments */
 
-#define VBE_RET_CTRL 0x00 /**< @brief VBE function to return controller information */
-#define VBE_RET_MODE 0x01 /**< @brief VBE function to return mode information */
-#define VBE_SET_MODE 0x02 /**< @brief VBE function to set a video mode */
+#define VBE_RET_CTRL 0x00             /**< @brief VBE function to return controller information */
+#define VBE_RET_MODE 0x01             /**< @brief VBE function to return mode information */
+#define VBE_SET_MODE 0x02             /**< @brief VBE function to set a video mode */
+#define VBE_SET_DISPLAY_START_AL 0x07 /**< @brief VBE set display start AL */
+#define VBE_SET_DISPLAY_START_BL 0x00 /**< @brief VBE set display start BL */
 
 /* VBE functions return values */
 
@@ -86,6 +88,13 @@ int(vbe_set_video_mode)(uint16_t mode);
  * @return Return 0 upon success, non-zero otherwise
  */
 int(vbe_map_vram)(uint16_t mode);
+
+/**
+ * @brief Switches the front and back buffers.
+ *
+ * @return Return 0 upon success, non-zero otherwise
+ */
+int(vbe_flip_page)(void);
 
 /**@}*/
 
