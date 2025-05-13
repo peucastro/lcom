@@ -303,14 +303,14 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
   drawing_state state = START;
   int16_t x_delta, y_delta = 0;
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
-    return 1;
-  }
-
   if (mouse_subscribe_int(&bit_no) != 0) {
     return 1;
   }
   irq_set = BIT(bit_no);
+
+  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
+    return 1;
+  }
 
   // loop while we're not at the desired state
   while (state != END) {

@@ -60,7 +60,7 @@ void(mouse_handler)(Game *game);
  * @param irq_mask Bitmask containing the pending interrupt flags
  * @param game Pointer to the game instance to be updated
  */
-void(process_interrupts)(uint64_t irq_mask, Game *game);
+void(process_interrupts)(uint32_t irq_mask, Game *game);
 
 /**@}*/
 
