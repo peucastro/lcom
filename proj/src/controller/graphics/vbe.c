@@ -11,6 +11,12 @@ static uint8_t buff_index = 0;
  * in minix 3, vram is not directly accessible and needs to be mapped */
 static uint8_t *video_mem[2] = {NULL, NULL};
 
+// auxiliary global variables
+static uint16_t h_res;
+static uint16_t v_res;
+static uint8_t bytes_per_pixel;
+static uint32_t vram_size;
+
 vbe_mode_info_t(vbe_get_mode)(void) {
   return mode_info;
 }
@@ -160,6 +166,11 @@ int(vbe_map_vram)(uint16_t mode) {
     return 1;
   }
 
+  h_res = mode_info.XResolution;
+  v_res = mode_info.YResolution;
+  bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
+  vram_size = h_res * v_res * bytes_per_pixel;
+
   // declare a struct minix_mem_range to define the physical memory range
   struct minix_mem_range mr;
   // check if setting the memory of the minix_mem_range structure to zero fails
@@ -167,8 +178,6 @@ int(vbe_map_vram)(uint16_t mode) {
     perror("vbe_map_vram: failed to clear minix_mem_range.");
     return 1;
   }
-
-  uint32_t vram_size = mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8;
 
   // set the base physical address of the memory range to the physical base pointer obtained from mode_info.
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
@@ -207,7 +216,7 @@ int(vbe_flip_page)(void) {
   args.al = VBE_SET_DISPLAY_START_AL;
   args.bl = VBE_SET_DISPLAY_START_BL;
   args.cx = 0;
-  args.dx = buff_index * mode_info.YResolution;
+  args.dx = buff_index * v_res;
   args.intno = VBE_INT;
 
   // call sys_int86 to invoke the bios interrupt with the specified register values
