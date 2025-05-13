@@ -38,11 +38,11 @@ int(draw_sprite)(Sprite *sp) {
     fprintf(stderr, "draw_sprite: sp pointer cannot be null.");
     return 1;
   }
-  if (sp->x >= vbe_get_mode().XResolution || sp->y >= vbe_get_mode().YResolution) {
+  if (sp->x >= vbe_get_h_res() || sp->y >= vbe_get_v_res()) {
     fprintf(stderr, "draw_sprite: invalid coordinates.");
     return 1;
   }
-  if (sp->x + sp->width > vbe_get_mode().XResolution || sp->y + sp->height > vbe_get_mode().YResolution) {
+  if (sp->x + sp->width > vbe_get_h_res() || sp->y + sp->height > vbe_get_v_res()) {
     fprintf(stderr, "draw_sprite: invalid dimensions.");
     return 1;
   }
@@ -71,7 +71,7 @@ int(move_sprite)(Sprite *sp, int16_t xmov, int16_t ymov) {
     fprintf(stderr, "move_sprite: sp pointer cannot be null.");
     return 1;
   }
-  if (sp->x + xmov > vbe_get_mode().XResolution || sp->y + ymov > vbe_get_mode().YResolution) {
+  if (sp->x + xmov > vbe_get_h_res() || sp->y + ymov > vbe_get_v_res()) {
     fprintf(stderr, "move_sprite: invalid coordinates.");
     return 1;
   }

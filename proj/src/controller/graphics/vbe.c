@@ -246,7 +246,6 @@ int(vbe_flip_page)(void) {
     return 1;
   }
 
-  printf("buff index: %u\n", buff_index);
   buff_index = (buff_index + 1) % 2;
   return 0;
 }
