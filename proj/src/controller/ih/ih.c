@@ -35,8 +35,12 @@ int(subscribe_interrupts)(void) {
 }
 
 int(unsubscribe_interrupts)(void) {
-  if (timer_unsubscribe_int() != 0) {
-    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe timer interrupts.");
+  if (mouse_unsubscribe_int() != 0) {
+    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe mouse interrupts.");
+    return 1;
+  }
+  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
+    fprintf(stderr, "unsubscribe_interrupts: failed to disable mouse data reporting.");
     return 1;
   }
 
@@ -45,12 +49,8 @@ int(unsubscribe_interrupts)(void) {
     return 1;
   }
 
-  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
-    fprintf(stderr, "unsubscribe_interrupts: failed to disable mouse data reporting.");
-    return 1;
-  }
-  if (mouse_unsubscribe_int() != 0) {
-    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe mouse interrupts.");
+  if (timer_unsubscribe_int() != 0) {
+    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe timer interrupts.");
     return 1;
   }
 
