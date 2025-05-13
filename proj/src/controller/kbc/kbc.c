@@ -37,20 +37,19 @@ int(kbc_read_data)(uint8_t *data, bool expect_mouse_data) {
     // checks if the "output buffer full" bit is set to 1
     if (st & KBC_FULL_OBF) {
       // effectivelly reads the value stored at the output buffer
-      if (util_sys_inb(KBC_OUT, data) != 0) {
-        fprintf(stderr, "kbc_read_data: failed to read the kbc buffer.");
-        return 1;
-      }
       // checks for erros in the KBC
       if (!kbc_ready(st)) {
         fprintf(stderr, "kbc_read_data: KBC not ready.");
         return 1;
       }
       // when not expecting mouse data, bit 5 must NOT be set
-      if (!expect_mouse_data && (*data & KBC_AUX)) {
-        tickdelay(micros_to_ticks(DELAY_US));
-        attempts--;
-        continue;
+      if (!expect_mouse_data && (st & KBC_AUX)) {
+        fprintf(stderr, "kbc_read_data: expected keyboard data, but received data from the mouse.");
+        return 1;
+      }
+      if (util_sys_inb(KBC_OUT, data) != 0) {
+        fprintf(stderr, "kbc_read_data: failed to read the kbc buffer.");
+        return 1;
       }
       return 0;
     }
