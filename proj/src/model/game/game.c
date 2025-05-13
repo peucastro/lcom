@@ -10,6 +10,7 @@ void(init_game)(Game *game) {
 }
 
 void(draw_game)(Game *game) {
+  graphics_clear_screen();
   if (game->state == START) {
     graphics_draw_rectangle(0, 0, 1152, 864, 0xFF0000);
   }

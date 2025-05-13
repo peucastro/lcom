@@ -9,7 +9,7 @@ static vbe_mode_info_t mode_info;
 static uint8_t buff_index = 0;
 /* static global pointer to the mapped video memory in the process's address space.
  * in minix 3, vram is not directly accessible and needs to be mapped */
-static uint8_t *video_mem[2] = {NULL, NULL};
+static uint8_t *video_mem[3] = {NULL, NULL, NULL};
 
 // auxiliary global variables
 static uint16_t h_res = 0;
@@ -198,7 +198,7 @@ int(vbe_map_vram)(uint16_t mode) {
   // set the base physical address of the memory range to the physical base pointer obtained from mode_info.
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
   // set the limit of the memory range to the base address plus the total vram size.
-  mr.mr_limit = mr.mr_base + 2 * vram_size;
+  mr.mr_limit = mr.mr_base + 3 * vram_size;
 
   // request permission to map the specified physical memory range into the process's address space using the sys_privctl kernel call
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
@@ -207,11 +207,12 @@ int(vbe_map_vram)(uint16_t mode) {
   }
 
   // map the physical memory region into the process's virtual address space using the vm_map_phys kernel call.
-  video_mem[0] = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
-  video_mem[1] = (uint8_t *) vm_map_phys(SELF, (void *) (mr.mr_base + vram_size), vram_size);
+  for (uint8_t i = 0; i < 3; i++) {
+    video_mem[i] = (uint8_t *) vm_map_phys(SELF, (void *) (mr.mr_base + i * vram_size), vram_size);
+  }
 
   // check if the memory mapping failed.
-  if ((void *) video_mem[0] == MAP_FAILED || (void *) video_mem[1] == MAP_FAILED) {
+  if ((void *) video_mem[0] == MAP_FAILED || (void *) video_mem[1] == MAP_FAILED || (void *) video_mem[2] == MAP_FAILED) {
     fprintf(stderr, "vbe_map_vram: map failed.");
     return 1;
   }
@@ -229,8 +230,8 @@ int(vbe_flip_page)(void) {
   }
 
   args.ah = VBE_FUNCTION;
-  args.al = VBE_SET_DISPLAY_START_AL;
-  args.bl = VBE_SET_DISPLAY_START_BL;
+  args.al = VBE_SET_DISPLAY_START_CTRL;
+  args.bl = VBE_SET_DISPLAY_START_VERTICAL;
   args.cx = 0;
   args.dx = buff_index * v_res;
   args.intno = VBE_INT;
@@ -246,6 +247,6 @@ int(vbe_flip_page)(void) {
     return 1;
   }
 
-  buff_index = (buff_index + 1) % 2;
+  buff_index = (buff_index + 1) % 3;
   return 0;
 }
