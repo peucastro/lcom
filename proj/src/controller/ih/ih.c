@@ -90,7 +90,7 @@ void(mouse_handler)(Game *game) {
   }
 }
 
-void(process_interrupts)(uint64_t irq_mask, Game *game) {
+void(process_interrupts)(uint32_t irq_mask, Game *game) {
   if (irq_mask & irq_set_timer) {
     timer_handler(game);
   }
