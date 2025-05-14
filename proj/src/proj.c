@@ -91,6 +91,11 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
 
+  // Clean up the game board
+  if (game.board != NULL) {
+    destroy_board(game.board);
+  }
+  
   destroy_resources();
 
   return 0;
