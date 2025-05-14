@@ -1,0 +1,51 @@
+#ifndef __PROJ_BOARD_PARSER_H
+#define __PROJ_BOARD_PARSER_H
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+/** @defgroup board_parser board_parser
+ * @{
+ *
+ * Functions for parsing game board from text files
+ */
+
+/**
+ * @brief Enum representing different types of board elements
+ */
+typedef enum {
+  EMPTY_SPACE, /**< Empty space where players can move */
+  WALL,        /**< Indestructible wall */
+  BRICK,       /**< Destructible brick */
+  PLAYER,      /**< Player starting position */
+  ENEMY,       /**< Enemy starting position */
+  BOMB,        /**< Bomb */
+  POWERUP      /**< Power-up item */
+} BoardElement;
+
+/**
+ * @brief Struct representing the game board
+ */
+typedef struct {
+  int width;               /**< Width of the board in cells */
+  int height;              /**< Height of the board in cells */
+  BoardElement **elements; /**< 2D array of board elements */
+} GameBoard;
+
+/**
+ * @brief Creates a new game board from a text file
+ *
+ * @param filename Path to the text file containing the board layout
+ * @return Pointer to the created game board, or NULL if an error occurs
+ */
+GameBoard *(create_board_from_file) (const char *filename);
+
+/**
+ * @brief Destroys a game board and frees its resources
+ *
+ * @param board Pointer to the board to be destroyed
+ */
+void(destroy_board)(GameBoard *board);
+
+#endif /* __PROJ_BOARD_PARSER_H */

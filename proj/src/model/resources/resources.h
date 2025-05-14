@@ -1,18 +1,25 @@
 #ifndef __PROJ_RESOURCES_H
 #define __PROJ_RESOURCES_H
 
+#include "model/sprite/sprite.h"
+
 /** @defgroup resources resources
  * @{
  *
- * Module for managing game resources
+ * Functions for managing game resources
  */
 
-#include "model/sprite/sprite.h"
-#include "view/xpm/example.xpm"
+/**
+ * @brief Creates all game resources
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(create_resources)();
 
-int(create_resources)(void);
-
-void(destroy_resources)(void);
+/**
+ * @brief Destroys all game resources
+ */
+void(destroy_resources)();
 
 /**@}*/
 
