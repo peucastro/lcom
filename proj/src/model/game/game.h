@@ -3,7 +3,7 @@
 
 #include "controller/graphics/graphics.h"
 #include "model/sprite/sprite.h"
-#include "utils/board_parser.h"
+#include "model/board/board.h"
 
 /** @defgroup game game
  * @{

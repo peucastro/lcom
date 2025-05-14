@@ -1,10 +1,4 @@
-#include "utils/board_parser.h"
-#include <string.h>
-
-/**
- * @brief Maximum line length for reading board files
- */
-#define MAX_LINE_LENGTH 256
+#include "model/board/board.h"
 
 /**
  * @brief Converts a character from the board file to a BoardElement

@@ -1,15 +1,17 @@
 #ifndef __PROJ_BOARD_PARSER_H
 #define __PROJ_BOARD_PARSER_H
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /** @defgroup board_parser board_parser
  * @{
  *
  * Functions for parsing game board from text files
  */
+
+#define MAX_LINE_LENGTH 256 /**< @brief Maximum line length for reading board files */
 
 /**
  * @brief Enum representing different types of board elements

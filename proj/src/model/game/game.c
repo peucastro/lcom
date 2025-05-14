@@ -1,7 +1,6 @@
 #include <lcom/lcf.h>
 
 #include "model/game/game.h"
-#include "model/resources/resources.h"
 
 extern Sprite *wall_sprite;
 extern Sprite *brick_sprite;
