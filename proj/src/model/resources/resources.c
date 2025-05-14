@@ -3,10 +3,10 @@
 #include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
 
-#include "model/xpm/wall.xpm"
-#include "model/xpm/brick.xpm"
-#include "model/xpm/player.xpm"
-#include "model/xpm/enemy.xpm"
+#include "assets/xpm/wall.xpm"
+#include "assets/xpm/brick.xpm"
+#include "assets/xpm/player.xpm"
+#include "assets/xpm/enemy.xpm"
 
 Sprite *wall_sprite = NULL;
 Sprite *brick_sprite = NULL;
