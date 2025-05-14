@@ -182,6 +182,7 @@ int(vbe_map_vram)(uint16_t mode) {
     return 1;
   }
 
+  // initialize the auxiliary global variables
   h_res = mode_info.XResolution;
   v_res = mode_info.YResolution;
   bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
@@ -231,9 +232,13 @@ int(vbe_flip_page)(void) {
 
   args.ah = VBE_FUNCTION;
   args.al = VBE_SET_DISPLAY_START_CTRL;
+  // set display start during vertical retrace (prevents tearing)
   args.bl = VBE_SET_DISPLAY_START_VERTICAL;
+  // first displayed pixel in scan line (no horizontal panning)
   args.cx = 0;
+  // first displayed scan line, calculated to show the appropriate vertical section of VRAM
   args.dx = buff_index * v_res;
+  // video BIOS interrupt
   args.intno = VBE_INT;
 
   // call sys_int86 to invoke the bios interrupt with the specified register values
@@ -247,6 +252,7 @@ int(vbe_flip_page)(void) {
     return 1;
   }
 
+  // cycle to the next buffer
   buff_index = (buff_index + 1) % 3;
   return 0;
 }

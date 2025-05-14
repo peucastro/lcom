@@ -111,7 +111,11 @@ int(vbe_set_video_mode)(uint16_t mode);
 int(vbe_map_vram)(uint16_t mode);
 
 /**
- * @brief Switches the front and back buffers.
+ * @brief Switches the front and back buffers for tripe buffering.
+ *
+ * Uses VBE Function 07h (Set Display Start) to change which portion of video memory
+ * is displayed on screen. This implementation uses vertical retrace timing to prevent
+ * visual tearing effects, and cycles between 3 buffers to enable smooth animations.
  *
  * @return Return 0 upon success, non-zero otherwise
  */
