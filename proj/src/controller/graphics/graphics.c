@@ -31,7 +31,7 @@ uint32_t(extract_blue)(uint32_t color) {
 int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   /* check if the given pixel coordinates (x, y) are outside the screen boundaries
    * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
-  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution) {
+  if (x >= vbe_get_h_res() || y >= vbe_get_v_res()) {
     fprintf(stderr, "graphics_draw_pixel: invalid coordinate.");
     return 1;
   }
@@ -40,10 +40,10 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
    each row has h_res pixels, so we move y rows down by doing (y * h_res).
    we then move x pixels right within that row.
    then we multiply by bytes_per_pixel to account for the color depth */
-  uint8_t *pixel = vbe_get_video_mem() + (y * vbe_get_mode().XResolution + x) * ((vbe_get_mode().BitsPerPixel + 7) / 8);
+  uint8_t *pixel = vbe_get_video_mem() + (y * vbe_get_h_res() + x) * (vbe_get_bytes_per_pixel());
 
   // write the given color value to the calculated pixel location in memory
-  if (memcpy(pixel, &color, (vbe_get_mode().BitsPerPixel + 7) / 8) == NULL) {
+  if (memcpy(pixel, &color, vbe_get_bytes_per_pixel()) == NULL) {
     perror("graphics_draw_pixel: failed to draw pixel.");
     return 1;
   }
@@ -53,7 +53,7 @@ int(graphics_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
 int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
   // check if the starting point or the line length goes beyond the screen width
-  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution || x + len > vbe_get_mode().XResolution) {
+  if (x >= vbe_get_h_res() || y >= vbe_get_v_res() || x + len > vbe_get_h_res()) {
     fprintf(stderr, "graphics_draw_hline: invalid coordinate.");
     return 1;
   }
@@ -74,7 +74,7 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
   /* check if the rectangle’s starting point or size would cause it to exceed screen bounds.
    * ensures both bottom and right edges of the rectangle stay within the screen */
-  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution || x + width > vbe_get_mode().XResolution || y + height > vbe_get_mode().YResolution) {
+  if (x >= vbe_get_h_res() || y >= vbe_get_v_res() || x + width > vbe_get_h_res() || y + height > vbe_get_v_res()) {
     fprintf(stderr, "graphics_draw_rectangle: invalid dimensions.");
     return 1;
   }
@@ -94,8 +94,8 @@ int(graphics_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t he
 
 int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
   // calculate the width and height of each rectangle in the grid
-  uint16_t width = vbe_get_mode().XResolution / no_rectangles;
-  uint16_t height = vbe_get_mode().YResolution / no_rectangles;
+  uint16_t width = vbe_get_h_res() / no_rectangles;
+  uint16_t height = vbe_get_v_res() / no_rectangles;
   uint32_t color, r, g, b;
 
   // extract R, G, B components from the base color in case of direct color mode
@@ -137,7 +137,7 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
 int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   /* check if the given pixel coordinates (x, y) are outside the screen boundaries
    * note: coordinates are valid if 0 <= x < h_res and 0 <= y < v_res */
-  if (x >= vbe_get_mode().XResolution || y >= vbe_get_mode().YResolution) {
+  if (x >= vbe_get_h_res() || y >= vbe_get_v_res()) {
     fprintf(stderr, "graphics_draw_xpm: invalid coordinates.");
     return 1;
   }
@@ -157,7 +157,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
   /* check if the full image would go beyond the screen limits when drawn from (x, y).
    * prevents drawing outside of VRAM which would cause memory errors */
-  if (x + img.width > vbe_get_mode().XResolution || y + img.height > vbe_get_mode().YResolution) {
+  if (x + img.width > vbe_get_h_res() || y + img.height > vbe_get_v_res()) {
     fprintf(stderr, "graphics_draw_xpm: invalid dimensions.");
     return 1;
   }
@@ -185,7 +185,7 @@ int(graphics_draw_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(graphics_clear_screen)(void) {
   // clears out the video mem
-  if (memset(vbe_get_video_mem(), 0, vbe_get_mode().XResolution * vbe_get_mode().YResolution * (vbe_get_mode().BitsPerPixel + 7) / 8) == NULL) {
+  if (memset(vbe_get_video_mem(), 0, vbe_get_bytes_per_pixel()) == NULL) {
     perror("graphics_clear_screen: failed to clear vram frame.");
     return 1;
   }

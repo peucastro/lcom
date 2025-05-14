@@ -18,9 +18,11 @@
 
 /* VBE_FUNCTION arguments */
 
-#define VBE_RET_CTRL 0x00 /**< @brief VBE function to return controller information */
-#define VBE_RET_MODE 0x01 /**< @brief VBE function to return mode information */
-#define VBE_SET_MODE 0x02 /**< @brief VBE function to set a video mode */
+#define VBE_RET_CTRL 0x00                   /**< @brief VBE function to return controller information */
+#define VBE_RET_MODE 0x01                   /**< @brief VBE function to return mode information */
+#define VBE_SET_MODE 0x02                   /**< @brief VBE function to set a video mode */
+#define VBE_SET_DISPLAY_START_CTRL 0x07     /**< @brief VBE set display start */
+#define VBE_SET_DISPLAY_START_VERTICAL 0x80 /**< @brief VBE set display start vertical retrace */
 
 /* VBE functions return values */
 
@@ -56,6 +58,27 @@ vbe_mode_info_t(vbe_get_mode)(void);
 uint8_t *(vbe_get_video_mem) (void);
 
 /**
+ * @brief Gets the horizontal resolution of the current video mode.
+ *
+ * @return The width in pixels of the current video mode
+ */
+uint16_t(vbe_get_h_res)(void);
+
+/**
+ * @brief Gets the vertical resolution of the current video mode.
+ *
+ * @return The height in pixels of the current video mode
+ */
+uint16_t(vbe_get_v_res)(void);
+
+/**
+ * @brief Gets the number of bytes used to represent each pixel.
+ *
+ * @return The number of bytes per pixel in the current video mode
+ */
+uint8_t(vbe_get_bytes_per_pixel)(void);
+
+/**
  * @brief Retrieves information about a specified VBE video mode.
  *
  * @param mode 16-bit VBE mode identifier
@@ -86,6 +109,17 @@ int(vbe_set_video_mode)(uint16_t mode);
  * @return Return 0 upon success, non-zero otherwise
  */
 int(vbe_map_vram)(uint16_t mode);
+
+/**
+ * @brief Switches the front and back buffers for tripe buffering.
+ *
+ * Uses VBE Function 07h (Set Display Start) to change which portion of video memory
+ * is displayed on screen. This implementation uses vertical retrace timing to prevent
+ * visual tearing effects, and cycles between 3 buffers to enable smooth animations.
+ *
+ * @return Return 0 upon success, non-zero otherwise
+ */
+int(vbe_flip_page)(void);
 
 /**@}*/
 

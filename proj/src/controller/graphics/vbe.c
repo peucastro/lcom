@@ -5,16 +5,40 @@
 /* static global variable to store vbe mode information.
  * this structure holds details about the selected video mode */
 static vbe_mode_info_t mode_info;
+// double buffer index
+static uint8_t buff_index = 0;
 /* static global pointer to the mapped video memory in the process's address space.
  * in minix 3, vram is not directly accessible and needs to be mapped */
-static uint8_t *video_mem;
+static uint8_t *video_mem[3] = {NULL, NULL, NULL};
+
+// auxiliary global variables
+static uint16_t h_res = 0;
+static uint16_t v_res = 0;
+static uint8_t bytes_per_pixel = 0;
+static uint32_t vram_size = 0;
 
 vbe_mode_info_t(vbe_get_mode)(void) {
   return mode_info;
 }
 
 uint8_t *(vbe_get_video_mem) (void) {
-  return video_mem;
+  return video_mem[buff_index];
+}
+
+uint16_t(vbe_get_h_res)(void) {
+  return h_res;
+}
+
+uint16_t(vbe_get_v_res)(void) {
+  return v_res;
+}
+
+uint8_t(vbe_get_bytes_per_pixel)(void) {
+  return bytes_per_pixel;
+}
+
+uint32_t(vbe_get_vram_size)(void) {
+  return vram_size;
 }
 
 int(vbe_get_mode_information)(uint16_t mode, vbe_mode_info_t *vmi) {
@@ -158,6 +182,12 @@ int(vbe_map_vram)(uint16_t mode) {
     return 1;
   }
 
+  // initialize the auxiliary global variables
+  h_res = mode_info.XResolution;
+  v_res = mode_info.YResolution;
+  bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
+  vram_size = h_res * v_res * bytes_per_pixel;
+
   // declare a struct minix_mem_range to define the physical memory range
   struct minix_mem_range mr;
   // check if setting the memory of the minix_mem_range structure to zero fails
@@ -165,10 +195,11 @@ int(vbe_map_vram)(uint16_t mode) {
     perror("vbe_map_vram: failed to clear minix_mem_range.");
     return 1;
   }
+
   // set the base physical address of the memory range to the physical base pointer obtained from mode_info.
   mr.mr_base = (phys_bytes) mode_info.PhysBasePtr;
   // set the limit of the memory range to the base address plus the total vram size.
-  mr.mr_limit = mr.mr_base + mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8;
+  mr.mr_limit = mr.mr_base + 3 * vram_size;
 
   // request permission to map the specified physical memory range into the process's address space using the sys_privctl kernel call
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr) != 0) {
@@ -177,13 +208,51 @@ int(vbe_map_vram)(uint16_t mode) {
   }
 
   // map the physical memory region into the process's virtual address space using the vm_map_phys kernel call.
-  video_mem = (uint8_t *) vm_map_phys(SELF, (void *) mr.mr_base, mode_info.XResolution * mode_info.YResolution * (mode_info.BitsPerPixel + 7) / 8);
+  for (uint8_t i = 0; i < 3; i++) {
+    video_mem[i] = (uint8_t *) vm_map_phys(SELF, (void *) (mr.mr_base + i * vram_size), vram_size);
+  }
 
   // check if the memory mapping failed.
-  if ((void *) video_mem == MAP_FAILED) {
+  if ((void *) video_mem[0] == MAP_FAILED || (void *) video_mem[1] == MAP_FAILED || (void *) video_mem[2] == MAP_FAILED) {
     fprintf(stderr, "vbe_map_vram: map failed.");
     return 1;
   }
 
+  return 0;
+}
+
+int(vbe_flip_page)(void) {
+  // holds the arguments for the bios interrupt call
+  struct reg86 args;
+  // clear the reg86 structure to avoid unexpected behavior
+  if (memset(&args, 0, sizeof(args)) == NULL) {
+    perror("vbe_flip_page: failed to clear reg86.");
+    return 1;
+  }
+
+  args.ah = VBE_FUNCTION;
+  args.al = VBE_SET_DISPLAY_START_CTRL;
+  // set display start during vertical retrace (prevents tearing)
+  args.bl = VBE_SET_DISPLAY_START_VERTICAL;
+  // first displayed pixel in scan line (no horizontal panning)
+  args.cx = 0;
+  // first displayed scan line, calculated to show the appropriate vertical section of VRAM
+  args.dx = buff_index * v_res;
+  // video BIOS interrupt
+  args.intno = VBE_INT;
+
+  // call sys_int86 to invoke the bios interrupt with the specified register values
+  if (sys_int86(&args) != 0) {
+    perror("vbe_flip_page: failed to call sys_int86.");
+    return 1;
+  }
+
+  if (args.ah != VBE_CALL_SUCCESS || args.al != VBE_FUNCTION) {
+    fprintf(stderr, "vbe_flip_page: function call error.");
+    return 1;
+  }
+
+  // cycle to the next buffer
+  buff_index = (buff_index + 1) % 3;
   return 0;
 }

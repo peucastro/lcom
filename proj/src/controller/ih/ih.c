@@ -59,11 +59,9 @@ int(unsubscribe_interrupts)(void) {
 
 void(timer_handler)(Game *game) {
   timer_int_handler();
-  if (timer_get_counter() % sys_hz() == 0) {
-    draw_game(game);
-    timer_reset();
-    // TODO: handle events related to the timer
-  }
+  draw_game(game);
+  vbe_flip_page();
+  // TODO: handle events related to the timer
 }
 
 void(kbd_handler)(Game *game) {
