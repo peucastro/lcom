@@ -21,11 +21,11 @@ static BoardElement char_to_element(char c) {
     case 'E': return ENEMY;
     case 'O': return BOMB;
     case 'U': return POWERUP;
-    default: return EMPTY_SPACE; // Default to empty space for unknown characters
+    default: return EMPTY_SPACE;
   }
 }
 
-GameBoard *(create_board_from_file)(const char *filename) {
+GameBoard *(create_board_from_file) (const char *filename) {
   if (filename == NULL) {
     fprintf(stderr, "create_board_from_file: filename cannot be null.\n");
     return NULL;
@@ -37,21 +37,20 @@ GameBoard *(create_board_from_file)(const char *filename) {
     return NULL;
   }
 
-  // First pass: determine board dimensions
   int width = 0;
   int height = 0;
   char line[MAX_LINE_LENGTH];
 
   while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-    // Remove newline character if present
     size_t len = strlen(line);
-    if (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r')) {
+    if (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
       line[--len] = '\0';
     }
-    if (len > 0) { // Skip empty lines
+    if (len > 0) {
       if (width == 0) {
-        width = (int)len;
-      } else if ((int)len != width) {
+        width = (int) len;
+      }
+      else if ((int) len != width) {
         fprintf(stderr, "create_board_from_file: inconsistent line lengths in file %s.\n", filename);
         fclose(file);
         return NULL;
@@ -66,8 +65,7 @@ GameBoard *(create_board_from_file)(const char *filename) {
     return NULL;
   }
 
-  // Allocate memory for the board
-  GameBoard *board = (GameBoard *)malloc(sizeof(GameBoard));
+  GameBoard *board = (GameBoard *) malloc(sizeof(GameBoard));
   if (board == NULL) {
     fprintf(stderr, "create_board_from_file: failed to allocate memory for board.\n");
     fclose(file);
@@ -76,9 +74,8 @@ GameBoard *(create_board_from_file)(const char *filename) {
 
   board->width = width;
   board->height = height;
-  
-  // Allocate memory for the elements array
-  board->elements = (BoardElement **)malloc(height * sizeof(BoardElement *));
+
+  board->elements = (BoardElement **) malloc(height * sizeof(BoardElement *));
   if (board->elements == NULL) {
     fprintf(stderr, "create_board_from_file: failed to allocate memory for board elements.\n");
     free(board);
@@ -87,10 +84,9 @@ GameBoard *(create_board_from_file)(const char *filename) {
   }
 
   for (int i = 0; i < height; i++) {
-    board->elements[i] = (BoardElement *)malloc(width * sizeof(BoardElement));
+    board->elements[i] = (BoardElement *) malloc(width * sizeof(BoardElement));
     if (board->elements[i] == NULL) {
       fprintf(stderr, "create_board_from_file: failed to allocate memory for board row %d.\n", i);
-      // Free previously allocated rows
       for (int j = 0; j < i; j++) {
         free(board->elements[j]);
       }
@@ -101,18 +97,16 @@ GameBoard *(create_board_from_file)(const char *filename) {
     }
   }
 
-  // Second pass: read the board data
   rewind(file);
   int row = 0;
 
   while (fgets(line, MAX_LINE_LENGTH, file) != NULL && row < height) {
-    // Remove newline character if present
     size_t len = strlen(line);
-    if (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r')) {
+    if (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
       line[--len] = '\0';
     }
-    if (len > 0) { // Skip empty lines
-      for (int col = 0; col < width && col < (int)len; col++) {
+    if (len > 0) {
+      for (int col = 0; col < width && col < (int) len; col++) {
         board->elements[row][col] = char_to_element(line[col]);
       }
       row++;
