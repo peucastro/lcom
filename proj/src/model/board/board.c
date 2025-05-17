@@ -1,5 +1,10 @@
 #include "model/board/board.h"
 
+extern Sprite *wall_sprite;
+extern Sprite *brick_sprite;
+extern Sprite *player_sprite;
+extern Sprite *enemy_sprite;
+
 /**
  * @brief Converts a character from the board file to a BoardElement
  *
@@ -77,6 +82,12 @@ GameBoard *(create_board_from_file) (const char *filename) {
     return NULL;
   }
 
+  Entity *player = NULL;
+  Entity **enemies = malloc(sizeof(Entity *) * MAX_ENEMIES);
+  Entity **bricks = malloc(sizeof(Entity *) * MAX_BRICKS);
+  Entity **walls = malloc(sizeof(Entity *) * MAX_WALLS);
+  int enemy_count = 0, brick_count = 0, wall_count = 0;
+
   for (int i = 0; i < height; i++) {
     board->elements[i] = (BoardElement *) malloc(width * sizeof(BoardElement));
     if (board->elements[i] == NULL) {
@@ -101,7 +112,35 @@ GameBoard *(create_board_from_file) (const char *filename) {
     }
     if (len > 0) {
       for (int col = 0; col < width && col < (int) len; col++) {
-        board->elements[row][col] = char_to_element(line[col]);
+        char ch = line[col];
+        BoardElement elem = char_to_element(ch);
+
+        switch (elem) {
+          case PLAYER:
+            player = create_entity(col, row, player_sprite);
+            board->elements[row][col] = EMPTY_SPACE;
+            break;
+          case ENEMY:
+            if (enemy_count < MAX_ENEMIES) {
+              enemies[enemy_count++] = create_entity(col, row, enemy_sprite);
+            }
+            board->elements[row][col] = EMPTY_SPACE;
+            break;
+          case BRICK:
+            if (brick_count < MAX_BRICKS) {
+              bricks[brick_count++] = create_entity(col, row, brick_sprite);
+            }
+            board->elements[row][col] = EMPTY_SPACE;
+            break;
+          case WALL:
+            if (wall_count < MAX_WALLS) {
+              walls[wall_count++] = create_entity(col, row, wall_sprite);
+            }
+            board->elements[row][col] = EMPTY_SPACE;
+            break;
+          default:
+            board->elements[row][col] = elem;
+        }
       }
       row++;
     }
