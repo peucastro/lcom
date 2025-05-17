@@ -3,6 +3,11 @@
 
 #include "model/sprite/sprite.h"
 
+#include "assets/xpm/brick.xpm"
+#include "assets/xpm/enemy.xpm"
+#include "assets/xpm/player.xpm"
+#include "assets/xpm/wall.xpm"
+
 /** @defgroup resources resources
  * @{
  *
@@ -10,16 +15,43 @@
  */
 
 /**
+ * @brief Struct representing game resources
+ *
+ * This struct contains pointers to all the sprites used in the game,
+ * including the wall, brick, player, and enemy sprites.
+ */
+typedef struct {
+  Sprite *wall_sprite;   /**< @brief Pointer to the wall sprite */
+  Sprite *brick_sprite;  /**< @brief Pointer to the brick sprite */
+  Sprite *player_sprite; /**< @brief Pointer to the player sprite */
+  Sprite *enemy_sprite;  /**< @brief Pointer to the enemy sprite */
+} Resources;
+
+/**
  * @brief Creates all game resources
+ *
+ * Allocates and initializes all the sprites used in the game, including
+ * the wall, brick, player, and enemy sprites.
  *
  * @return 0 upon success, non-zero otherwise
  */
-int(create_resources)();
+int(create_resources)(void);
 
 /**
  * @brief Destroys all game resources
+ *
+ * Frees the memory allocated for all the sprites used in the game.
  */
-void(destroy_resources)();
+void(destroy_resources)(void);
+
+/**
+ * @brief Retrieves the game resources
+ *
+ * Provides access to the `Resources` struct containing all the game sprites.
+ *
+ * @return Pointer to the `Resources` struct
+ */
+const Resources *(get_resources) (void);
 
 /**@}*/
 
