@@ -1,3 +1,5 @@
+#include <lcom/lcf.h>
+
 #include "model/board/board.h"
 
 /**
@@ -6,7 +8,7 @@
  * @param c Character to convert
  * @return Corresponding BoardElement
  */
-static BoardElement char_to_element(char c) {
+static BoardElement(char_to_element)(char c) {
   switch (c) {
     case ' ': return EMPTY_SPACE;
     case '#': return WALL;
@@ -77,12 +79,6 @@ GameBoard *(create_board_from_file) (const char *filename) {
     return NULL;
   }
 
-  Entity *player = NULL;
-  Entity **enemies = malloc(sizeof(Entity *) * MAX_ENEMIES);
-  Entity **bricks = malloc(sizeof(Entity *) * MAX_BRICKS);
-  Entity **walls = malloc(sizeof(Entity *) * MAX_WALLS);
-  int enemy_count = 0, brick_count = 0, wall_count = 0;
-
   for (int i = 0; i < height; i++) {
     board->elements[i] = (BoardElement *) malloc(width * sizeof(BoardElement));
     if (board->elements[i] == NULL) {
@@ -97,8 +93,6 @@ GameBoard *(create_board_from_file) (const char *filename) {
     }
   }
 
-  const Resources *resources = get_resources();
-
   rewind(file);
   int row = 0;
 
@@ -108,36 +102,8 @@ GameBoard *(create_board_from_file) (const char *filename) {
       line[--len] = '\0';
     }
     if (len > 0) {
-      for (int col = 0; col < width && col < (int) len; col++) {
-        char ch = line[col];
-        BoardElement elem = char_to_element(ch);
-
-        switch (elem) {
-          case PLAYER:
-            player = create_entity(col, row, resources->player_sprite);
-            board->elements[row][col] = PLAYER;
-            break;
-          case ENEMY:
-            if (enemy_count < MAX_ENEMIES) {
-              enemies[enemy_count++] = create_entity(col, row, resources->enemy_sprite);
-            }
-            board->elements[row][col] = ENEMY;
-            break;
-          case BRICK:
-            if (brick_count < MAX_BRICKS) {
-              bricks[brick_count++] = create_entity(col, row, resources->brick_sprite);
-            }
-            board->elements[row][col] = BRICK;
-            break;
-          case WALL:
-            if (wall_count < MAX_WALLS) {
-              walls[wall_count++] = create_entity(col, row, resources->wall_sprite);
-            }
-            board->elements[row][col] = WALL;
-            break;
-          default:
-            board->elements[row][col] = EMPTY_SPACE;
-        }
+      for (int col = 0; col < width; col++) {
+        board->elements[row][col] = char_to_element(line[col]);
       }
       row++;
     }

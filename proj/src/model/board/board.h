@@ -6,7 +6,6 @@
 #include <string.h>
 
 #include "model/entity/entity.h"
-#include "model/resources/resources.h"
 
 /** @defgroup board_parser board_parser
  * @{
@@ -15,9 +14,6 @@
  */
 
 #define MAX_LINE_LENGTH 256 /**< @brief Maximum line length for reading board files */
-#define MAX_ENEMIES 32
-#define MAX_BRICKS 256
-#define MAX_WALLS 128
 
 /**
  * @brief Enum representing different types of board elements
@@ -55,5 +51,7 @@ GameBoard *(create_board_from_file) (const char *filename);
  * @param board Pointer to the board to be destroyed
  */
 void(destroy_board)(GameBoard *board);
+
+/**@}*/
 
 #endif /* __PROJ_BOARD_H */
