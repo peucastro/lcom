@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "model/entity/entity.h"
+#include "model/resources/resources.h"
 
 /** @defgroup board_parser board_parser
  * @{

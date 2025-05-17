@@ -1,10 +1,5 @@
 #include "model/board/board.h"
 
-extern Sprite *wall_sprite;
-extern Sprite *brick_sprite;
-extern Sprite *player_sprite;
-extern Sprite *enemy_sprite;
-
 /**
  * @brief Converts a character from the board file to a BoardElement
  *
@@ -102,6 +97,8 @@ GameBoard *(create_board_from_file) (const char *filename) {
     }
   }
 
+  const Resources *resources = get_resources();
+
   rewind(file);
   int row = 0;
 
@@ -117,24 +114,24 @@ GameBoard *(create_board_from_file) (const char *filename) {
 
         switch (elem) {
           case PLAYER:
-            player = create_entity(col, row, player_sprite);
+            player = create_entity(col, row, resources->player_sprite);
             board->elements[row][col] = PLAYER;
             break;
           case ENEMY:
             if (enemy_count < MAX_ENEMIES) {
-              enemies[enemy_count++] = create_entity(col, row, enemy_sprite);
+              enemies[enemy_count++] = create_entity(col, row, resources->enemy_sprite);
             }
             board->elements[row][col] = ENEMY;
             break;
           case BRICK:
             if (brick_count < MAX_BRICKS) {
-              bricks[brick_count++] = create_entity(col, row, brick_sprite);
+              bricks[brick_count++] = create_entity(col, row, resources->brick_sprite);
             }
             board->elements[row][col] = BRICK;
             break;
           case WALL:
             if (wall_count < MAX_WALLS) {
-              walls[wall_count++] = create_entity(col, row, wall_sprite);
+              walls[wall_count++] = create_entity(col, row, resources->wall_sprite);
             }
             board->elements[row][col] = WALL;
             break;
