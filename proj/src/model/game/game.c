@@ -126,40 +126,35 @@ void(draw_game)(Game *game) {
   else if (game->state == GAME) {
     graphics_draw_rectangle(0, 0, 1152, 864, 0x0000FF);
 
-    if (game->board != NULL) {
-      const int cell_size = 32;
+    const int cell_size = 32;
 
+    if (game->board != NULL) {
       for (int row = 0; row < game->board->height; row++) {
         for (int col = 0; col < game->board->width; col++) {
-          int x = col * cell_size;
-          int y = row * cell_size;
-
-          Sprite *sprite = NULL;
-
-          switch (game->board->elements[row][col]) {
-            case WALL:
-              sprite = wall_sprite;
-              break;
-            case BRICK:
-              sprite = brick_sprite;
-              break;
-            case PLAYER:
-              sprite = player_sprite;
-              break;
-            case ENEMY:
-              sprite = enemy_sprite;
-              break;
-            default:
-              continue;
-          }
-
-          if (sprite != NULL) {
-            sprite->x = x;
-            sprite->y = y;
-            draw_sprite(sprite);
+          if (game->board->elements[row][col] == EMPTY_SPACE) {
+            // TODO: decide background
           }
         }
       }
+    }
+
+    if (game->player != NULL) {
+      draw_sprite(game->player->sprite, game->player->x * cell_size, game->player->y * cell_size);
+    }
+
+    for (int i = 0; game->enemies != NULL && i < game->num_enemies; i++) {
+      Entity *enemy = game->enemies[i];
+      draw_sprite(enemy->sprite, enemy->x * cell_size, enemy->y * cell_size);
+    }
+
+    for (int i = 0; game->bricks != NULL && i < game->num_bricks; i++) {
+      Entity *brick = game->bricks[i];
+      draw_sprite(brick->sprite, brick->x * cell_size, brick->y * cell_size);
+    }
+
+    for (int i = 0; game->walls != NULL && i < game->num_walls; i++) {
+      Entity *wall = game->walls[i];
+      draw_sprite(wall->sprite, wall->x * cell_size, wall->y * cell_size);
     }
   }
 }
