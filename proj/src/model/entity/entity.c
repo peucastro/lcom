@@ -2,7 +2,7 @@
 
 #include "model/entity/entity.h"
 
-Entity *create_entity(int16_t x, int16_t y, Sprite *sp) {
+Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp) {
   if (sp == NULL) {
     fprintf(stderr, "create_entity: sprite pointer cannot be null.");
     return NULL;

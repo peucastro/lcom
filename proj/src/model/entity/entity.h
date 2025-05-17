@@ -3,6 +3,12 @@
 
 #include "model/sprite/sprite.h"
 
+/** @defgroup entity entity
+ * @{
+ *
+ * Module for managing game entities
+ */
+
 /**
  * @brief Struct representing an entity in the game
  *
@@ -31,5 +37,7 @@ Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp);
  * @param entity Pointer to the entity to be destroyed
  */
 void(destroy_entity)(Entity *entity);
+
+/**@}*/
 
 #endif /* __PROJ_ENTITY_H */

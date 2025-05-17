@@ -14,25 +14,25 @@ Sprite *player_sprite = NULL;
 Sprite *enemy_sprite = NULL;
 
 int(create_resources)() {
-  wall_sprite = create_sprite(wall_xpm, 0, 0);
+  wall_sprite = create_sprite(wall_xpm);
   if (wall_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create wall sprite.");
     return 1;
   }
 
-  brick_sprite = create_sprite(brick_xpm, 0, 0);
+  brick_sprite = create_sprite(brick_xpm);
   if (brick_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create brick sprite.");
     return 1;
   }
 
-  player_sprite = create_sprite(player_xpm, 0, 0);
+  player_sprite = create_sprite(player_xpm);
   if (player_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create player sprite.");
     return 1;
   }
 
-  enemy_sprite = create_sprite(enemy_xpm, 0, 0);
+  enemy_sprite = create_sprite(enemy_xpm);
   if (enemy_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create enemy sprite.");
     return 1;
