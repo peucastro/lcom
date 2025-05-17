@@ -118,28 +118,28 @@ GameBoard *(create_board_from_file) (const char *filename) {
         switch (elem) {
           case PLAYER:
             player = create_entity(col, row, player_sprite);
-            board->elements[row][col] = EMPTY_SPACE;
+            board->elements[row][col] = PLAYER;
             break;
           case ENEMY:
             if (enemy_count < MAX_ENEMIES) {
               enemies[enemy_count++] = create_entity(col, row, enemy_sprite);
             }
-            board->elements[row][col] = EMPTY_SPACE;
+            board->elements[row][col] = ENEMY;
             break;
           case BRICK:
             if (brick_count < MAX_BRICKS) {
               bricks[brick_count++] = create_entity(col, row, brick_sprite);
             }
-            board->elements[row][col] = EMPTY_SPACE;
+            board->elements[row][col] = BRICK;
             break;
           case WALL:
             if (wall_count < MAX_WALLS) {
               walls[wall_count++] = create_entity(col, row, wall_sprite);
             }
-            board->elements[row][col] = EMPTY_SPACE;
+            board->elements[row][col] = WALL;
             break;
           default:
-            board->elements[row][col] = elem;
+            board->elements[row][col] = EMPTY_SPACE;
         }
       }
       row++;
