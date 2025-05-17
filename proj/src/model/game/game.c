@@ -21,6 +21,66 @@ int(init_game)(Game *game) {
     return 1;
   }
 
+  int n_enemies = 0, n_bricks = 0, n_walls = 0;
+  for (int r = 0; r < game->board->height; r++) {
+    for (int c = 0; c < game->board->width; c++) {
+      switch (game->board->elements[r][c]) {
+        case ENEMY: n_enemies++; break;
+        case BRICK: n_bricks++; break;
+        case WALL: n_walls++; break;
+        default: break;
+      }
+    }
+  }
+
+  game->num_enemies = n_enemies;
+  game->num_bricks = n_bricks;
+  game->num_walls = n_walls;
+
+  game->enemies = malloc(n_enemies * sizeof(Entity *));
+  game->bricks = malloc(n_bricks * sizeof(Entity *));
+  game->walls = malloc(n_walls * sizeof(Entity *));
+  game->player = NULL;
+
+  if ((n_enemies && !game->enemies) ||
+      (n_bricks && !game->bricks) ||
+      (n_walls && !game->walls)) {
+    fprintf(stderr, "init_game: failed to allocate entity arrays.");
+    free(game->enemies);
+    free(game->bricks);
+    free(game->walls);
+    destroy_board(game->board);
+    return 1;
+  }
+
+  int ei = 0, bi = 0, wi = 0;
+  for (int r = 0; r < game->board->height; r++) {
+    for (int c = 0; c < game->board->width; c++) {
+      BoardElement el = game->board->elements[r][c];
+      switch (el) {
+        case PLAYER:
+          game->player = create_entity(c, r, player_sprite);
+          game->board->elements[r][c] = EMPTY_SPACE;
+          break;
+        case ENEMY:
+          game->enemies[ei++] = create_entity(c, r, enemy_sprite);
+          game->board->elements[r][c] = EMPTY_SPACE;
+          break;
+        case BRICK:
+          game->bricks[bi++] = create_entity(c, r, brick_sprite);
+          game->board->elements[r][c] = EMPTY_SPACE;
+          break;
+        case WALL:
+          game->walls[wi++] = create_entity(c, r, wall_sprite);
+          game->board->elements[r][c] = EMPTY_SPACE;
+          break;
+        default:
+          // nothing to do for empty tiles
+          break;
+      }
+    }
+  }
+
   return 0;
 }
 
