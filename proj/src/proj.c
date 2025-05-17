@@ -43,9 +43,12 @@ int(proj_main_loop)(int argc, char *argv[]) {
   int ipc_status, r;
   message msg;
 
-  init_game(&game);
   if (create_resources() != 0) {
     fprintf(stderr, "proj_main_loop: failed to create game resources.");
+    return 1;
+  }
+  if (init_game(&game) != 0) {
+    fprintf(stderr, "proj_main_loop: failed to initialize game.");
     return 1;
   }
 
@@ -91,11 +94,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
 
-  // Clean up the game board
-  if (game.board != NULL) {
-    destroy_board(game.board);
-  }
-  
+  destroy_game(&game);
   destroy_resources();
 
   return 0;

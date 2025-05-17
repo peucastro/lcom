@@ -84,6 +84,39 @@ int(init_game)(Game *game) {
   return 0;
 }
 
+void(destroy_game)(Game *game) {
+  if (game == NULL) {
+    return;
+  }
+
+  if (game->player) {
+    free(game->player);
+  }
+
+  if (game->enemies) {
+    for (int i = 0; game->enemies[i]; i++) {
+      free(game->enemies[i]);
+    }
+    free(game->enemies);
+  }
+
+  if (game->bricks) {
+    for (int i = 0; game->bricks[i]; i++) {
+      free(game->bricks[i]);
+    }
+    free(game->bricks);
+  }
+
+  if (game->walls) {
+    for (int i = 0; game->walls[i]; i++) {
+      free(game->walls[i]);
+    }
+    free(game->walls);
+  }
+
+  destroy_board(game->board);
+}
+
 void(draw_game)(Game *game) {
   graphics_clear_screen();
 
