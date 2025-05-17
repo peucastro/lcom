@@ -75,7 +75,7 @@ void(kbd_handler)(Game *game) {
 
   i = 0;
   // TODO: handle events related to the kbd
-  handle_event(game, get_scancode());
+  handle_kbd_event(game, get_scancode());
 }
 
 void(mouse_handler)(Game *game) {
