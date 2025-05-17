@@ -125,15 +125,15 @@ void(draw_game)(Game *game) {
 
     const int cell_size = 32;
 
-    if (game->board != NULL) {
+    // TODO: decide background
+    /* if (game->board != NULL) {
       for (int row = 0; row < game->board->height; row++) {
         for (int col = 0; col < game->board->width; col++) {
           if (game->board->elements[row][col] == EMPTY_SPACE) {
-            // TODO: decide background
           }
         }
       }
-    }
+    } */
 
     if (game->player != NULL) {
       draw_sprite(game->player->sprite, game->player->x * cell_size, game->player->y * cell_size);

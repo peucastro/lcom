@@ -71,16 +71,6 @@ void(destroy_game)(Game *game);
  */
 void(draw_game)(Game *game);
 
-/**
- * @brief Handles an event
- *
- * Processes a scancode event and updates the game state accordingly.
- *
- * @param game Pointer to the game
- * @param scancode Scancode of the event
- */
-void(handle_event)(Game *game, uint8_t scancode);
-
 /**@}*/
 
 #endif /* __PROJ_GAME_H */

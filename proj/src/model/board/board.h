@@ -7,7 +7,7 @@
 
 #include "model/entity/entity.h"
 
-/** @defgroup board_parser board_parser
+/** @defgroup board board
  * @{
  *
  * Functions for parsing game board from text files
