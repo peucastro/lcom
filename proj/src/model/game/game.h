@@ -4,6 +4,7 @@
 #include "controller/graphics/graphics.h"
 #include "model/board/board.h"
 #include "model/entity/entity.h"
+#include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
 
 /** @defgroup game game

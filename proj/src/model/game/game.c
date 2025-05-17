@@ -2,11 +2,6 @@
 
 #include "model/game/game.h"
 
-extern Sprite *wall_sprite;
-extern Sprite *brick_sprite;
-extern Sprite *player_sprite;
-extern Sprite *enemy_sprite;
-
 int(init_game)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "init_game: game pointer cannot be null.");
@@ -20,6 +15,8 @@ int(init_game)(Game *game) {
     fprintf(stderr, "init_game: failed to load game board.");
     return 1;
   }
+
+  const Resources *resources = get_resources();
 
   int n_enemies = 0, n_bricks = 0, n_walls = 0;
   for (int r = 0; r < game->board->height; r++) {
@@ -59,19 +56,19 @@ int(init_game)(Game *game) {
       BoardElement el = game->board->elements[r][c];
       switch (el) {
         case PLAYER:
-          game->player = create_entity(c, r, player_sprite);
+          game->player = create_entity(c, r, resources->player_sprite);
           game->board->elements[r][c] = EMPTY_SPACE;
           break;
         case ENEMY:
-          game->enemies[ei++] = create_entity(c, r, enemy_sprite);
+          game->enemies[ei++] = create_entity(c, r, resources->enemy_sprite);
           game->board->elements[r][c] = EMPTY_SPACE;
           break;
         case BRICK:
-          game->bricks[bi++] = create_entity(c, r, brick_sprite);
+          game->bricks[bi++] = create_entity(c, r, resources->brick_sprite);
           game->board->elements[r][c] = EMPTY_SPACE;
           break;
         case WALL:
-          game->walls[wi++] = create_entity(c, r, wall_sprite);
+          game->walls[wi++] = create_entity(c, r, resources->wall_sprite);
           game->board->elements[r][c] = EMPTY_SPACE;
           break;
         default:
