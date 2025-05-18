@@ -137,7 +137,7 @@ void(draw_game)(Game *game) {
   else if (game->state == GAME) {
     graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF);
 
-    const int cell_size = 32;
+    const int cell_size = 64;
 
     // TODO: decide background
     /* if (game->board != NULL) {
