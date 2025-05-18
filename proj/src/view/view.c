@@ -49,7 +49,10 @@ void(draw_game)(Game *game) {
 }
 
 void(draw_next_frame)(Game *game) {
-  graphics_clear_screen();
+  if (graphics_clear_screen() != 0) {
+    fprintf(stderr, "draw_next_frame: failed to clear screen.");
+    return;
+  }
 
   switch (game->state) {
     case START:
