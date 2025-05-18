@@ -60,11 +60,11 @@ int(proj_main_loop)(int argc, char *argv[]) {
     fprintf(stderr, "proj_main_loop: failed to subscribe interrupts.");
     return 1;
   }
-  if (vbe_map_vram(VBE_MODE_1152x864) != 0) {
+  if (vbe_map_vram(VBE_MODE_1024x768_8_8_8) != 0) {
     fprintf(stderr, "proj_main_loop: failed to map graphics vram.");
     return 1;
   }
-  if (vbe_set_video_mode(VBE_MODE_1152x864) != 0) {
+  if (vbe_set_video_mode(VBE_MODE_1024x768_8_8_8) != 0) {
     fprintf(stderr, "proj_main_loop: failed to set video mode.");
     return 1;
   }

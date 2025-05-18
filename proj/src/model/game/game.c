@@ -132,10 +132,10 @@ void(draw_game)(Game *game) {
   graphics_clear_screen();
 
   if (game->state == START) {
-    graphics_draw_rectangle(0, 0, 1152, 864, 0xFF0000);
+    graphics_draw_rectangle(0, 0, 1024, 768, 0xFF0000);
   }
   else if (game->state == GAME) {
-    graphics_draw_rectangle(0, 0, 1152, 864, 0x0000FF);
+    graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF);
 
     const int cell_size = 32;
 
