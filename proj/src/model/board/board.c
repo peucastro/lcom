@@ -75,6 +75,7 @@ GameBoard *(create_board_from_file) (const char *filename) {
   if (board->elements == NULL) {
     fprintf(stderr, "create_board_from_file: failed to allocate memory for board elements.\n");
     free(board);
+    board = NULL;
     fclose(file);
     return NULL;
   }
@@ -85,9 +86,12 @@ GameBoard *(create_board_from_file) (const char *filename) {
       fprintf(stderr, "create_board_from_file: failed to allocate memory for board row %d.\n", i);
       for (int j = 0; j < i; j++) {
         free(board->elements[j]);
+        board->elements[j] = NULL;
       }
       free(board->elements);
+      board->elements = NULL;
       free(board);
+      board = NULL;
       fclose(file);
       return NULL;
     }
@@ -122,10 +126,13 @@ void(destroy_board)(GameBoard *board) {
     for (int i = 0; i < board->height; i++) {
       if (board->elements[i] != NULL) {
         free(board->elements[i]);
+        board->elements[i] = NULL;
       }
     }
     free(board->elements);
+    board->elements = NULL;
   }
 
   free(board);
+  board = NULL;
 }

@@ -29,4 +29,5 @@ void(destroy_entity)(Entity *entity) {
   }
 
   free(entity);
+  entity = NULL;
 }

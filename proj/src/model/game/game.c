@@ -44,8 +44,11 @@ int(init_game)(Game *game) {
       (n_walls && !game->walls)) {
     fprintf(stderr, "init_game: failed to allocate entity arrays.");
     free(game->enemies);
+    game->enemies = NULL;
     free(game->bricks);
+    game->bricks = NULL;
     free(game->walls);
+    game->walls = NULL;
     destroy_board(game->board);
     return 1;
   }
@@ -87,31 +90,42 @@ void(destroy_game)(Game *game) {
   }
 
   if (game->player) {
-    free(game->player);
+    destroy_entity(game->player);
+    game->player = NULL;
   }
 
   if (game->enemies) {
-    for (int i = 0; game->enemies[i]; i++) {
-      free(game->enemies[i]);
+    for (int i = 0; i < game->num_enemies; i++) {
+      if (game->enemies[i] != NULL) {
+        destroy_entity(game->enemies[i]);
+      }
     }
     free(game->enemies);
+    game->enemies = NULL;
   }
 
   if (game->bricks) {
-    for (int i = 0; game->bricks[i]; i++) {
-      free(game->bricks[i]);
+    for (int i = 0; i < game->num_bricks; i++) {
+      if (game->bricks[i] != NULL) {
+        destroy_entity(game->bricks[i]);
+      }
     }
     free(game->bricks);
+    game->bricks = NULL;
   }
 
   if (game->walls) {
-    for (int i = 0; game->walls[i]; i++) {
-      free(game->walls[i]);
+    for (int i = 0; i < game->num_walls; i++) {
+      if (game->walls[i] != NULL) {
+        destroy_entity(game->walls[i]);
+      }
     }
     free(game->walls);
+    game->walls = NULL;
   }
 
   destroy_board(game->board);
+  game->board = NULL;
 }
 
 void(draw_game)(Game *game) {

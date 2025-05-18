@@ -4,13 +4,15 @@
 
 Sprite *(create_sprite) (const char *pic[]) {
   Sprite *sp = (Sprite *) malloc(sizeof(Sprite));
-  xpm_image_t img;
   if (sp == NULL) {
+    fprintf(stderr, "create_sprite: failed to allocate memory for sprite.");
     return NULL;
   }
 
+  xpm_image_t img;
   sp->map = (char *) xpm_load(pic, XPM_8_8_8_8, &img);
   if (sp->map == NULL) {
+    fprintf(stderr, "create_sprite: failed to load XPM image.");
     free(sp);
     return NULL;
   }
