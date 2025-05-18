@@ -17,6 +17,11 @@ int(init_game)(Game *game) {
   }
 
   const Resources *resources = get_resources();
+  if (resources == NULL) {
+    fprintf(stderr, "init_game: failed to load resources.");
+    destroy_board(game->board);
+    return 1;
+  }
 
   uint8_t n_enemies = 0, n_bricks = 0, n_walls = 0, n_bombs = 0;
   for (uint8_t r = 0; r < game->board->height; r++) {
@@ -39,12 +44,15 @@ int(init_game)(Game *game) {
   game->enemies = malloc(n_enemies * sizeof(Entity *));
   game->bricks = malloc(n_bricks * sizeof(Entity *));
   game->walls = malloc(n_walls * sizeof(Entity *));
+  game->bombs = malloc(n_bombs * sizeof(Entity *));
   game->player = NULL;
 
   if ((n_enemies && !game->enemies) ||
       (n_bricks && !game->bricks) ||
-      (n_walls && !game->walls)) {
+      (n_walls && !game->walls) ||
+      (n_bombs && !game->bombs)) {
     fprintf(stderr, "init_game: failed to allocate entity arrays.");
+
     free(game->enemies);
     game->enemies = NULL;
 
@@ -54,7 +62,12 @@ int(init_game)(Game *game) {
     free(game->walls);
     game->walls = NULL;
 
-    destroy_board(game->board);
+    free(game->bombs);
+    game->bombs = NULL;
+
+    if (destroy_board(game->board) != 0) {
+      fprintf(stderr, "init_game: failed to destroy game board after error.");
+    }
     return 1;
   }
 
@@ -65,18 +78,47 @@ int(init_game)(Game *game) {
       switch (el) {
         case PLAYER:
           game->player = create_entity(c, r, resources->player_sprite);
+          if (game->player == NULL) {
+            fprintf(stderr, "init_game: failed to create player entity.");
+            destroy_game(game);
+            return 1;
+          }
           break;
         case ENEMY:
-          game->enemies[ei++] = create_entity(c, r, resources->enemy_sprite);
+          game->enemies[ei] = create_entity(c, r, resources->enemy_sprite);
+          if (game->enemies[ei] == NULL) {
+            fprintf(stderr, "init_game: failed to create enemy entity at index %d.", ei);
+            destroy_game(game);
+            return 1;
+          }
+          ei++;
           break;
         case BRICK:
-          game->bricks[bri++] = create_entity(c, r, resources->brick_sprite);
+          game->bricks[bri] = create_entity(c, r, resources->brick_sprite);
+          if (game->bricks[bri] == NULL) {
+            fprintf(stderr, "init_game: failed to create brick entity at index %d.", bri);
+            destroy_game(game);
+            return 1;
+          }
+          bri++;
           break;
         case WALL:
-          game->walls[wi++] = create_entity(c, r, resources->wall_sprite);
+          game->walls[wi] = create_entity(c, r, resources->wall_sprite);
+          if (game->walls[wi] == NULL) {
+            fprintf(stderr, "init_game: failed to create wall entity at index %d.", wi);
+            destroy_game(game);
+            return 1;
+          }
+          wi++;
           break;
         case BOMB:
-          game->bombs[boi++] = create_entity(c, r, resources->bomb_sprite);
+          game->bombs[boi] = create_entity(c, r, resources->bomb_sprite);
+          if (game->bombs[boi] == NULL) {
+            fprintf(stderr, "init_game: failed to create bomb entity at index %d.", boi);
+            destroy_game(game);
+            return 1;
+          }
+          boi++;
           break;
         default:
           // nothing to do for empty tiles
@@ -88,21 +130,25 @@ int(init_game)(Game *game) {
   return 0;
 }
 
-void(destroy_game)(Game *game) {
+int(destroy_game)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "destroy_game: game pointer cannot be null.");
-    return;
+    return 1;
   }
 
   if (game->player) {
-    destroy_entity(game->player);
+    if (destroy_entity(game->player) != 0) {
+      fprintf(stderr, "destroy_game: failed to destroy player entity.");
+    }
     game->player = NULL;
   }
 
   if (game->enemies) {
     for (uint8_t i = 0; i < game->num_enemies; i++) {
       if (game->enemies[i] != NULL) {
-        destroy_entity(game->enemies[i]);
+        if (destroy_entity(game->enemies[i]) != 0) {
+          fprintf(stderr, "destroy_game: failed to destroy enemy entity at index %d.", i);
+        }
       }
     }
     free(game->enemies);
@@ -112,7 +158,9 @@ void(destroy_game)(Game *game) {
   if (game->bricks) {
     for (uint8_t i = 0; i < game->num_bricks; i++) {
       if (game->bricks[i] != NULL) {
-        destroy_entity(game->bricks[i]);
+        if (destroy_entity(game->bricks[i]) != 0) {
+          fprintf(stderr, "destroy_game: failed to destroy brick entity at index %d.", i);
+        }
       }
     }
     free(game->bricks);
@@ -122,13 +170,31 @@ void(destroy_game)(Game *game) {
   if (game->walls) {
     for (uint8_t i = 0; i < game->num_walls; i++) {
       if (game->walls[i] != NULL) {
-        destroy_entity(game->walls[i]);
+        if (destroy_entity(game->walls[i]) != 0) {
+          fprintf(stderr, "destroy_game: failed to destroy wall entity at index %d.", i);
+        }
       }
     }
     free(game->walls);
     game->walls = NULL;
   }
 
-  destroy_board(game->board);
+  if (game->bombs) {
+    for (uint8_t i = 0; i < game->num_bombs; i++) {
+      if (game->bombs[i] != NULL) {
+        if (destroy_entity(game->bombs[i]) != 0) {
+          fprintf(stderr, "destroy_game: failed to destroy bomb entity at index %d.", i);
+        }
+      }
+    }
+    free(game->bombs);
+    game->bombs = NULL;
+  }
+
+  if (destroy_board(game->board) != 0) {
+    fprintf(stderr, "destroy_game: failed to destroy game board.");
+  }
   game->board = NULL;
+
+  return 0;
 }

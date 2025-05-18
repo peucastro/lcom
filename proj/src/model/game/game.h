@@ -49,6 +49,7 @@ typedef struct {
  * the game board, player, enemies, bricks, and walls.
  *
  * @param game Pointer to the game to be initialized
+ *
  * @return 0 upon success, non-zero otherwise
  */
 int(init_game)(Game *game);
@@ -60,8 +61,10 @@ int(init_game)(Game *game);
  * player, enemies, bricks, and walls.
  *
  * @param game Pointer to the game to be destroyed
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(destroy_game)(Game *game);
+int(destroy_game)(Game *game);
 
 /**@}*/
 

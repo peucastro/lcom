@@ -35,8 +35,10 @@ Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp);
  * @brief Destroys an entity and frees its resources
  *
  * @param entity Pointer to the entity to be destroyed
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(destroy_entity)(Entity *entity);
+int(destroy_entity)(Entity *entity);
 
 /**@}*/
 

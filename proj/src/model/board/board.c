@@ -23,13 +23,13 @@ static BoardElement(char_to_element)(char c) {
 
 GameBoard *(create_board_from_file) (const char *filename) {
   if (filename == NULL) {
-    fprintf(stderr, "create_board_from_file: filename cannot be null.\n");
+    fprintf(stderr, "create_board_from_file: filename cannot be null");
     return NULL;
   }
 
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    fprintf(stderr, "create_board_from_file: failed to open file %s.\n", filename);
+    fprintf(stderr, "create_board_from_file: failed to open file %s", filename);
     return NULL;
   }
 
@@ -47,8 +47,10 @@ GameBoard *(create_board_from_file) (const char *filename) {
         width = len;
       }
       else if (len != width) {
-        fprintf(stderr, "create_board_from_file: inconsistent line lengths in file %s.\n", filename);
-        fclose(file);
+        fprintf(stderr, "create_board_from_file: inconsistent line lengths in file %s", filename);
+        if (fclose(file) != 0) {
+          fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+        }
         return NULL;
       }
       height++;
@@ -56,15 +58,19 @@ GameBoard *(create_board_from_file) (const char *filename) {
   }
 
   if (width == 0 || height == 0) {
-    fprintf(stderr, "create_board_from_file: empty or invalid board file %s.\n", filename);
-    fclose(file);
+    fprintf(stderr, "create_board_from_file: empty or invalid board file %s", filename);
+    if (fclose(file) != 0) {
+      fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+    }
     return NULL;
   }
 
   GameBoard *board = (GameBoard *) malloc(sizeof(GameBoard));
   if (board == NULL) {
-    fprintf(stderr, "create_board_from_file: failed to allocate memory for board.\n");
-    fclose(file);
+    fprintf(stderr, "create_board_from_file: failed to allocate memory for board");
+    if (fclose(file) != 0) {
+      fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+    }
     return NULL;
   }
 
@@ -73,17 +79,19 @@ GameBoard *(create_board_from_file) (const char *filename) {
 
   board->elements = (BoardElement **) malloc(height * sizeof(BoardElement *));
   if (board->elements == NULL) {
-    fprintf(stderr, "create_board_from_file: failed to allocate memory for board elements.\n");
+    fprintf(stderr, "create_board_from_file: failed to allocate memory for board elements");
     free(board);
     board = NULL;
-    fclose(file);
+    if (fclose(file) != 0) {
+      fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+    }
     return NULL;
   }
 
   for (uint8_t i = 0; i < height; i++) {
     board->elements[i] = (BoardElement *) malloc(width * sizeof(BoardElement));
     if (board->elements[i] == NULL) {
-      fprintf(stderr, "create_board_from_file: failed to allocate memory for board row %d.\n", i);
+      fprintf(stderr, "create_board_from_file: failed to allocate memory for board row %d", i);
       for (uint8_t j = 0; j < i; j++) {
         free(board->elements[j]);
         board->elements[j] = NULL;
@@ -92,7 +100,9 @@ GameBoard *(create_board_from_file) (const char *filename) {
       board->elements = NULL;
       free(board);
       board = NULL;
-      fclose(file);
+      if (fclose(file) != 0) {
+        fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+      }
       return NULL;
     }
   }
@@ -113,14 +123,17 @@ GameBoard *(create_board_from_file) (const char *filename) {
     }
   }
 
-  fclose(file);
+  if (fclose(file) != 0) {
+    fprintf(stderr, "create_board_from_file: failed to close file %s after reading", filename);
+  }
+
   return board;
 }
 
-void(destroy_board)(GameBoard *board) {
+int(destroy_board)(GameBoard *board) {
   if (board == NULL) {
-    fprintf(stderr, "destroy_board: board pointer cannot be null.");
-    return;
+    fprintf(stderr, "destroy_board: board pointer cannot be null");
+    return 1;
   }
 
   if (board->elements != NULL) {
@@ -136,4 +149,6 @@ void(destroy_board)(GameBoard *board) {
 
   free(board);
   board = NULL;
+
+  return 0;
 }

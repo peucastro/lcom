@@ -49,8 +49,10 @@ GameBoard *(create_board_from_file) (const char *filename);
  * @brief Destroys a game board and frees its resources
  *
  * @param board Pointer to the board to be destroyed
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(destroy_board)(GameBoard *board);
+int(destroy_board)(GameBoard *board);
 
 /**@}*/
 

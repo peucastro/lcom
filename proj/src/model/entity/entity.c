@@ -22,12 +22,14 @@ Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp) {
   return entity;
 }
 
-void(destroy_entity)(Entity *entity) {
+int(destroy_entity)(Entity *entity) {
   if (entity == NULL) {
     fprintf(stderr, "destroy_entity: entity pointer cannot be null.");
-    return;
+    return 1;
   }
 
   free(entity);
   entity = NULL;
+
+  return 0;
 }
