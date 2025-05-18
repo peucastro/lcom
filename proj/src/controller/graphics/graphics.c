@@ -107,7 +107,7 @@ int(graphics_draw_matrix)(uint16_t mode, uint8_t no_rectangles, uint32_t first, 
   for (uint8_t row = 0; row < no_rectangles; row++) {
     for (uint8_t col = 0; col < no_rectangles; col++) {
       // check if mode is indexed
-      if (mode == VBE_MODE_1024x768) {
+      if (mode == VBE_MODE_1024x768_8_8_8) {
         // compute the color index for indexed mode
         color = (first + (row * no_rectangles + col) * step) % (1 << vbe_get_mode().BitsPerPixel);
       }

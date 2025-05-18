@@ -34,6 +34,9 @@ model/resources/resources.o: model/resources/resources.c model/resources/resourc
 model/game/game.o: model/game/game.c model/game/game.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+view/view.o: view/view.c view/view.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 controller/timer/timer.o: controller/timer/timer.c controller/timer/timer.h
 	${CC} ${CFLAGS} -c $< -o $@
 

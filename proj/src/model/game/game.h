@@ -1,7 +1,6 @@
 #ifndef __PROJ_GAME_H
 #define __PROJ_GAME_H
 
-#include "controller/graphics/graphics.h"
 #include "model/board/board.h"
 #include "model/entity/entity.h"
 #include "model/resources/resources.h"
@@ -18,6 +17,7 @@
  */
 typedef enum {
   START, /**< @brief Game is in start menu */
+  PAUSE, /**< @brief Game is in pause menu */
   GAME,  /**< @brief Game is being played */
   EXIT   /**< @brief Game is exiting */
 } game_state;
@@ -62,16 +62,6 @@ int(init_game)(Game *game);
  * @param game Pointer to the game to be destroyed
  */
 void(destroy_game)(Game *game);
-
-/**
- * @brief Draws the game
- *
- * Renders the game board, player, enemies, bricks, and walls
- * to the screen.
- *
- * @param game Pointer to the game to be drawn
- */
-void(draw_game)(Game *game);
 
 /**@}*/
 

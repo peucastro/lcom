@@ -6,6 +6,7 @@
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
 #include "model/game/game.h"
+#include "view/view.h"
 
 /** @defgroup ih ih
  * @{

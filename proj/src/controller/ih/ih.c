@@ -59,7 +59,7 @@ int(unsubscribe_interrupts)(void) {
 
 void(timer_handler)(Game *game) {
   timer_int_handler();
-  draw_game(game);
+  draw_next_frame(game);
   vbe_flip_page();
   // TODO: handle events related to the timer
 }
