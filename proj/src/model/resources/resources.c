@@ -5,9 +5,9 @@
 static Resources resources;
 
 int(create_resources)(void) {
-  resources.wall_sprite = create_sprite(wall_xpm);
-  if (resources.wall_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create wall sprite.");
+  resources.bomb_sprite = create_sprite(bomb_xpm);
+  if (resources.bomb_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create bomb sprite.");
     return 1;
   }
 
@@ -17,15 +17,21 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.enemy_sprite = create_sprite(enemy_xpm);
+  if (resources.enemy_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create enemy sprite.");
+    return 1;
+  }
+
   resources.player_sprite = create_sprite(player_xpm);
   if (resources.player_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create player sprite.");
     return 1;
   }
 
-  resources.enemy_sprite = create_sprite(enemy_xpm);
-  if (resources.enemy_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create enemy sprite.");
+  resources.wall_sprite = create_sprite(wall_xpm);
+  if (resources.wall_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create wall sprite.");
     return 1;
   }
 

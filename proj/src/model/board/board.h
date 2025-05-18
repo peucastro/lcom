@@ -13,28 +13,28 @@
  * Functions for parsing game board from text files
  */
 
-#define MAX_LINE_LENGTH 256 /**< @brief Maximum line length for reading board files */
+#define MAX_LINE_LENGTH 64 /**< @brief Maximum line length for reading board files */
 
 /**
  * @brief Enum representing different types of board elements
  */
 typedef enum {
-  EMPTY_SPACE, /**< Empty space where players can move */
-  WALL,        /**< Indestructible wall */
-  BRICK,       /**< Destructible brick */
-  PLAYER,      /**< Player starting position */
-  ENEMY,       /**< Enemy starting position */
-  BOMB,        /**< Bomb */
-  POWERUP      /**< Power-up item */
+  PLAYER,     /**< @brief Player starting position */
+  ENEMY,      /**< @brief Enemy starting position */
+  BRICK,      /**< @brief Destructible brick */
+  WALL,       /**< @brief Indestructible wall */
+  BOMB,       /**< @brief Bomb */
+  POWERUP,    /**< @brief Power-up item */
+  EMPTY_SPACE /**< @brief Empty space where players can move */
 } BoardElement;
 
 /**
  * @brief Struct representing the game board
  */
 typedef struct {
-  int width;               /**< Width of the board in cells */
-  int height;              /**< Height of the board in cells */
-  BoardElement **elements; /**< 2D array of board elements */
+  int width;               /**< @brief Width of the board in cells */
+  int height;              /**< @brief Height of the board in cells */
+  BoardElement **elements; /**< @brief 2D array of board elements */
 } GameBoard;
 
 /**

@@ -3,6 +3,7 @@
 
 #include "model/sprite/sprite.h"
 
+#include "assets/xpm/bomb.xpm"
 #include "assets/xpm/brick.xpm"
 #include "assets/xpm/enemy.xpm"
 #include "assets/xpm/player.xpm"
@@ -21,10 +22,11 @@
  * including the wall, brick, player, and enemy sprites.
  */
 typedef struct {
-  Sprite *wall_sprite;   /**< @brief Pointer to the wall sprite */
+  Sprite *bomb_sprite;   /**< @brief Pointer to the bomb sprite */
   Sprite *brick_sprite;  /**< @brief Pointer to the brick sprite */
-  Sprite *player_sprite; /**< @brief Pointer to the player sprite */
   Sprite *enemy_sprite;  /**< @brief Pointer to the enemy sprite */
+  Sprite *player_sprite; /**< @brief Pointer to the player sprite */
+  Sprite *wall_sprite;   /**< @brief Pointer to the wall sprite */
 } Resources;
 
 /**

@@ -10,13 +10,13 @@
  */
 static BoardElement(char_to_element)(char c) {
   switch (c) {
-    case ' ': return EMPTY_SPACE;
-    case '#': return WALL;
-    case 'B': return BRICK;
     case 'P': return PLAYER;
     case 'E': return ENEMY;
+    case 'B': return BRICK;
+    case '#': return WALL;
     case 'O': return BOMB;
     case 'U': return POWERUP;
+    case ' ': return EMPTY_SPACE;
     default: return EMPTY_SPACE;
   }
 }
@@ -33,8 +33,8 @@ GameBoard *(create_board_from_file) (const char *filename) {
     return NULL;
   }
 
-  int width = 0;
-  int height = 0;
+  size_t width = 0;
+  size_t height = 0;
   char line[MAX_LINE_LENGTH];
 
   while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
@@ -44,9 +44,9 @@ GameBoard *(create_board_from_file) (const char *filename) {
     }
     if (len > 0) {
       if (width == 0) {
-        width = (int) len;
+        width = len;
       }
-      else if ((int) len != width) {
+      else if (len != width) {
         fprintf(stderr, "create_board_from_file: inconsistent line lengths in file %s.\n", filename);
         fclose(file);
         return NULL;
@@ -80,11 +80,11 @@ GameBoard *(create_board_from_file) (const char *filename) {
     return NULL;
   }
 
-  for (int i = 0; i < height; i++) {
+  for (uint8_t i = 0; i < height; i++) {
     board->elements[i] = (BoardElement *) malloc(width * sizeof(BoardElement));
     if (board->elements[i] == NULL) {
       fprintf(stderr, "create_board_from_file: failed to allocate memory for board row %d.\n", i);
-      for (int j = 0; j < i; j++) {
+      for (uint8_t j = 0; j < i; j++) {
         free(board->elements[j]);
         board->elements[j] = NULL;
       }
@@ -98,7 +98,7 @@ GameBoard *(create_board_from_file) (const char *filename) {
   }
 
   rewind(file);
-  int row = 0;
+  uint8_t row = 0;
 
   while (fgets(line, MAX_LINE_LENGTH, file) != NULL && row < height) {
     size_t len = strlen(line);
@@ -106,7 +106,7 @@ GameBoard *(create_board_from_file) (const char *filename) {
       line[--len] = '\0';
     }
     if (len > 0) {
-      for (int col = 0; col < width; col++) {
+      for (uint8_t col = 0; col < width; col++) {
         board->elements[row][col] = char_to_element(line[col]);
       }
       row++;
@@ -123,7 +123,7 @@ void(destroy_board)(GameBoard *board) {
   }
 
   if (board->elements != NULL) {
-    for (int i = 0; i < board->height; i++) {
+    for (uint8_t i = 0; i < board->height; i++) {
       if (board->elements[i] != NULL) {
         free(board->elements[i]);
         board->elements[i] = NULL;

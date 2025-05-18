@@ -35,9 +35,11 @@ typedef struct {
   Entity **enemies;    /**< @brief Array of pointers to enemy entities */
   Entity **bricks;     /**< @brief Array of pointers to brick entities */
   Entity **walls;      /**< @brief Array of pointers to wall entities */
+  Entity **bombs;      /**< @brief Array of pointers to bomb entities */
   uint8_t num_enemies; /**< @brief Number of enemies in the game */
   uint8_t num_bricks;  /**< @brief Number of bricks in the game */
   uint8_t num_walls;   /**< @brief Number of walls in the game */
+  uint8_t num_bombs;   /**< @brief Number of bombs in the game */
 } Game;
 
 /**
