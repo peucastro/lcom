@@ -16,8 +16,10 @@
  *
  * @param game Pointer to the game instance
  * @param scancode Scancode of the key pressed
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(handle_kbd_event)(Game *game, uint8_t scancode);
+int(handle_kbd_event)(Game *game, uint8_t scancode);
 
 /**@}*/
 

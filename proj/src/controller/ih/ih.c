@@ -58,6 +58,11 @@ int(unsubscribe_interrupts)(void) {
 }
 
 void(timer_handler)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "timer_handler: game pointer cannot be null.");
+    return;
+  }
+
   timer_int_handler();
   draw_next_frame(game);
   vbe_flip_page();
@@ -65,6 +70,11 @@ void(timer_handler)(Game *game) {
 }
 
 void(kbd_handler)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "kbd_handler: game pointer cannot be null.");
+    return;
+  }
+
   kbd_ih();
   bytes[i] = get_scancode();
 
@@ -75,10 +85,18 @@ void(kbd_handler)(Game *game) {
 
   i = 0;
   // TODO: handle events related to the kbd
-  handle_kbd_event(game, get_scancode());
+  if (handle_kbd_event(game, get_scancode()) != 0) {
+    fprintf(stderr, "kbd_handler: failed to call hanble_kbd_event.");
+    return;
+  }
 }
 
 void(mouse_handler)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "mouse_handler: game pointer cannot be null.");
+    return;
+  }
+
   mouse_ih();
   mouse_sync();
 
@@ -89,6 +107,11 @@ void(mouse_handler)(Game *game) {
 }
 
 void(process_interrupts)(uint32_t irq_mask, Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "process_interrupts: game pointer cannot be null.");
+    return;
+  }
+
   if (irq_mask & irq_set_timer) {
     timer_handler(game);
   }

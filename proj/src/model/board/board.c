@@ -119,6 +119,7 @@ GameBoard *(create_board_from_file) (const char *filename) {
 
 void(destroy_board)(GameBoard *board) {
   if (board == NULL) {
+    fprintf(stderr, "destroy_board: board pointer cannot be null.");
     return;
   }
 

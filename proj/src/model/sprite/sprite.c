@@ -24,6 +24,7 @@ Sprite *(create_sprite) (const char *pic[]) {
 
 void(destroy_sprite)(Sprite *sp) {
   if (sp == NULL) {
+    fprintf(stderr, "destroy_sprite: sp pointer cannot be null.");
     return;
   }
   if (sp->map) {

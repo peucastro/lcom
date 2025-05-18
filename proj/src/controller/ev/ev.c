@@ -2,7 +2,12 @@
 
 #include "controller/ev/ev.h"
 
-void(handle_kbd_event)(Game *game, uint8_t scancode) {
+int(handle_kbd_event)(Game *game, uint8_t scancode) {
+  if (game == NULL) {
+    fprintf(stderr, "handle_kbd_event: game pointer cannot be null.");
+    return 1;
+  }
+
   switch (game->state) {
     case START:
       switch (scancode) {
@@ -37,6 +42,9 @@ void(handle_kbd_event)(Game *game, uint8_t scancode) {
       break;
 
     default:
-      break;
+      fprintf(stderr, "handle_kbd_event: invalid game state.");
+      return 1;
   }
+
+  return 0;
 }

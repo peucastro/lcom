@@ -90,6 +90,7 @@ int(init_game)(Game *game) {
 
 void(destroy_game)(Game *game) {
   if (game == NULL) {
+    fprintf(stderr, "destroy_game: game pointer cannot be null.");
     return;
   }
 
