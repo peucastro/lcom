@@ -13,15 +13,19 @@
  * @brief Draws the start menu
  *
  * Renders the start menu to the screen.
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(draw_start_menu)(void);
+int(draw_start_menu)(void);
 
 /**
  * @brief Draws the pause menu
  *
  * Renders the pause menu to the screen.
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(draw_pause_menu)(void);
+int(draw_pause_menu)(void);
 
 /**
  * @brief Draws the game
@@ -30,8 +34,9 @@ void(draw_pause_menu)(void);
  * to the screen.
  *
  * @param game Pointer to the game to be drawn
+ * @return 0 upon success, non-zero otherwise
  */
-void(draw_game)(Game *game);
+int(draw_game)(Game *game);
 
 /**
  * @brief Draws the next frame
