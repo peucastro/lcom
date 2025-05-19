@@ -10,7 +10,7 @@ int(init_game)(Game *game) {
 
   game->state = START;
 
-  game->board = create_board_from_file("/home/lcom/labs/proj/src/assets/boards/level1.txt");
+  game->board = create_board("/home/lcom/labs/proj/src/assets/boards/level1.txt");
   if (game->board == NULL) {
     fprintf(stderr, "init_game: failed to load game board.");
     return 1;
@@ -74,7 +74,7 @@ int(init_game)(Game *game) {
   uint8_t ei = 0, bri = 0, wi = 0, boi = 0;
   for (uint8_t r = 0; r < game->board->height; r++) {
     for (uint8_t c = 0; c < game->board->width; c++) {
-      BoardElement el = game->board->elements[r][c];
+      board_element_t el = game->board->elements[r][c];
       switch (el) {
         case PLAYER:
           game->player = create_entity(c, r, resources->player_sprite);

@@ -39,9 +39,9 @@ int(create_resources)(void) {
 }
 
 void(destroy_resources)(void) {
-  if (resources.wall_sprite != NULL) {
-    destroy_sprite(resources.wall_sprite);
-    resources.wall_sprite = NULL;
+  if (resources.bomb_sprite != NULL) {
+    destroy_sprite(resources.bomb_sprite);
+    resources.bomb_sprite = NULL;
   }
 
   if (resources.brick_sprite != NULL) {
@@ -49,14 +49,19 @@ void(destroy_resources)(void) {
     resources.brick_sprite = NULL;
   }
 
+  if (resources.enemy_sprite != NULL) {
+    destroy_sprite(resources.enemy_sprite);
+    resources.enemy_sprite = NULL;
+  }
+
   if (resources.player_sprite != NULL) {
     destroy_sprite(resources.player_sprite);
     resources.player_sprite = NULL;
   }
 
-  if (resources.enemy_sprite != NULL) {
-    destroy_sprite(resources.enemy_sprite);
-    resources.enemy_sprite = NULL;
+  if (resources.wall_sprite != NULL) {
+    destroy_sprite(resources.wall_sprite);
+    resources.wall_sprite = NULL;
   }
 }
 

@@ -3,12 +3,12 @@
 #include "model/board/board.h"
 
 /**
- * @brief Converts a character from the board file to a BoardElement
+ * @brief Converts a character from the board file to a board_element_t
  *
  * @param c Character to convert
- * @return Corresponding BoardElement
+ * @return Corresponding board_element_t
  */
-static BoardElement(char_to_element)(char c) {
+static board_element_t(char_to_element)(char c) {
   switch (c) {
     case 'P': return PLAYER;
     case 'E': return ENEMY;
@@ -21,15 +21,15 @@ static BoardElement(char_to_element)(char c) {
   }
 }
 
-GameBoard *(create_board_from_file) (const char *filename) {
+GameBoard *(create_board) (const char *filename) {
   if (filename == NULL) {
-    fprintf(stderr, "create_board_from_file: filename cannot be null");
+    fprintf(stderr, "create_board: filename cannot be null");
     return NULL;
   }
 
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    fprintf(stderr, "create_board_from_file: failed to open file %s", filename);
+    fprintf(stderr, "create_board: failed to open file %s", filename);
     return NULL;
   }
 
@@ -47,9 +47,9 @@ GameBoard *(create_board_from_file) (const char *filename) {
         width = len;
       }
       else if (len != width) {
-        fprintf(stderr, "create_board_from_file: inconsistent line lengths in file %s", filename);
+        fprintf(stderr, "create_board: inconsistent line lengths in file %s", filename);
         if (fclose(file) != 0) {
-          fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+          fprintf(stderr, "create_board: failed to close file %s after error", filename);
         }
         return NULL;
       }
@@ -58,18 +58,18 @@ GameBoard *(create_board_from_file) (const char *filename) {
   }
 
   if (width == 0 || height == 0) {
-    fprintf(stderr, "create_board_from_file: empty or invalid board file %s", filename);
+    fprintf(stderr, "create_board: empty or invalid board file %s", filename);
     if (fclose(file) != 0) {
-      fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+      fprintf(stderr, "create_board: failed to close file %s after error", filename);
     }
     return NULL;
   }
 
   GameBoard *board = (GameBoard *) malloc(sizeof(GameBoard));
   if (board == NULL) {
-    fprintf(stderr, "create_board_from_file: failed to allocate memory for board");
+    fprintf(stderr, "create_board: failed to allocate memory for board");
     if (fclose(file) != 0) {
-      fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+      fprintf(stderr, "create_board: failed to close file %s after error", filename);
     }
     return NULL;
   }
@@ -77,21 +77,21 @@ GameBoard *(create_board_from_file) (const char *filename) {
   board->width = width;
   board->height = height;
 
-  board->elements = (BoardElement **) malloc(height * sizeof(BoardElement *));
+  board->elements = (board_element_t **) malloc(height * sizeof(board_element_t *));
   if (board->elements == NULL) {
-    fprintf(stderr, "create_board_from_file: failed to allocate memory for board elements");
+    fprintf(stderr, "create_board: failed to allocate memory for board elements");
     free(board);
     board = NULL;
     if (fclose(file) != 0) {
-      fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+      fprintf(stderr, "create_board: failed to close file %s after error", filename);
     }
     return NULL;
   }
 
   for (uint8_t i = 0; i < height; i++) {
-    board->elements[i] = (BoardElement *) malloc(width * sizeof(BoardElement));
+    board->elements[i] = (board_element_t *) malloc(width * sizeof(board_element_t));
     if (board->elements[i] == NULL) {
-      fprintf(stderr, "create_board_from_file: failed to allocate memory for board row %d", i);
+      fprintf(stderr, "create_board: failed to allocate memory for board row %d", i);
       for (uint8_t j = 0; j < i; j++) {
         free(board->elements[j]);
         board->elements[j] = NULL;
@@ -101,7 +101,7 @@ GameBoard *(create_board_from_file) (const char *filename) {
       free(board);
       board = NULL;
       if (fclose(file) != 0) {
-        fprintf(stderr, "create_board_from_file: failed to close file %s after error", filename);
+        fprintf(stderr, "create_board: failed to close file %s after error", filename);
       }
       return NULL;
     }
@@ -124,7 +124,7 @@ GameBoard *(create_board_from_file) (const char *filename) {
   }
 
   if (fclose(file) != 0) {
-    fprintf(stderr, "create_board_from_file: failed to close file %s after reading", filename);
+    fprintf(stderr, "create_board: failed to close file %s after reading", filename);
   }
 
   return board;

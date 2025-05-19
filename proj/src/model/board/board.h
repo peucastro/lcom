@@ -26,7 +26,7 @@ typedef enum {
   BOMB,       /**< @brief Bomb */
   POWERUP,    /**< @brief Power-up item */
   EMPTY_SPACE /**< @brief Empty space where players can move */
-} BoardElement;
+} board_element_t;
 
 /**
  * @brief Struct representing the game board
@@ -34,7 +34,7 @@ typedef enum {
 typedef struct {
   int width;               /**< @brief Width of the board in cells */
   int height;              /**< @brief Height of the board in cells */
-  BoardElement **elements; /**< @brief 2D array of board elements */
+  board_element_t **elements; /**< @brief 2D array of board elements */
 } GameBoard;
 
 /**
@@ -43,7 +43,7 @@ typedef struct {
  * @param filename Path to the text file containing the board layout
  * @return Pointer to the created game board, or NULL if an error occurs
  */
-GameBoard *(create_board_from_file) (const char *filename);
+GameBoard *(create_board) (const char *filename);
 
 /**
  * @brief Destroys a game board and frees its resources

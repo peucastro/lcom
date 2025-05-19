@@ -20,7 +20,7 @@ typedef enum {
   PAUSE, /**< @brief Game is in pause menu */
   GAME,  /**< @brief Game is being played */
   EXIT   /**< @brief Game is exiting */
-} game_state;
+} game_state_t;
 
 /**
  * @brief Struct representing the game
@@ -29,7 +29,7 @@ typedef enum {
  * and pointers to the player, enemies, bricks, and walls.
  */
 typedef struct {
-  game_state state;    /**< @brief Current state of the game */
+  game_state_t state;  /**< @brief Current state of the game */
   GameBoard *board;    /**< @brief Current game board */
   Entity *player;      /**< @brief Pointer to the player entity */
   Entity **enemies;    /**< @brief Array of pointers to enemy entities */
