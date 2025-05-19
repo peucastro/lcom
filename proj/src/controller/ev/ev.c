@@ -14,6 +14,20 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
         case 0x1C: // ENTER
           game->state = GAME;
           break;
+        case 0x01:
+          game->state = EXIT;
+        default:
+          break;
+      }
+      break;
+
+    case PAUSE:
+      switch (scancode) {
+        case 0x1C: // ENTER
+          game->state = GAME;
+          break;
+        case 0x01: // ESC
+          game->state = START;
         default:
           break;
       }
@@ -22,7 +36,7 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
     case GAME:
       switch (scancode) {
         case 0x1C: // ENTER
-          game->state = START;
+          game->state = PAUSE;
           break;
         case 0x48: // UP
           move_player(game, 0, -1);
@@ -39,6 +53,9 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
         default:
           break;
       }
+      break;
+
+    case EXIT:
       break;
 
     default:

@@ -69,7 +69,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
 
-  while (get_scancode() != BREAK_ESC) {
+  while (game.state != EXIT) {
     /* get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
