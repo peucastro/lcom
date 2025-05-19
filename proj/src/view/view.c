@@ -30,9 +30,14 @@ int(draw_game)(Game *game) {
     }
   }
 
+  if (graphics_draw_rectangle(0, 0, 1024, cell_size, 0xB0B0B0) != 0) {
+    fprintf(stderr, "draw_game: failed to draw top bar.");
+    return 1;
+  }
+
   for (uint8_t i = 0; game->enemies != NULL && i < game->num_enemies; i++) {
     Entity *enemy = game->enemies[i];
-    if (draw_sprite(enemy->sprite, enemy->x * cell_size, enemy->y * cell_size) != 0) {
+    if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
       fprintf(stderr, "draw_game: failed to draw enemy sprite at index %d.", i);
       return 1;
     }
@@ -40,7 +45,7 @@ int(draw_game)(Game *game) {
 
   for (uint8_t i = 0; game->bricks != NULL && i < game->num_bricks; i++) {
     Entity *brick = game->bricks[i];
-    if (draw_sprite(brick->sprite, brick->x * cell_size, brick->y * cell_size) != 0) {
+    if (draw_sprite(brick->sprite, brick->x * cell_size, cell_size + brick->y * cell_size) != 0) {
       fprintf(stderr, "draw_game: failed to draw brick sprite at index %d.", i);
       return 1;
     }
@@ -48,7 +53,7 @@ int(draw_game)(Game *game) {
 
   for (uint8_t i = 0; game->walls != NULL && i < game->num_walls; i++) {
     Entity *wall = game->walls[i];
-    if (draw_sprite(wall->sprite, wall->x * cell_size, wall->y * cell_size) != 0) {
+    if (draw_sprite(wall->sprite, wall->x * cell_size, cell_size + wall->y * cell_size) != 0) {
       fprintf(stderr, "draw_game: failed to draw wall sprite at index %d.", i);
       return 1;
     }
@@ -56,7 +61,7 @@ int(draw_game)(Game *game) {
 
   for (uint8_t i = 0; game->bombs != NULL && i < game->num_bombs; i++) {
     Entity *bomb = game->bombs[i];
-    if (draw_sprite(bomb->sprite, bomb->x * cell_size, bomb->y * cell_size) != 0) {
+    if (draw_sprite(bomb->sprite, bomb->x * cell_size, cell_size + bomb->y * cell_size) != 0) {
       fprintf(stderr, "draw_game: failed to draw bomb sprite at index %d.", i);
       return 1;
     }
