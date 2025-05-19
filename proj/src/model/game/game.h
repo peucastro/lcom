@@ -66,6 +66,17 @@ int(init_game)(Game *game);
  */
 int(destroy_game)(Game *game);
 
+/**
+ * @brief Moves the player in the game
+ *
+ * @param game Pointer to the game
+ * @param xmov The amount to move in the x direction
+ * @param ymov The amount to move in the y direction
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(move_player)(Game *game, int16_t xmov, int16_t ymov);
+
 /**@}*/
 
 #endif /* __PROJ_GAME_H */

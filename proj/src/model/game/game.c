@@ -198,3 +198,44 @@ int(destroy_game)(Game *game) {
 
   return 0;
 }
+
+int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
+  if (!game || !game->player || !game->board) {
+    fprintf(stderr, "move_player: game not initialized.");
+    return 1;
+  }
+
+  int16_t new_x = game->player->x + xmov;
+  int16_t new_y = game->player->y + ymov;
+
+  if (new_x < 0 || new_x >= game->board->width ||
+      new_y < 0 || new_y >= game->board->height) {
+    fprintf(stderr, "move_player: invalid coordinate.");
+    return 1;
+  }
+
+  board_element_t destination = game->board->elements[new_y][new_x];
+
+  switch (destination) {
+    case EMPTY_SPACE:
+    case POWERUP:
+      game->board->elements[game->player->y][game->player->x] = EMPTY_SPACE;
+      game->board->elements[new_y][new_x] = PLAYER;
+      game->player->x = new_x;
+      game->player->y = new_y;
+      break;
+
+    case WALL: // TODO
+      break;
+    case BRICK: // TODO
+      break;
+    case BOMB: // TODO
+      break;
+    case ENEMY: // TODO
+      break;
+    default:
+      fprintf(stderr, "move_player: invalid destination.");
+      return 1;
+  }
+  return 0;
+}
