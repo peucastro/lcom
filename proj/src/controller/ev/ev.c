@@ -24,17 +24,17 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
         case 0x1C: // ENTER
           game->state = START;
           break;
-        case 0x48: // UP arrow
-          game->player->y -= 1;
+        case 0x48: // UP
+          move_player(game, 0, -1);
           break;
-        case 0x4D: // RIGHT arrow
-          game->player->x += 1;
+        case 0x4D: // RIGHT
+          move_player(game, 1, 0);
           break;
-        case 0x50: // DOWN arrow
-          game->player->y += 1;
+        case 0x50: // DOWN
+          move_player(game, 0, 1);
           break;
-        case 0x4B: // LEFT arrow
-          game->player->x -= 1;
+        case 0x4B: // LEFT
+          move_player(game, -1, 0);
           break;
         default:
           break;
