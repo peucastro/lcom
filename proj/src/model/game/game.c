@@ -77,7 +77,7 @@ int(init_game)(Game *game) {
       board_element_t el = game->board->elements[r][c];
       switch (el) {
         case PLAYER:
-          game->player = create_entity(c, r, resources->player_sprite);
+          game->player = create_entity(c, r, resources->player_down_sprite);
           if (game->player == NULL) {
             fprintf(stderr, "init_game: failed to create player entity.");
             destroy_game(game);

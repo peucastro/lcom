@@ -6,7 +6,7 @@
 #include "assets/xpm/bomb.xpm"
 #include "assets/xpm/brick.xpm"
 #include "assets/xpm/enemy.xpm"
-#include "assets/xpm/player.xpm"
+#include "assets/xpm/player_down.xpm"
 #include "assets/xpm/wall.xpm"
 
 /** @defgroup resources resources
@@ -22,11 +22,11 @@
  * including the wall, brick, player, and enemy sprites.
  */
 typedef struct {
-  Sprite *bomb_sprite;   /**< @brief Pointer to the bomb sprite */
-  Sprite *brick_sprite;  /**< @brief Pointer to the brick sprite */
-  Sprite *enemy_sprite;  /**< @brief Pointer to the enemy sprite */
-  Sprite *player_sprite; /**< @brief Pointer to the player sprite */
-  Sprite *wall_sprite;   /**< @brief Pointer to the wall sprite */
+  Sprite *bomb_sprite;        /**< @brief Pointer to the bomb sprite */
+  Sprite *brick_sprite;       /**< @brief Pointer to the brick sprite */
+  Sprite *enemy_sprite;       /**< @brief Pointer to the enemy sprite */
+  Sprite *player_down_sprite; /**< @brief Pointer to the player sprite */
+  Sprite *wall_sprite;        /**< @brief Pointer to the wall sprite */
 } Resources;
 
 /**

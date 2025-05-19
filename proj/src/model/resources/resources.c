@@ -23,8 +23,8 @@ int(create_resources)(void) {
     return 1;
   }
 
-  resources.player_sprite = create_sprite(player_xpm);
-  if (resources.player_sprite == NULL) {
+  resources.player_down_sprite = create_sprite(player_down_xpm);
+  if (resources.player_down_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create player sprite.");
     return 1;
   }
@@ -54,9 +54,9 @@ void(destroy_resources)(void) {
     resources.enemy_sprite = NULL;
   }
 
-  if (resources.player_sprite != NULL) {
-    destroy_sprite(resources.player_sprite);
-    resources.player_sprite = NULL;
+  if (resources.player_down_sprite != NULL) {
+    destroy_sprite(resources.player_down_sprite);
+    resources.player_down_sprite = NULL;
   }
 
   if (resources.wall_sprite != NULL) {

@@ -1,5 +1,5 @@
 /* XPM */
-static const char * player_xpm[] = {
+static const char * player_down_xpm[] = {
 "64 64 4 1",
 " 	c None",
 ".	c #FFFFFF",
