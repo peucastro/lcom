@@ -6,6 +6,7 @@
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
 #include "model/game/game.h"
+#include "view/view.h"
 
 /** @defgroup ih ih
  * @{
@@ -56,6 +57,9 @@ void(mouse_handler)(Game *game);
 
 /**
  * @brief Processes device interrupts based on the interrupt bitmask.
+ *
+ * This function checks the interrupt bitmask to determine which device
+ * generated an interrupt and calls the appropriate handler (timer, keyboard, or mouse).
  *
  * @param irq_mask Bitmask containing the pending interrupt flags
  * @param game Pointer to the game instance to be updated

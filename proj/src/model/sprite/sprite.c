@@ -2,21 +2,21 @@
 
 #include "model/sprite/sprite.h"
 
-Sprite *(create_sprite) (const char *pic[], int16_t x, int16_t y) {
+Sprite *(create_sprite) (const char *pic[]) {
   Sprite *sp = (Sprite *) malloc(sizeof(Sprite));
-  xpm_image_t img;
   if (sp == NULL) {
+    fprintf(stderr, "create_sprite: failed to allocate memory for sprite.");
     return NULL;
   }
 
+  xpm_image_t img;
   sp->map = (char *) xpm_load(pic, XPM_8_8_8_8, &img);
   if (sp->map == NULL) {
+    fprintf(stderr, "create_sprite: failed to load XPM image.");
     free(sp);
     return NULL;
   }
 
-  sp->x = x;
-  sp->y = y;
   sp->width = img.width;
   sp->height = img.height;
   return sp;
@@ -24,6 +24,7 @@ Sprite *(create_sprite) (const char *pic[], int16_t x, int16_t y) {
 
 void(destroy_sprite)(Sprite *sp) {
   if (sp == NULL) {
+    fprintf(stderr, "destroy_sprite: sp pointer cannot be null.");
     return;
   }
   if (sp->map) {
@@ -33,16 +34,16 @@ void(destroy_sprite)(Sprite *sp) {
   sp = NULL;
 }
 
-int(draw_sprite)(Sprite *sp) {
+int(draw_sprite)(Sprite *sp, int16_t x, int16_t y) {
   if (sp == NULL) {
     fprintf(stderr, "draw_sprite: sp pointer cannot be null.");
     return 1;
   }
-  if (sp->x >= vbe_get_h_res() || sp->y >= vbe_get_v_res()) {
+  if (x >= vbe_get_h_res() || y >= vbe_get_v_res()) {
     fprintf(stderr, "draw_sprite: invalid coordinates.");
     return 1;
   }
-  if (sp->x + sp->width > vbe_get_h_res() || sp->y + sp->height > vbe_get_v_res()) {
+  if (x + sp->width > vbe_get_h_res() || y + sp->height > vbe_get_v_res()) {
     fprintf(stderr, "draw_sprite: invalid dimensions.");
     return 1;
   }
@@ -56,27 +57,12 @@ int(draw_sprite)(Sprite *sp) {
         continue;
       }
 
-      if (graphics_draw_pixel(sp->x + col, sp->y + row, color) != 0) {
+      if (graphics_draw_pixel(x + col, y + row, color) != 0) {
         fprintf(stderr, "draw_sprite: failed to draw pixel.");
         return 1;
       }
     }
   }
 
-  return 0;
-}
-
-int(move_sprite)(Sprite *sp, int16_t xmov, int16_t ymov) {
-  if (sp == NULL) {
-    fprintf(stderr, "move_sprite: sp pointer cannot be null.");
-    return 1;
-  }
-  if (sp->x + xmov > vbe_get_h_res() || sp->y + ymov > vbe_get_v_res()) {
-    fprintf(stderr, "move_sprite: invalid coordinates.");
-    return 1;
-  }
-
-  sp->x = sp->x + xmov;
-  sp->y = sp->y + ymov;
   return 0;
 }

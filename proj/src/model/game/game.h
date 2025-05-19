@@ -1,9 +1,10 @@
 #ifndef __PROJ_GAME_H
 #define __PROJ_GAME_H
 
-#include "controller/graphics/graphics.h"
+#include "model/board/board.h"
+#include "model/entity/entity.h"
+#include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
-#include "utils/board_parser.h"
 
 /** @defgroup game game
  * @{
@@ -15,41 +16,66 @@
  * @brief Enum representing the game state
  */
 typedef enum {
-  START,  /**< Game is in start menu */
-  GAME,   /**< Game is being played */
-  EXIT    /**< Game is exiting */
-} game_state;
+  START, /**< @brief Game is in start menu */
+  PAUSE, /**< @brief Game is in pause menu */
+  GAME,  /**< @brief Game is being played */
+  EXIT   /**< @brief Game is exiting */
+} game_state_t;
 
 /**
  * @brief Struct representing the game
+ *
+ * This struct contains the current state of the game, the game board,
+ * and pointers to the player, enemies, bricks, and walls.
  */
 typedef struct {
-  game_state state; /**< Current state of the game */
-  GameBoard *board; /**< Current game board */
+  game_state_t state;  /**< @brief Current state of the game */
+  GameBoard *board;    /**< @brief Current game board */
+  Entity *player;      /**< @brief Pointer to the player entity */
+  Entity **enemies;    /**< @brief Array of pointers to enemy entities */
+  Entity **bricks;     /**< @brief Array of pointers to brick entities */
+  Entity **walls;      /**< @brief Array of pointers to wall entities */
+  Entity **bombs;      /**< @brief Array of pointers to bomb entities */
+  uint8_t num_enemies; /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;  /**< @brief Number of bricks in the game */
+  uint8_t num_walls;   /**< @brief Number of walls in the game */
+  uint8_t num_bombs;   /**< @brief Number of bombs in the game */
 } Game;
 
 /**
  * @brief Initializes the game
  *
+ * Sets up the game state, allocates resources, and initializes
+ * the game board, player, enemies, bricks, and walls.
+ *
  * @param game Pointer to the game to be initialized
+ *
  * @return 0 upon success, non-zero otherwise
  */
 int(init_game)(Game *game);
 
 /**
- * @brief Draws the game
+ * @brief Destroys the game
  *
- * @param game Pointer to the game to be drawn
+ * Frees all resources allocated for the game, including the game board,
+ * player, enemies, bricks, and walls.
+ *
+ * @param game Pointer to the game to be destroyed
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(draw_game)(Game *game);
+int(destroy_game)(Game *game);
 
 /**
- * @brief Handles an event
+ * @brief Moves the player in the game
  *
  * @param game Pointer to the game
- * @param scancode Scancode of the event
+ * @param xmov The amount to move in the x direction
+ * @param ymov The amount to move in the y direction
+ *
+ * @return 0 upon success, non-zero otherwise
  */
-void(handle_event)(Game *game, uint8_t scancode);
+int(move_player)(Game *game, int16_t xmov, int16_t ymov);
 
 /**@}*/
 

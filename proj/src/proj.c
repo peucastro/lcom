@@ -4,10 +4,14 @@
 #include "controller/graphics/graphics.h"
 #include "controller/graphics/vbe.h"
 #include "controller/ih/ih.h"
+#include "controller/kbc/i8042.h"
 #include "controller/kbc/kbc.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
+#include "controller/timer/i8254.h"
 #include "controller/timer/timer.h"
+#include "model/board/board.h"
+#include "model/entity/entity.h"
 #include "model/game/game.h"
 #include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
@@ -43,9 +47,12 @@ int(proj_main_loop)(int argc, char *argv[]) {
   int ipc_status, r;
   message msg;
 
-  init_game(&game);
   if (create_resources() != 0) {
     fprintf(stderr, "proj_main_loop: failed to create game resources.");
+    return 1;
+  }
+  if (init_game(&game) != 0) {
+    fprintf(stderr, "proj_main_loop: failed to initialize game.");
     return 1;
   }
 
@@ -53,11 +60,11 @@ int(proj_main_loop)(int argc, char *argv[]) {
     fprintf(stderr, "proj_main_loop: failed to subscribe interrupts.");
     return 1;
   }
-  if (vbe_map_vram(VBE_MODE_1152x864) != 0) {
+  if (vbe_map_vram(VBE_MODE_1024x768_8_8_8) != 0) {
     fprintf(stderr, "proj_main_loop: failed to map graphics vram.");
     return 1;
   }
-  if (vbe_set_video_mode(VBE_MODE_1152x864) != 0) {
+  if (vbe_set_video_mode(VBE_MODE_1024x768_8_8_8) != 0) {
     fprintf(stderr, "proj_main_loop: failed to set video mode.");
     return 1;
   }
@@ -91,11 +98,10 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
 
-  // Clean up the game board
-  if (game.board != NULL) {
-    destroy_board(game.board);
+  if (destroy_game(&game) != 0) {
+    fprintf(stderr, "proj_main_loop: failed to destroy game.");
+    return 1;
   }
-  
   destroy_resources();
 
   return 0;

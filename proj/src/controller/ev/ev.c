@@ -2,11 +2,49 @@
 
 #include "controller/ev/ev.h"
 
-void(handle_event)(Game *game, uint8_t scancode) {
-  if (game->state == START && scancode == 0x1C) {
-    game->state = GAME;
+int(handle_kbd_event)(Game *game, uint8_t scancode) {
+  if (game == NULL) {
+    fprintf(stderr, "handle_kbd_event: game pointer cannot be null.");
+    return 1;
   }
-  else if (game->state == GAME && scancode == 0x1C) {
-    game->state = START;
+
+  switch (game->state) {
+    case START:
+      switch (scancode) {
+        case 0x1C: // ENTER
+          game->state = GAME;
+          break;
+        default:
+          break;
+      }
+      break;
+
+    case GAME:
+      switch (scancode) {
+        case 0x1C: // ENTER
+          game->state = START;
+          break;
+        case 0x48: // UP
+          move_player(game, 0, -1);
+          break;
+        case 0x4D: // RIGHT
+          move_player(game, 1, 0);
+          break;
+        case 0x50: // DOWN
+          move_player(game, 0, 1);
+          break;
+        case 0x4B: // LEFT
+          move_player(game, -1, 0);
+          break;
+        default:
+          break;
+      }
+      break;
+
+    default:
+      fprintf(stderr, "handle_kbd_event: invalid game state.");
+      return 1;
   }
+
+  return 0;
 }

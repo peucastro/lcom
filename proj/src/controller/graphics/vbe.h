@@ -33,11 +33,26 @@
 
 /* VBE modes */
 
-#define VBE_MODE_640x480 0x110   /**< @brief 640x480 resolution, 15-bit direct color (1:5:5:5) */
-#define VBE_MODE_800x600 0x115   /**< @brief 800x600 resolution, 24-bit direct color (8:8:8) */
-#define VBE_MODE_1024x768 0x105  /**< @brief 1024x768 resolution, 8-bit indexed color */
-#define VBE_MODE_1280x1024 0x11A /**< @brief 1280x1024 resolution, 16-bit direct color (5:6:5) */
-#define VBE_MODE_1152x864 0x14C  /**< @brief 1152x864 resolution, 32-bit direct color (8:8:8:8) */
+#define VBE_MODE_320x200_1_5_5_5 0x10D /**< @brief 320x200 resolution, 15-bit direct color (1:5:5:5) */
+#define VBE_MODE_320x200_5_6_5 0x10E   /**< @brief 320x200 resolution, 16-bit direct color (5:6:5) */
+#define VBE_MODE_320x200_8_8_8 0x10F   /**< @brief 320x200 resolution, 24-bit direct color (8:8:8) */
+
+#define VBE_MODE_640x480_1_5_5_5 0x110 /**< @brief 640x480 resolution, 15-bit direct color (1:5:5:5) */
+#define VBE_MODE_640x480_5_6_5 0x111   /**< @brief 640x480 resolution, 16-bit direct color (5:6:5) */
+#define VBE_MODE_640x480_8_8_8 0x112   /**< @brief 640x480 resolution, 24-bit direct color (8:8:8) */
+
+#define VBE_MODE_800x600_1_5_5_5 0x113 /**< @brief 800x600 resolution, 15-bit direct color (1:5:5:5) */
+#define VBE_MODE_800x600_5_6_5 0x114   /**< @brief 800x600 resolution, 16-bit direct color (5:6:5) */
+#define VBE_MODE_800x600_8_8_8 0x115   /**< @brief 800x600 resolution, 24-bit direct color (8:8:8) */
+
+#define VBE_MODE_1024x768_1_5_5_5 0x116 /**< @brief 1024x768 resolution, 15-bit direct color (1:5:5:5) */
+#define VBE_MODE_1024x768_5_6_5 0x117   /**< @brief 1024x768 resolution, 16-bit direct color (5:6:5) */
+#define VBE_MODE_1024x768_8_8_8 0x118   /**< @brief 1024x768 resolution, 24-bit direct color (8:8:8) */
+
+#define VBE_MODE_1280x1024_1_5_5_5 0x119 /**< @brief 1280x1024 resolution, 15-bit direct color (1:5:5:5) */
+#define VBE_MODE_1280x1024_5_6_5 0x11A   /**< @brief 1280x1024 resolution, 16-bit direct color (5:6:5) */
+#define VBE_MODE_1280x1024_8_8_8 0x11B   /**< @brief 1280x1024 resolution, 24-bit direct color (8:8:8) */
+
 #define VBE_MODE_80x25_TEXT 0x03 /**< @brief 80x25 Text mode (Minix3 Default) */
 #define VBE_LINEAR_MODE BIT(14)  /**< @brief Linear frame buffer mode bit */
 

@@ -9,7 +9,17 @@
  * Module responsible for event handling in the game
  */
 
-void(handle_event)(Game *game, uint8_t scancode);
+/**
+ * @brief Handles keyboard events
+ *
+ * Processes a scancode event and updates the game state or player position accordingly.
+ *
+ * @param game Pointer to the game instance
+ * @param scancode Scancode of the key pressed
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(handle_kbd_event)(Game *game, uint8_t scancode);
 
 /**@}*/
 

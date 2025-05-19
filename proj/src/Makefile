@@ -19,16 +19,22 @@ proj.o: proj.c ${HDRS}
 utils/utils.o: utils/utils.c utils/utils.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-utils/board_parser.o: utils/board_parser.c utils/board_parser.h
+model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
+model/board/board.o: model/board/board.c model/board/board.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/entity/entity.o: model/entity/entity.c model/entity/entity.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 model/resources/resources.o: model/resources/resources.c model/resources/resources.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 model/game/game.o: model/game/game.c model/game/game.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+view/view.o: view/view.c view/view.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 controller/timer/timer.o: controller/timer/timer.c controller/timer/timer.h

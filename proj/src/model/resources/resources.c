@@ -1,64 +1,70 @@
 #include <lcom/lcf.h>
 
 #include "model/resources/resources.h"
-#include "model/sprite/sprite.h"
 
-#include "model/xpm/wall.xpm"
-#include "model/xpm/brick.xpm"
-#include "model/xpm/player.xpm"
-#include "model/xpm/enemy.xpm"
+static Resources resources;
 
-Sprite *wall_sprite = NULL;
-Sprite *brick_sprite = NULL;
-Sprite *player_sprite = NULL;
-Sprite *enemy_sprite = NULL;
-
-int(create_resources)() {
-  wall_sprite = create_sprite(wall_xpm, 0, 0);
-  if (wall_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create wall sprite.");
+int(create_resources)(void) {
+  resources.bomb_sprite = create_sprite(bomb_xpm);
+  if (resources.bomb_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create bomb sprite.");
     return 1;
   }
 
-  brick_sprite = create_sprite(brick_xpm, 0, 0);
-  if (brick_sprite == NULL) {
+  resources.brick_sprite = create_sprite(brick_xpm);
+  if (resources.brick_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create brick sprite.");
     return 1;
   }
 
-  player_sprite = create_sprite(player_xpm, 0, 0);
-  if (player_sprite == NULL) {
+  resources.enemy_sprite = create_sprite(enemy_xpm);
+  if (resources.enemy_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create enemy sprite.");
+    return 1;
+  }
+
+  resources.player_sprite = create_sprite(player_xpm);
+  if (resources.player_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create player sprite.");
     return 1;
   }
 
-  enemy_sprite = create_sprite(enemy_xpm, 0, 0);
-  if (enemy_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create enemy sprite.");
+  resources.wall_sprite = create_sprite(wall_xpm);
+  if (resources.wall_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create wall sprite.");
     return 1;
   }
 
   return 0;
 }
 
-void(destroy_resources)() {
-  if (wall_sprite != NULL) {
-    destroy_sprite(wall_sprite);
-    wall_sprite = NULL;
+void(destroy_resources)(void) {
+  if (resources.bomb_sprite != NULL) {
+    destroy_sprite(resources.bomb_sprite);
+    resources.bomb_sprite = NULL;
   }
 
-  if (brick_sprite != NULL) {
-    destroy_sprite(brick_sprite);
-    brick_sprite = NULL;
+  if (resources.brick_sprite != NULL) {
+    destroy_sprite(resources.brick_sprite);
+    resources.brick_sprite = NULL;
   }
 
-  if (player_sprite != NULL) {
-    destroy_sprite(player_sprite);
-    player_sprite = NULL;
+  if (resources.enemy_sprite != NULL) {
+    destroy_sprite(resources.enemy_sprite);
+    resources.enemy_sprite = NULL;
   }
 
-  if (enemy_sprite != NULL) {
-    destroy_sprite(enemy_sprite);
-    enemy_sprite = NULL;
+  if (resources.player_sprite != NULL) {
+    destroy_sprite(resources.player_sprite);
+    resources.player_sprite = NULL;
   }
+
+  if (resources.wall_sprite != NULL) {
+    destroy_sprite(resources.wall_sprite);
+    resources.wall_sprite = NULL;
+  }
+}
+
+const Resources *(get_resources) (void) {
+  return &resources;
 }
