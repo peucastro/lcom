@@ -214,6 +214,26 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
     return 1;
   }
 
+  const Resources *resources = get_resources();
+  if (resources == NULL) {
+    fprintf(stderr, "move_player: failed to load resources.");
+    destroy_board(game->board);
+    return 1;
+  }
+
+  if (xmov > 0) {
+    game->player->sprite = resources->player_right_sprite;
+  }
+  else if (xmov < 0) {
+    game->player->sprite = resources->player_left_sprite;
+  }
+  else if (ymov > 0) {
+    game->player->sprite = resources->player_down_sprite;
+  }
+  else if (ymov < 0) {
+    game->player->sprite = resources->player_up_sprite;
+  }
+
   board_element_t destination = game->board->elements[new_y][new_x];
 
   switch (destination) {
