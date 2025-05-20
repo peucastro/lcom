@@ -14,7 +14,7 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
         case 0x1C: // ENTER
           game->state = GAME;
           break;
-        case 0x01:
+        case 0x01: // ESC
           game->state = EXIT;
         default:
           break;

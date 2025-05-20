@@ -106,7 +106,10 @@ void(mouse_handler)(Game *game) {
       fprintf(stderr, "mouse_handler: failed to update mouse_info.");
       return;
     }
-    // TODO: handle events related to the mouse
+    if (handle_mouse_event(game, mouse_info) != 0) {
+      fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
+      return;
+    }
   }
 }
 
