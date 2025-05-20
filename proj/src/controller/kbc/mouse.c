@@ -166,15 +166,15 @@ int(mouse_update_info)(mouse_info_t *mouse_info, struct packet pp) {
   if (new_x < 0) {
     new_x = 0;
   }
-  else if (new_x >= vbe_get_h_res()) {
-    new_x = vbe_get_h_res() - 1;
+  else if (new_x >= vbe_get_h_res() - 16) {
+    new_x = vbe_get_h_res() - 16;
   }
 
   if (new_y < 0) {
     new_y = 0;
   }
-  else if (new_y >= vbe_get_v_res()) {
-    new_y = vbe_get_v_res() - 1;
+  else if (new_y >= vbe_get_v_res() - 16) {
+    new_y = vbe_get_v_res() - 16;
   }
 
   mouse_info->x = new_x;
