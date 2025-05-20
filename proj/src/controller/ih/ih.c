@@ -5,6 +5,7 @@
 static uint32_t irq_set_timer = 0, irq_set_kbd = 0, irq_set_mouse = 0;
 static uint8_t i = 0, bytes[2] = {0, 0};
 static struct packet pp;
+static mouse_info_t mouse_info = {false, false, 512, 384};
 
 int(subscribe_interrupts)(void) {
   uint8_t bit_no;
@@ -84,7 +85,6 @@ void(kbd_handler)(Game *game) {
   }
 
   i = 0;
-  // TODO: handle events related to the kbd
   if (handle_kbd_event(game, get_scancode()) != 0) {
     fprintf(stderr, "kbd_handler: failed to call hanble_kbd_event.");
     return;
@@ -102,7 +102,14 @@ void(mouse_handler)(Game *game) {
 
   if (mouse_get_index() == 0) {
     pp = mouse_parse_packet();
-    // TODO: handle events related to the mouse
+    if (mouse_update_info(&mouse_info, pp) != 0) {
+      fprintf(stderr, "mouse_handler: failed to update mouse_info.");
+      return;
+    }
+    if (handle_mouse_event(game, mouse_info) != 0) {
+      fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
+      return;
+    }
   }
 }
 
@@ -121,4 +128,8 @@ void(process_interrupts)(uint32_t irq_mask, Game *game) {
   if (irq_mask & irq_set_mouse) {
     mouse_handler(game);
   }
+}
+
+mouse_info_t(get_mouse_info)(void) {
+  return mouse_info;
 }

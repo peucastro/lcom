@@ -6,6 +6,8 @@
 #include "assets/xpm/bomb.xpm"
 #include "assets/xpm/brick.xpm"
 #include "assets/xpm/enemy.xpm"
+#include "assets/xpm/handopen.xpm"
+#include "assets/xpm/handpointing.xpm"
 #include "assets/xpm/player_down.xpm"
 #include "assets/xpm/player_left.xpm"
 #include "assets/xpm/player_right.xpm"
@@ -28,6 +30,8 @@ typedef struct {
   Sprite *bomb_sprite;         /**< @brief Pointer to the bomb sprite */
   Sprite *brick_sprite;        /**< @brief Pointer to the brick sprite */
   Sprite *enemy_sprite;        /**< @brief Pointer to the enemy sprite */
+  Sprite *handopen_sprite;     /**< @brief Pointer to the handopen sprite */
+  Sprite *handpointing_sprite; /**< @brief Pointer to the handpointing sprite */
   Sprite *player_down_sprite;  /**< @brief Pointer to the player down sprite */
   Sprite *player_left_sprite;  /**< @brief Pointer to the player left sprite */
   Sprite *player_right_sprite; /**< @brief Pointer to the player right sprite */

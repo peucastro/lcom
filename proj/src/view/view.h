@@ -1,6 +1,8 @@
 #ifndef __PROJ_VIEW_H
 #define __PROJ_VIEW_H
 
+#include "controller/ih/ih.h"
+#include "controller/kbc/mouse.h"
 #include "model/game/game.h"
 
 /** @defgroup view view
@@ -34,9 +36,19 @@ int(draw_pause_menu)(void);
  * to the screen.
  *
  * @param game Pointer to the game to be drawn
+ *
  * @return 0 upon success, non-zero otherwise
  */
 int(draw_game)(Game *game);
+
+/**
+ * @brief Draws the mouse cursor
+ *
+ * @param mouse_info Structure containing mouse position and button states
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_mouse)(mouse_info_t mouse_info);
 
 /**
  * @brief Draws the next frame

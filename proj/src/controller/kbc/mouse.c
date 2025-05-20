@@ -134,6 +134,55 @@ struct packet(mouse_parse_packet)(void) {
   return pp;
 }
 
+int(mouse_update_info)(mouse_info_t *mouse_info, struct packet pp) {
+  if (mouse_info == NULL) {
+    fprintf(stderr, "mouse_update_info: mouse_info pointer cannot be null.");
+    return 1;
+  }
+
+  mouse_info->rb = pp.rb;
+  mouse_info->lb = pp.lb;
+
+  int16_t new_x = mouse_info->x + pp.delta_x;
+  if (pp.x_ov) {
+    if (pp.delta_x > 0) {
+      new_x = vbe_get_h_res() - 1;
+    }
+    else if (pp.delta_x < 0) {
+      new_x = 0;
+    }
+  }
+
+  int16_t new_y = mouse_info->y - pp.delta_y;
+  if (pp.y_ov) {
+    if (pp.delta_y < 0) {
+      new_y = vbe_get_v_res() - 1;
+    }
+    else if (pp.delta_y > 0) {
+      new_y = 0;
+    }
+  }
+
+  if (new_x < 0) {
+    new_x = 0;
+  }
+  else if (new_x >= vbe_get_h_res() - 16) {
+    new_x = vbe_get_h_res() - 16;
+  }
+
+  if (new_y < 0) {
+    new_y = 0;
+  }
+  else if (new_y >= vbe_get_v_res() - 16) {
+    new_y = vbe_get_v_res() - 16;
+  }
+
+  mouse_info->x = new_x;
+  mouse_info->y = new_y;
+
+  return 0;
+}
+
 void(mouse_ih)(void) {
   kbc_read_data(&byte, true); // reads the value stored in the output buffer
 }

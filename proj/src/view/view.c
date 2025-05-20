@@ -70,6 +70,19 @@ int(draw_game)(Game *game) {
   return 0;
 }
 
+int(draw_mouse)(mouse_info_t mouse_info) {
+  Sprite *mouse_sprite = get_resources()->handpointing_sprite;
+  if (mouse_info.rb || mouse_info.lb) {
+    mouse_sprite = get_resources()->handopen_sprite;
+  }
+  if (draw_sprite(mouse_sprite, mouse_info.x, mouse_info.y) != 0) {
+    fprintf(stderr, "draw_mouse: failed to draw cursor sprite.");
+    return 1;
+  }
+
+  return 0;
+}
+
 void(draw_next_frame)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "draw_next_frame: game pointer cannot be null.");
@@ -106,5 +119,10 @@ void(draw_next_frame)(Game *game) {
     default:
       fprintf(stderr, "draw_next_frame: invalid game state.");
       return;
+  }
+
+  if (draw_mouse(get_mouse_info()) != 0) {
+    fprintf(stderr, "draw_next_frame: failed to draw cursor.");
+    return;
   }
 }
