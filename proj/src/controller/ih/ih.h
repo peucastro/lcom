@@ -8,6 +8,10 @@
 #include "model/game/game.h"
 #include "view/view.h"
 
+#include "controller/input/input.h"
+#include "controller/input/game_input.h"
+#include "controller/input/menu_input.h"
+
 /** @defgroup ih ih
  * @{
  *

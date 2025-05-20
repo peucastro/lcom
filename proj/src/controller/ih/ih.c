@@ -84,11 +84,16 @@ void(kbd_handler)(Game *game) {
   }
 
   i = 0;
+  /*
   // TODO: handle events related to the kbd
   if (handle_kbd_event(game, get_scancode()) != 0) {
     fprintf(stderr, "kbd_handler: failed to call hanble_kbd_event.");
     return;
-  }
+  }*/
+
+  Key k = translate_scancode(get_scancode());
+  if (game->state == START) {handle_menu_input(game, k);}
+  else if (game->state == GAME) {handle_game_input(game, k);}
 }
 
 void(mouse_handler)(Game *game) {
