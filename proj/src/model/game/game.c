@@ -10,8 +10,7 @@ int(init_game)(Game *game) {
 
   game->state = START;
 
-  game->board = create_board("/home/lcom/labs/proj/src/assets/boards/level1.txt");
-  if (game->board == NULL) {
+  if (load_board(&game->board, "/home/lcom/labs/proj/src/assets/boards/level1.txt") != 0) {
     fprintf(stderr, "init_game: failed to load game board.");
     return 1;
   }
@@ -19,14 +18,14 @@ int(init_game)(Game *game) {
   const Resources *resources = get_resources();
   if (resources == NULL) {
     fprintf(stderr, "init_game: failed to load resources.");
-    destroy_board(game->board);
+    reset_board(&game->board);
     return 1;
   }
 
   uint8_t n_enemies = 0, n_bricks = 0, n_walls = 0, n_bombs = 0;
-  for (uint8_t r = 0; r < game->board->height; r++) {
-    for (uint8_t c = 0; c < game->board->width; c++) {
-      switch (game->board->elements[r][c]) {
+  for (uint8_t r = 0; r < game->board.height; r++) {
+    for (uint8_t c = 0; c < game->board.width; c++) {
+      switch (game->board.elements[r][c]) {
         case ENEMY: n_enemies++; break;
         case BRICK: n_bricks++; break;
         case WALL: n_walls++; break;
@@ -65,16 +64,16 @@ int(init_game)(Game *game) {
     free(game->bombs);
     game->bombs = NULL;
 
-    if (destroy_board(game->board) != 0) {
+    if (reset_board(&game->board) != 0) {
       fprintf(stderr, "init_game: failed to destroy game board after error.");
     }
     return 1;
   }
 
   uint8_t ei = 0, bri = 0, wi = 0, boi = 0;
-  for (uint8_t r = 0; r < game->board->height; r++) {
-    for (uint8_t c = 0; c < game->board->width; c++) {
-      board_element_t el = game->board->elements[r][c];
+  for (uint8_t r = 0; r < game->board.height; r++) {
+    for (uint8_t c = 0; c < game->board.width; c++) {
+      board_element_t el = game->board.elements[r][c];
       switch (el) {
         case PLAYER:
           game->player = create_entity(c, r, resources->player_down_sprite);
@@ -191,16 +190,15 @@ int(destroy_game)(Game *game) {
     game->bombs = NULL;
   }
 
-  if (destroy_board(game->board) != 0) {
-    fprintf(stderr, "destroy_game: failed to destroy game board.");
+  if (reset_board(&game->board) != 0) {
+    fprintf(stderr, "destroy_game: failed to reset game board.");
   }
-  game->board = NULL;
 
   return 0;
 }
 
 int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
-  if (!game || !game->player || !game->board) {
+  if (!game || !game->player) {
     fprintf(stderr, "move_player: game not initialized.");
     return 1;
   }
@@ -208,8 +206,8 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
   int16_t new_x = game->player->x + xmov;
   int16_t new_y = game->player->y + ymov;
 
-  if (new_x < 0 || new_x >= game->board->width ||
-      new_y < 0 || new_y >= game->board->height) {
+  if (new_x < 0 || new_x >= game->board.width ||
+      new_y < 0 || new_y >= game->board.height) {
     fprintf(stderr, "move_player: invalid coordinate.");
     return 1;
   }
@@ -217,7 +215,6 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
   const Resources *resources = get_resources();
   if (resources == NULL) {
     fprintf(stderr, "move_player: failed to load resources.");
-    destroy_board(game->board);
     return 1;
   }
 
@@ -234,13 +231,13 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
     game->player->sprite = resources->player_up_sprite;
   }
 
-  board_element_t destination = game->board->elements[new_y][new_x];
+  board_element_t destination = game->board.elements[new_y][new_x];
 
   switch (destination) {
     case EMPTY_SPACE:
     case POWERUP:
-      game->board->elements[game->player->y][game->player->x] = EMPTY_SPACE;
-      game->board->elements[new_y][new_x] = PLAYER;
+      game->board.elements[game->player->y][game->player->x] = EMPTY_SPACE;
+      game->board.elements[new_y][new_x] = PLAYER;
       game->player->x = new_x;
       game->player->y = new_y;
       break;

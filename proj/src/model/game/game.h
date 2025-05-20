@@ -30,7 +30,7 @@ typedef enum {
  */
 typedef struct {
   game_state_t state;  /**< @brief Current state of the game */
-  GameBoard *board;    /**< @brief Current game board */
+  GameBoard board;     /**< @brief Current game board */
   Entity *player;      /**< @brief Pointer to the player entity */
   Entity **enemies;    /**< @brief Array of pointers to enemy entities */
   Entity **bricks;     /**< @brief Array of pointers to brick entities */
