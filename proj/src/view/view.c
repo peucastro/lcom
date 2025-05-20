@@ -3,8 +3,14 @@
 #include "view/view.h"
 
 int(draw_start_menu)(void) {
-  if (graphics_draw_rectangle(0, 0, 1024, 768, 0xFF0000) != 0) {
-    fprintf(stderr, "draw_start_menu: failed to draw start menu background.");
+
+  const Resources *res = get_resources();
+  if(!res-> menu_sprite){
+    fprintf(stderr, "draw_start_menu: menu_sprite is NULL\n");
+    return 1;
+  }
+  if (draw_sprite(res->menu_sprite, 0, 0) != 0) {
+    fprintf(stderr, "draw_start_menu: failed to draw menu sprite.\n");
     return 1;
   }
 

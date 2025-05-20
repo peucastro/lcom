@@ -11,6 +11,7 @@
 #include "assets/xpm/player_right.xpm"
 #include "assets/xpm/player_up.xpm"
 #include "assets/xpm/wall.xpm"
+#include "assets/xpm/menu.xpm"
 
 /** @defgroup resources resources
  * @{
@@ -33,6 +34,8 @@ typedef struct {
   Sprite *player_right_sprite; /**< @brief Pointer to the player right sprite */
   Sprite *player_up_sprite;    /**< @brief Pointer to the player up sprite */
   Sprite *wall_sprite;         /**< @brief Pointer to the wall sprite */
+
+  Sprite *menu_sprite;
 } Resources;
 
 /**
