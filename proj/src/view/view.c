@@ -71,7 +71,11 @@ int(draw_game)(Game *game) {
 }
 
 int(draw_mouse)(mouse_info_t mouse_info) {
-  if (draw_sprite(get_resources()->cursor_sprite, mouse_info.x, mouse_info.y) != 0) {
+  Sprite *mouse_sprite = get_resources()->handpointing_sprite;
+  if (mouse_info.rb || mouse_info.lb) {
+    mouse_sprite = get_resources()->handopen_sprite;
+  }
+  if (draw_sprite(mouse_sprite, mouse_info.x, mouse_info.y) != 0) {
     fprintf(stderr, "draw_mouse: failed to draw cursor sprite.");
     return 1;
   }

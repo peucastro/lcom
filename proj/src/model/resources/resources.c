@@ -17,15 +17,21 @@ int(create_resources)(void) {
     return 1;
   }
 
-  resources.cursor_sprite = create_sprite(cursor_xpm);
-  if (resources.cursor_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create cursor sprite.");
-    return 1;
-  }
-
   resources.enemy_sprite = create_sprite(enemy_xpm);
   if (resources.enemy_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create enemy sprite.");
+    return 1;
+  }
+
+  resources.handopen_sprite = create_sprite(handopen_xpm);
+  if (resources.handopen_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create handopen sprite.");
+    return 1;
+  }
+
+  resources.handpointing_sprite = create_sprite(handpointing_xpm);
+  if (resources.handpointing_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create handpointing sprite.");
     return 1;
   }
 
@@ -73,14 +79,19 @@ void(destroy_resources)(void) {
     resources.brick_sprite = NULL;
   }
 
-  if (resources.cursor_sprite != NULL) {
-    destroy_sprite(resources.cursor_sprite);
-    resources.cursor_sprite = NULL;
-  }
-
   if (resources.enemy_sprite != NULL) {
     destroy_sprite(resources.enemy_sprite);
     resources.enemy_sprite = NULL;
+  }
+
+  if (resources.handopen_sprite != NULL) {
+    destroy_sprite(resources.handopen_sprite);
+    resources.handopen_sprite = NULL;
+  }
+
+  if (resources.handpointing_sprite != NULL) {
+    destroy_sprite(resources.handpointing_sprite);
+    resources.handpointing_sprite = NULL;
   }
 
   if (resources.player_down_sprite != NULL) {

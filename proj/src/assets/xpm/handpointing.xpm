@@ -1,5 +1,5 @@
 /* XPM */
-static const char * cursor_xpm[] = {
+static const char * handpointing_xpm[] = {
 "16 16 41 1",
 " 	g None",
 ".	g #000000",

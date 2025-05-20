@@ -80,10 +80,10 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
       break;
 
     case GAME:
-      if (mouse_info.lb)
-        printf("%d : %u -> left button\n", mouse_info.x, mouse_info.y);
-      else if (mouse_info.rb)
+      if (mouse_info.rb)
         printf("%d : %u -> right button\n", mouse_info.x, mouse_info.y);
+      else if (mouse_info.lb)
+        printf("%d : %u -> left button\n", mouse_info.x, mouse_info.y);
       break;
 
     case EXIT:
