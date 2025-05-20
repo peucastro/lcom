@@ -5,6 +5,7 @@
 
 #include "assets/xpm/bomb.xpm"
 #include "assets/xpm/brick.xpm"
+#include "assets/xpm/cursor.xpm"
 #include "assets/xpm/enemy.xpm"
 #include "assets/xpm/player_down.xpm"
 #include "assets/xpm/player_left.xpm"
@@ -27,6 +28,7 @@
 typedef struct {
   Sprite *bomb_sprite;         /**< @brief Pointer to the bomb sprite */
   Sprite *brick_sprite;        /**< @brief Pointer to the brick sprite */
+  Sprite *cursor_sprite;       /**< @brief Pointer to the brick sprite */
   Sprite *enemy_sprite;        /**< @brief Pointer to the enemy sprite */
   Sprite *player_down_sprite;  /**< @brief Pointer to the player down sprite */
   Sprite *player_left_sprite;  /**< @brief Pointer to the player left sprite */

@@ -17,6 +17,12 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.cursor_sprite = create_sprite(cursor_xpm);
+  if (resources.cursor_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create cursor sprite.");
+    return 1;
+  }
+
   resources.enemy_sprite = create_sprite(enemy_xpm);
   if (resources.enemy_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create enemy sprite.");
@@ -65,6 +71,11 @@ void(destroy_resources)(void) {
   if (resources.brick_sprite != NULL) {
     destroy_sprite(resources.brick_sprite);
     resources.brick_sprite = NULL;
+  }
+
+  if (resources.cursor_sprite != NULL) {
+    destroy_sprite(resources.cursor_sprite);
+    resources.cursor_sprite = NULL;
   }
 
   if (resources.enemy_sprite != NULL) {
