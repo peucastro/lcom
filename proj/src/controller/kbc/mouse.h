@@ -1,6 +1,7 @@
 #ifndef __PROJ_MOUSE_H
 #define __PROJ_MOUSE_H
 
+#include "controller/graphics/vbe.h"
 #include "controller/kbc/kbc.h"
 
 /** @defgroup mouse mouse
@@ -8,6 +9,22 @@
  *
  * Functions for interacting with the Mouse.
  */
+
+/**
+ * @brief Stores mouse state information
+ *
+ * This structure maintains the current state of the mouse, including
+ * button states and cursor position coordinates.
+ *
+ * @param rb Right button state (true if pressed, false otherwise)
+ * @param lb Left button state (true if pressed, false otherwise)
+ * @param x Current x-coordinate of the mouse cursor
+ * @param y Current y-coordinate of the mouse cursor
+ */
+typedef struct {
+  bool rb, lb;
+  int16_t x, y;
+} mouse_info_t;
 
 /**
  * @brief Getter for the mouse index
@@ -53,6 +70,16 @@ void(mouse_sync)(void);
  * @return Returns the parsed struct mouse packet
  */
 struct packet(mouse_parse_packet)(void);
+
+/**
+ * @brief Updates mouse information based on the latest packet
+ *
+ * @param mouse_info Pointer to the mouse_info_t structure to be updated
+ * @param pp The parsed mouse packet containing movement and button data
+ * 
+ * @return 0 upon success, non-zero otherwise
+ */
+int(mouse_update_info)(mouse_info_t *mouse_info, struct packet pp);
 
 /**
  * @brief Mouse interrupt handler
