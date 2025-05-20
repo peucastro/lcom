@@ -65,3 +65,34 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
 
   return 0;
 }
+
+int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
+  if (game == NULL) {
+    fprintf(stderr, "handle_mouse_event: game pointer cannot be null.");
+    return 1;
+  }
+
+  switch (game->state) {
+    case START:
+      break;
+
+    case PAUSE:
+      break;
+
+    case GAME:
+      if (mouse_info.lb)
+        printf("%d : %u -> left button\n", mouse_info.x, mouse_info.y);
+      else if (mouse_info.rb)
+        printf("%d : %u -> right button\n", mouse_info.x, mouse_info.y);
+      break;
+
+    case EXIT:
+      break;
+
+    default:
+      fprintf(stderr, "handle_mouse_event: invalid game state.");
+      return 1;
+  }
+
+  return 0;
+}

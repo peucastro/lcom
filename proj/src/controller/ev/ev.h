@@ -1,6 +1,7 @@
 #ifndef __PROJ_EV_H
 #define __PROJ_EV_H
 
+#include "controller/kbc/mouse.h"
 #include "model/game/game.h"
 
 /** @defgroup ev ev
@@ -20,6 +21,8 @@
  * @return 0 upon success, non-zero otherwise
  */
 int(handle_kbd_event)(Game *game, uint8_t scancode);
+
+int(handle_mouse_event)(Game *game, mouse_info_t mouse_info);
 
 /**@}*/
 
