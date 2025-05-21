@@ -16,7 +16,7 @@ int(init_entity)(Entity *entity, int16_t x, int16_t y, Sprite *sp) {
   entity->x = x;
   entity->y = y;
   entity->sprite = sp;
-  entity->alive = true;
+  entity->active = true;
 
   return 0;
 }
@@ -30,7 +30,7 @@ int(reset_entity)(Entity *entity) {
   entity->x = 0;
   entity->y = 0;
   entity->sprite = NULL;
-  entity->alive = false;
+  entity->active = false;
 
   return 0;
 }

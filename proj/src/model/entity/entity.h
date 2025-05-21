@@ -13,12 +13,12 @@
  * @brief Struct representing an entity in the game
  *
  * An entity represents a game object with a position, a sprite, and a status
- * indicating whether it is alive or not.
+ * indicating whether it is active or not.
  */
 typedef struct {
   int16_t x, y;   /**< @brief x and y coordinates of the entity's position */
   Sprite *sprite; /**< @brief The entity's corresponding sprite */
-  bool alive;     /**< @brief Indicates whether the entity is alive */
+  bool active;    /**< @brief Indicates whether the entity is currently active in the game */
 } Entity;
 
 /**
