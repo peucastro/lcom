@@ -162,7 +162,6 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
     return 1;
   }
 
-  // Update sprite based on movement direction
   if (xmov > 0) {
     game->player.sprite = resources->player_right_sprite;
   }

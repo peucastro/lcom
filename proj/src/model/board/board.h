@@ -32,25 +32,32 @@ typedef enum {
 
 /**
  * @brief Struct representing the game board
+ *
+ * Uses fixed-size arrays for board elements to avoid dynamic memory allocation.
  */
 typedef struct {
-  uint8_t width;                                               /**< @brief Width of the board in cells */
-  uint8_t height;                                              /**< @brief Height of the board in cells */
-  board_element_t elements[MAX_BOARD_HEIGHT][MAX_BOARD_WIDTH]; /**< @brief 2D array of board elements */
+  uint8_t width;                                               /**< @brief Actual width of the board in cells */
+  uint8_t height;                                              /**< @brief Actual height of the board in cells */
+  board_element_t elements[MAX_BOARD_HEIGHT][MAX_BOARD_WIDTH]; /**< @brief Fixed-size 2D array of board elements */
 } GameBoard;
 
 /**
- * @brief Creates a new game board from a text file
+ * @brief Loads a game board from a text file
+ *
+ * Reads the board layout from a text file and initializes the GameBoard structure.
+ * The board is stored in a fixed-size array to avoid dynamic memory allocation.
  *
  * @param board Pointer to the GameBoard structure to fill
  * @param filename Path to the text file containing the board layout
- *
+ * 
  * @return 0 upon success, non-zero otherwise
  */
 int(load_board)(GameBoard *board, const char *filename);
 
 /**
- * @brief Resets a game board
+ * @brief Resets a game board to its initial empty state
+ *
+ * Clears all cells in the board's elements array and resets dimensions.
  *
  * @param board Pointer to the board to be reset
  *
