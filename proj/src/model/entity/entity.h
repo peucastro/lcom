@@ -22,23 +22,25 @@ typedef struct {
 } Entity;
 
 /**
- * @brief Creates a new entity
+ * @brief Initializes an entity
  *
+ * @param entity Pointer to the entity to initialize
  * @param x The x-coordinate of the entity's position
  * @param y The y-coordinate of the entity's position
  * @param sp Pointer to the sprite associated with the entity
- * @return Pointer to the created entity, or NULL if an error occurs
- */
-Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp);
-
-/**
- * @brief Destroys an entity and frees its resources
- *
- * @param entity Pointer to the entity to be destroyed
  *
  * @return 0 upon success, non-zero otherwise
  */
-int(destroy_entity)(Entity *entity);
+int(init_entity)(Entity *entity, int16_t x, int16_t y, Sprite *sp);
+
+/**
+ * @brief Resets an entity to its default state
+ *
+ * @param entity Pointer to the entity to reset
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(reset_entity)(Entity *entity);
 
 /**@}*/
 

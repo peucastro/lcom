@@ -2,16 +2,15 @@
 
 #include "model/entity/entity.h"
 
-Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp) {
-  if (sp == NULL) {
-    fprintf(stderr, "create_entity: sprite pointer cannot be null.");
-    return NULL;
+int(init_entity)(Entity *entity, int16_t x, int16_t y, Sprite *sp) {
+  if (entity == NULL) {
+    fprintf(stderr, "init_entity: entity pointer cannot be null.");
+    return 1;
   }
 
-  Entity *entity = malloc(sizeof(Entity));
-  if (entity == NULL) {
-    fprintf(stderr, "create_entity: failed to allocate memory for entity.");
-    return NULL;
+  if (sp == NULL) {
+    fprintf(stderr, "init_entity: sprite pointer cannot be null.");
+    return 1;
   }
 
   entity->x = x;
@@ -19,17 +18,19 @@ Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp) {
   entity->sprite = sp;
   entity->alive = true;
 
-  return entity;
+  return 0;
 }
 
-int(destroy_entity)(Entity *entity) {
+int(reset_entity)(Entity *entity) {
   if (entity == NULL) {
-    fprintf(stderr, "destroy_entity: entity pointer cannot be null.");
+    fprintf(stderr, "reset_entity: entity pointer cannot be null.");
     return 1;
   }
 
-  free(entity);
-  entity = NULL;
+  entity->x = 0;
+  entity->y = 0;
+  entity->sprite = NULL;
+  entity->alive = false;
 
   return 0;
 }
