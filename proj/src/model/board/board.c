@@ -46,7 +46,12 @@ int(load_board)(GameBoard *board, const char *filename) {
     }
     if (len > 0) {
       if (width == 0) {
-        width = (len <= MAX_BOARD_WIDTH) ? len : MAX_BOARD_WIDTH;
+        width = len;
+        if (width > MAX_BOARD_WIDTH) {
+          fprintf(stderr, "load_board: board width (%d) exceeds maximum (%d) in file %s", width, MAX_BOARD_WIDTH, filename);
+          fclose(file);
+          return 1;
+        }
       }
       else if (len != width) {
         fprintf(stderr, "load_board: inconsistent line lengths in file %s", filename);
@@ -63,6 +68,12 @@ int(load_board)(GameBoard *board, const char *filename) {
     return 1;
   }
 
+  if (height > MAX_BOARD_HEIGHT) {
+    fprintf(stderr, "load_board: board height (%d) exceeds maximum (%d) in file %s", height, MAX_BOARD_HEIGHT, filename);
+    fclose(file);
+    return 1;
+  }
+
   board->width = width;
   board->height = height;
 
@@ -75,7 +86,7 @@ int(load_board)(GameBoard *board, const char *filename) {
       line[--len] = '\0';
     }
     if (len > 0) {
-      for (uint8_t col = 0; col < width && col < MAX_BOARD_WIDTH; col++) {
+      for (uint8_t col = 0; col < width; col++) {
         board->elements[row][col] = char_to_element(line[col]);
       }
       row++;

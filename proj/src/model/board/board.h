@@ -13,9 +13,9 @@
  * Functions for parsing game board from text files
  */
 
-#define MAX_LINE_LENGTH 64  /**< @brief Maximum line length for reading board files */
-#define MAX_BOARD_WIDTH 16  /**< @brief Maximum width of the game board */
-#define MAX_BOARD_HEIGHT 11 /**< @brief Maximum height of the game board */
+#define MAX_BOARD_WIDTH 16                    /**< @brief Maximum width of the game board */
+#define MAX_BOARD_HEIGHT 11                   /**< @brief Maximum height of the game board */
+#define MAX_LINE_LENGTH (MAX_BOARD_WIDTH + 2) /**< @brief Maximum line length for reading board files */
 
 /**
  * @brief Enum representing different types of board elements
@@ -49,7 +49,7 @@ typedef struct {
  *
  * @param board Pointer to the GameBoard structure to fill
  * @param filename Path to the text file containing the board layout
- * 
+ *
  * @return 0 upon success, non-zero otherwise
  */
 int(load_board)(GameBoard *board, const char *filename);
