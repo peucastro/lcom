@@ -12,6 +12,12 @@
  * Functions for managing the game state
  */
 
+// maximum number of entities
+#define MAX_ENEMIES 10
+#define MAX_BRICKS 50
+#define MAX_WALLS 150
+#define MAX_BOMBS 5
+
 /**
  * @brief Enum representing the game state
  */
@@ -29,17 +35,17 @@ typedef enum {
  * and pointers to the player, enemies, bricks, and walls.
  */
 typedef struct {
-  game_state_t state;  /**< @brief Current state of the game */
-  GameBoard board;     /**< @brief Current game board */
-  Entity *player;      /**< @brief Pointer to the player entity */
-  Entity **enemies;    /**< @brief Array of pointers to enemy entities */
-  Entity **bricks;     /**< @brief Array of pointers to brick entities */
-  Entity **walls;      /**< @brief Array of pointers to wall entities */
-  Entity **bombs;      /**< @brief Array of pointers to bomb entities */
-  uint8_t num_enemies; /**< @brief Number of enemies in the game */
-  uint8_t num_bricks;  /**< @brief Number of bricks in the game */
-  uint8_t num_walls;   /**< @brief Number of walls in the game */
-  uint8_t num_bombs;   /**< @brief Number of bombs in the game */
+  game_state_t state;          /**< @brief Current state of the game */
+  GameBoard board;             /**< @brief Current game board */
+  Entity player;               /**< @brief The player entity */
+  Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
+  Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
+  Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
+  Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
+  uint8_t num_enemies;         /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;          /**< @brief Number of bricks in the game */
+  uint8_t num_walls;           /**< @brief Number of walls in the game */
+  uint8_t num_bombs;           /**< @brief Number of bombs in the game */
 } Game;
 
 /**
