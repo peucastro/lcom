@@ -26,7 +26,6 @@ int(init_game)(Game *game) {
     return 1;
   }
 
-  // Count entities in the board
   for (uint8_t r = 0; r < game->board.height; r++) {
     for (uint8_t c = 0; c < game->board.width; c++) {
       switch (game->board.elements[r][c]) {
@@ -51,7 +50,6 @@ int(init_game)(Game *game) {
     }
   }
 
-  // Initialize entities from the board
   uint8_t ei = 0, bri = 0, wi = 0, boi = 0;
   for (uint8_t r = 0; r < game->board.height; r++) {
     for (uint8_t c = 0; c < game->board.width; c++) {
@@ -193,7 +191,6 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
     case BRICK:
     case BOMB:
     case ENEMY:
-      // Don't move the player, but still update sprite direction
       break;
     default:
       fprintf(stderr, "move_player: invalid destination.");
