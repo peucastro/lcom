@@ -12,6 +12,11 @@
  * Functions for managing the game state
  */
 
+#define MAX_ENEMIES 10 /**< @brief Maximum number of enemies allowed in the game */
+#define MAX_BRICKS 50  /**< @brief Maximum number of bricks allowed in the game */
+#define MAX_WALLS 150  /**< @brief Maximum number of walls allowed in the game */
+#define MAX_BOMBS 5    /**< @brief Maximum number of bombs that can exist simultaneously */
+
 /**
  * @brief Enum representing the game state
  */
@@ -26,27 +31,29 @@ typedef enum {
  * @brief Struct representing the game
  *
  * This struct contains the current state of the game, the game board,
- * and pointers to the player, enemies, bricks, and walls.
+ * and all game entities (player, enemies, bricks, walls, bombs).
+ * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
 typedef struct {
-  game_state_t state;  /**< @brief Current state of the game */
-  GameBoard *board;    /**< @brief Current game board */
-  Entity *player;      /**< @brief Pointer to the player entity */
-  Entity **enemies;    /**< @brief Array of pointers to enemy entities */
-  Entity **bricks;     /**< @brief Array of pointers to brick entities */
-  Entity **walls;      /**< @brief Array of pointers to wall entities */
-  Entity **bombs;      /**< @brief Array of pointers to bomb entities */
-  uint8_t num_enemies; /**< @brief Number of enemies in the game */
-  uint8_t num_bricks;  /**< @brief Number of bricks in the game */
-  uint8_t num_walls;   /**< @brief Number of walls in the game */
-  uint8_t num_bombs;   /**< @brief Number of bombs in the game */
+  game_state_t state;          /**< @brief Current state of the game */
+  GameBoard board;             /**< @brief Current game board */
+  Entity player;               /**< @brief The player entity */
+  Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
+  Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
+  Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
+  Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
+  uint8_t num_enemies;         /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;          /**< @brief Number of bricks in the game */
+  uint8_t num_walls;           /**< @brief Number of walls in the game */
+  uint8_t num_bombs;           /**< @brief Number of bombs in the game */
 } Game;
 
 /**
  * @brief Initializes the game
  *
- * Sets up the game state, allocates resources, and initializes
- * the game board, player, enemies, bricks, and walls.
+ * Sets up the game state and initializes the game board,
+ * player, enemies, bricks, walls, and bombs based on the board layout.
+ * Uses stack-allocated entities to avoid dynamic memory allocation.
  *
  * @param game Pointer to the game to be initialized
  *
@@ -55,12 +62,12 @@ typedef struct {
 int(init_game)(Game *game);
 
 /**
- * @brief Destroys the game
+ * @brief Resets the game
  *
- * Frees all resources allocated for the game, including the game board,
- * player, enemies, bricks, and walls.
+ * Resets all entities in the game to their default state and
+ * clears the game board.
  *
- * @param game Pointer to the game to be destroyed
+ * @param game Pointer to the game to be reset
  *
  * @return 0 upon success, non-zero otherwise
  */
@@ -69,10 +76,15 @@ int(destroy_game)(Game *game);
 /**
  * @brief Moves the player in the game
  *
- * @param game Pointer to the game
- * @param xmov The amount to move in the x direction
- * @param ymov The amount to move in the y direction
+ * Attempts to move the player by the specified x and y offsets.
+ * Updates the player's sprite based on movement direction.
+ * Movement is only allowed to empty spaces or powerups.
+ * Movement is blocked by walls, bricks, bombs, and enemies.
  *
+ * @param game Pointer to the game
+ * @param xmov The amount to move in the x direction (-1, 0, or 1)
+ * @param ymov The amount to move in the y direction (-1, 0, or 1)
+ * 
  * @return 0 upon success, non-zero otherwise
  */
 int(move_player)(Game *game, int16_t xmov, int16_t ymov);

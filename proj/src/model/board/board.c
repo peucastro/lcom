@@ -21,91 +21,61 @@ static board_element_t(char_to_element)(char c) {
   }
 }
 
-GameBoard *(create_board) (const char *filename) {
-  if (filename == NULL) {
-    fprintf(stderr, "create_board: filename cannot be null");
-    return NULL;
+int(load_board)(GameBoard *board, const char *filename) {
+  if (filename == NULL || board == NULL) {
+    fprintf(stderr, "load_board: invalid arguments");
+    return 1;
   }
 
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    fprintf(stderr, "create_board: failed to open file %s", filename);
-    return NULL;
+    fprintf(stderr, "load_board: failed to open file %s", filename);
+    return 1;
   }
 
-  size_t width = 0;
-  size_t height = 0;
+  reset_board(board);
+
+  uint8_t width = 0;
+  uint8_t height = 0;
   char line[MAX_LINE_LENGTH];
 
-  while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+  while (fgets(line, MAX_LINE_LENGTH, file) != NULL && height < MAX_BOARD_HEIGHT) {
     size_t len = strlen(line);
-    if (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
+    if (len > 0 && (line[len - 1] == '\n')) {
       line[--len] = '\0';
     }
     if (len > 0) {
       if (width == 0) {
         width = len;
+        if (width > MAX_BOARD_WIDTH) {
+          fprintf(stderr, "load_board: board width (%d) exceeds maximum (%d) in file %s", width, MAX_BOARD_WIDTH, filename);
+          fclose(file);
+          return 1;
+        }
       }
       else if (len != width) {
-        fprintf(stderr, "create_board: inconsistent line lengths in file %s", filename);
-        if (fclose(file) != 0) {
-          fprintf(stderr, "create_board: failed to close file %s after error", filename);
-        }
-        return NULL;
+        fprintf(stderr, "load_board: inconsistent line lengths in file %s", filename);
+        fclose(file);
+        return 1;
       }
       height++;
     }
   }
 
   if (width == 0 || height == 0) {
-    fprintf(stderr, "create_board: empty or invalid board file %s", filename);
-    if (fclose(file) != 0) {
-      fprintf(stderr, "create_board: failed to close file %s after error", filename);
-    }
-    return NULL;
+    fprintf(stderr, "load_board: empty or invalid board file %s", filename);
+    fclose(file);
+    return 1;
   }
 
-  GameBoard *board = (GameBoard *) malloc(sizeof(GameBoard));
-  if (board == NULL) {
-    fprintf(stderr, "create_board: failed to allocate memory for board");
-    if (fclose(file) != 0) {
-      fprintf(stderr, "create_board: failed to close file %s after error", filename);
-    }
-    return NULL;
+  if (height > MAX_BOARD_HEIGHT) {
+    fprintf(stderr, "load_board: board height (%d) exceeds maximum (%d) in file %s", height, MAX_BOARD_HEIGHT, filename);
+    fclose(file);
+    return 1;
   }
 
   board->width = width;
   board->height = height;
-
-  board->elements = (board_element_t **) malloc(height * sizeof(board_element_t *));
-  if (board->elements == NULL) {
-    fprintf(stderr, "create_board: failed to allocate memory for board elements");
-    free(board);
-    board = NULL;
-    if (fclose(file) != 0) {
-      fprintf(stderr, "create_board: failed to close file %s after error", filename);
-    }
-    return NULL;
-  }
-
-  for (uint8_t i = 0; i < height; i++) {
-    board->elements[i] = (board_element_t *) malloc(width * sizeof(board_element_t));
-    if (board->elements[i] == NULL) {
-      fprintf(stderr, "create_board: failed to allocate memory for board row %d", i);
-      for (uint8_t j = 0; j < i; j++) {
-        free(board->elements[j]);
-        board->elements[j] = NULL;
-      }
-      free(board->elements);
-      board->elements = NULL;
-      free(board);
-      board = NULL;
-      if (fclose(file) != 0) {
-        fprintf(stderr, "create_board: failed to close file %s after error", filename);
-      }
-      return NULL;
-    }
-  }
 
   rewind(file);
   uint8_t row = 0;
@@ -123,32 +93,24 @@ GameBoard *(create_board) (const char *filename) {
     }
   }
 
-  if (fclose(file) != 0) {
-    fprintf(stderr, "create_board: failed to close file %s after reading", filename);
-  }
-
-  return board;
+  fclose(file);
+  return 0;
 }
 
-int(destroy_board)(GameBoard *board) {
+int(reset_board)(GameBoard *board) {
   if (board == NULL) {
-    fprintf(stderr, "destroy_board: board pointer cannot be null");
+    fprintf(stderr, "reset_board: board pointer cannot be null");
     return 1;
   }
 
-  if (board->elements != NULL) {
-    for (uint8_t i = 0; i < board->height; i++) {
-      if (board->elements[i] != NULL) {
-        free(board->elements[i]);
-        board->elements[i] = NULL;
-      }
-    }
-    free(board->elements);
-    board->elements = NULL;
-  }
+  board->width = 0;
+  board->height = 0;
 
-  free(board);
-  board = NULL;
+  for (uint8_t i = 0; i < MAX_BOARD_HEIGHT; i++) {
+    for (uint8_t j = 0; j < MAX_BOARD_WIDTH; j++) {
+      board->elements[i][j] = EMPTY_SPACE;
+    }
+  }
 
   return 0;
 }

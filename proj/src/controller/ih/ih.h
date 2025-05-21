@@ -66,13 +66,6 @@ void(mouse_handler)(Game *game);
  */
 void(process_interrupts)(uint32_t irq_mask, Game *game);
 
-/**
- * @brief Gets the current mouse information
- *
- * @return The current mouse_info_t structure containing position and button states
- */
-mouse_info_t(get_mouse_info)(void);
-
 /**@}*/
 
 #endif /* __PROJ_IH_H */
