@@ -5,7 +5,6 @@
 static uint32_t irq_set_timer = 0, irq_set_kbd = 0, irq_set_mouse = 0;
 static uint8_t i = 0, bytes[2] = {0, 0};
 static struct packet pp;
-static mouse_info_t mouse_info = {false, false, 512, 384};
 
 int(subscribe_interrupts)(void) {
   uint8_t bit_no;
@@ -102,11 +101,8 @@ void(mouse_handler)(Game *game) {
 
   if (mouse_get_index() == 0) {
     pp = mouse_parse_packet();
-    if (mouse_update_info(&mouse_info, pp) != 0) {
-      fprintf(stderr, "mouse_handler: failed to update mouse_info.");
-      return;
-    }
-    if (handle_mouse_event(game, mouse_info) != 0) {
+    mouse_update_info(pp);
+    if (handle_mouse_event(game, mouse_get_info()) != 0) {
       fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
       return;
     }
@@ -128,8 +124,4 @@ void(process_interrupts)(uint32_t irq_mask, Game *game) {
   if (irq_mask & irq_set_mouse) {
     mouse_handler(game);
   }
-}
-
-mouse_info_t(get_mouse_info)(void) {
-  return mouse_info;
 }

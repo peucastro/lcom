@@ -27,11 +27,28 @@ typedef struct {
 } mouse_info_t;
 
 /**
+ * @brief Initializes the mouse with a specific position
+ *
+ * @param x Initial x-coordinate of the mouse cursor
+ * @param y Initial y-coordinate of the mouse cursor
+ *
+ * @return Return 0 upon success and non-zero if the coordinates are invalid
+ */
+int(init_mouse)(int16_t x, int16_t y);
+
+/**
  * @brief Getter for the mouse index
  *
  * @return Return the current mouse index
  */
 uint8_t(mouse_get_index)(void);
+
+/**
+ * @brief Gets the current mouse information
+ *
+ * @return The current mouse_info_t structure containing position and button states
+ */
+mouse_info_t(mouse_get_info)(void);
 
 /**
  * @brief Subscribes mouse interrupts
@@ -74,12 +91,9 @@ struct packet(mouse_parse_packet)(void);
 /**
  * @brief Updates mouse information based on the latest packet
  *
- * @param mouse_info Pointer to the mouse_info_t structure to be updated
  * @param pp The parsed mouse packet containing movement and button data
- * 
- * @return 0 upon success, non-zero otherwise
  */
-int(mouse_update_info)(mouse_info_t *mouse_info, struct packet pp);
+void(mouse_update_info)(struct packet pp);
 
 /**
  * @brief Mouse interrupt handler

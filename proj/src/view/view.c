@@ -129,7 +129,7 @@ void(draw_next_frame)(Game *game) {
       return;
   }
 
-  if (draw_mouse(get_mouse_info()) != 0) {
+  if (draw_mouse(mouse_get_info()) != 0) {
     fprintf(stderr, "draw_next_frame: failed to draw cursor.");
     return;
   }
