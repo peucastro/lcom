@@ -1,50 +1,50 @@
 #ifndef __PROJ_ENTITY_H
 #define __PROJ_ENTITY_H
 
+#include "model/board/board.h"
 #include "model/sprite/sprite.h"
 
 /** @defgroup entity entity
  * @{
  *
  * Module for managing game entities
+ *
+ * Provides core functionality for game objects like players, enemies, and bombs.
+ * Defines the base Entity struct and common operations for all entity types.
  */
 
 /**
- * @brief Struct representing an entity in the game
+ * @brief Base game entity structure
  *
- * An entity represents a game object with a position, a sprite, and a status.
- * Entities are stored in fixed-size arrays to avoid dynamic memory allocation.
+ * Represents any game object with position, visual representation, and behavior.
  */
-typedef struct {
-  int16_t x, y;   /**< @brief x and y coordinates of the entity's position */
-  Sprite *sprite; /**< @brief Pointer to the entity's sprite (not owned by the entity) */
-  bool active;    /**< @brief Indicates whether the entity is currently active/valid in the game */
+typedef struct Entity {
+  int16_t x, y;   /**< Position coordinates */
+  Sprite *sprite; /**< Visual representation */
+  bool active;    /**< Whether entity is currently in play */
+  int16_t data;   /**< Entity-specific data (lives, damage, etc.) */
 } Entity;
 
 /**
- * @brief Initializes an entity with the given parameters
+ * @brief Initialize an entity
  *
- * Sets the entity's position and sprite, and marks it as active.
+ * @param e Entity to initialize
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param sp Sprite for visual representation
+ * @param data Entity-specific data value
  *
- * @param entity Pointer to the entity to initialize
- * @param x The x-coordinate of the entity's position
- * @param y The y-coordinate of the entity's position
- * @param sp Pointer to the sprite associated with the entity
- *
- * @return 0 upon success, non-zero otherwise
+ * @return 0 on success, non-zero otherwise
  */
-int(init_entity)(Entity *entity, int16_t x, int16_t y, Sprite *sp);
+int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data);
 
 /**
- * @brief Resets an entity to its inactive state
+ * @brief Reset an entity to inactive state
  *
- * Clears the entity's position and marks it as inactive.
- *
- * @param entity Pointer to the entity to reset
- *
- * @return 0 upon success, non-zero otherwise
+ * @param e Entity to reset
+ * @return 0 on success, non-zero otherwise
  */
-int(reset_entity)(Entity *entity);
+int(reset_entity)(Entity *e);
 
 /**@}*/
 

@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "model/entity/entity.h"
-
 /** @defgroup board board
  * @{
  *

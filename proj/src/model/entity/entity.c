@@ -2,8 +2,8 @@
 
 #include "model/entity/entity.h"
 
-int(init_entity)(Entity *entity, int16_t x, int16_t y, Sprite *sp) {
-  if (entity == NULL) {
+int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data) {
+  if (e == NULL) {
     fprintf(stderr, "init_entity: entity pointer cannot be null.");
     return 1;
   }
@@ -13,24 +13,26 @@ int(init_entity)(Entity *entity, int16_t x, int16_t y, Sprite *sp) {
     return 1;
   }
 
-  entity->x = x;
-  entity->y = y;
-  entity->sprite = sp;
-  entity->active = true;
+  e->x = x;
+  e->y = y;
+  e->sprite = sp;
+  e->active = true;
+  e->data = data;
 
   return 0;
 }
 
-int(reset_entity)(Entity *entity) {
-  if (entity == NULL) {
+int(reset_entity)(Entity *e) {
+  if (e == NULL) {
     fprintf(stderr, "reset_entity: entity pointer cannot be null.");
     return 1;
   }
 
-  entity->x = 0;
-  entity->y = 0;
-  entity->sprite = NULL;
-  entity->active = false;
+  e->x = 0;
+  e->y = 0;
+  e->sprite = NULL;
+  e->data = 0;
+  e->active = false;
 
   return 0;
 }

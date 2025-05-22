@@ -71,23 +71,29 @@ int(init_game)(Game *game);
  *
  * @return 0 upon success, non-zero otherwise
  */
-int(destroy_game)(Game *game);
+int(reset_game)(Game *game);
 
 /**
- * @brief Moves the player in the game
+ * @brief Updates the player entity based on movement input
  *
- * Attempts to move the player by the specified x and y offsets.
- * Updates the player's sprite based on movement direction.
- * Movement is only allowed to empty spaces or powerups.
- * Movement is blocked by walls, bricks, bombs, and enemies.
  *
- * @param game Pointer to the game
- * @param xmov The amount to move in the x direction (-1, 0, or 1)
- * @param ymov The amount to move in the y direction (-1, 0, or 1)
- * 
- * @return 0 upon success, non-zero otherwise
+ * @param p Pointer to the player entity
+ * @param game Pointer to the current game state
+ * @param xmov Horizontal movement (-1: left, 0: none, 1: right)
+ * @param ymov Vertical movement (-1: up, 0: none, 1: down)
  */
-int(move_player)(Game *game, int16_t xmov, int16_t ymov);
+void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
+
+/**
+ * @brief Updates an enemy entity with random movement
+ *
+ * Generates random movement in one of four directions (up, right, down, left).
+ * Only moves to empty spaces, powerups or the player.
+ *
+ * @param e Pointer to the enemy entity
+ * @param game Pointer to the current game state
+ */
+void(update_enemy)(Entity *e, Game *game);
 
 /**@}*/
 
