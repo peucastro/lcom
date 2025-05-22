@@ -2,6 +2,7 @@
 #define __PROJ_GAME_H
 
 #include "model/board/board.h"
+#include "model/entity/enemy.h"
 #include "model/entity/entity.h"
 #include "model/entity/player.h"
 #include "model/resources/resources.h"
@@ -36,17 +37,17 @@ typedef enum {
  * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
 typedef struct {
-  game_state_t state;          /**< @brief Current state of the game */
-  GameBoard board;             /**< @brief Current game board */
-  Player player;               /**< @brief The player entity */
-  Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
-  Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
-  Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
-  Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
-  uint8_t num_enemies;         /**< @brief Number of enemies in the game */
-  uint8_t num_bricks;          /**< @brief Number of bricks in the game */
-  uint8_t num_walls;           /**< @brief Number of walls in the game */
-  uint8_t num_bombs;           /**< @brief Number of bombs in the game */
+  game_state_t state;         /**< @brief Current state of the game */
+  GameBoard board;            /**< @brief Current game board */
+  Player player;              /**< @brief The player entity */
+  Enemy enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
+  Entity bricks[MAX_BRICKS];  /**< @brief Array of brick entities */
+  Entity walls[MAX_WALLS];    /**< @brief Array of wall entities */
+  Entity bombs[MAX_BOMBS];    /**< @brief Array of bomb entities */
+  uint8_t num_enemies;        /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;         /**< @brief Number of bricks in the game */
+  uint8_t num_walls;          /**< @brief Number of walls in the game */
+  uint8_t num_bombs;          /**< @brief Number of bombs in the game */
 } Game;
 
 /**

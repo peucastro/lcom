@@ -64,7 +64,7 @@ int(init_game)(Game *game) {
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
-            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite) != 0) {
+            if (init_enemy(&game->enemies[ei], c, r, resources->enemy_sprite) != 0) {
               fprintf(stderr, "init_game: failed to initialize enemy entity at index %d.", ei);
               return 1;
             }
@@ -115,7 +115,7 @@ int(destroy_game)(Game *game) {
   }
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
-    reset_entity(&game->enemies[i]);
+    reset_entity(&game->enemies[i].base);
   }
   game->num_enemies = 0;
 
