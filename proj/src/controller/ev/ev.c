@@ -20,8 +20,8 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
     case GAME:
       if (counter % 60 == 0) {
         for (uint8_t i = 0; i < game->num_enemies; i++) {
-          if (game->enemies[i].base.active && game->enemies[i].base.on_update != NULL) {
-            game->enemies[i].base.on_update(&game->enemies[i].base, &game->board, NULL);
+          if (game->enemies[i].active && game->enemies[i].on_update != NULL) {
+            game->enemies[i].on_update(&game->enemies[i], &game->board, NULL);
           }
         }
       }
@@ -78,25 +78,25 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
         case 0x48: // UP
         {
           PlayerMove moveUp = {0, -1};
-          update_player(&game->player.base, &game->board, &moveUp);
+          game->player.on_update(&game->player, game, &moveUp);
           break;
         }
         case 0x4D: // RIGHT
         {
           PlayerMove moveRight = {1, 0};
-          update_player(&game->player.base, &game->board, &moveRight);
+          game->player.on_update(&game->player, game, &moveRight);
           break;
         }
         case 0x50: // DOWN
         {
           PlayerMove moveDown = {0, 1};
-          update_player(&game->player.base, &game->board, &moveDown);
+          game->player.on_update(&game->player, game, &moveDown);
           break;
         }
         case 0x4B: // LEFT
         {
           PlayerMove moveLeft = {-1, 0};
-          update_player(&game->player.base, &game->board, &moveLeft);
+          game->player.on_update(&game->player, game, &moveLeft);
           break;
         }
         default:

@@ -2,7 +2,6 @@
 #define __PROJ_EV_H
 
 #include "controller/kbc/mouse.h"
-#include "model/entity/player.h"
 #include "model/game/game.h"
 
 /** @defgroup ev ev

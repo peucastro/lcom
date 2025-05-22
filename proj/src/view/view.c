@@ -28,15 +28,15 @@ int(draw_game)(Game *game) {
     return 1;
   }
 
-  if (game->player.base.active) {
-    if (draw_sprite(game->player.base.sprite, game->player.base.x * cell_size, cell_size + game->player.base.y * cell_size) != 0) {
+  if (game->player.active) {
+    if (draw_sprite(game->player.sprite, game->player.x * cell_size, cell_size + game->player.y * cell_size) != 0) {
       fprintf(stderr, "draw_game: failed to draw player sprite.");
       return 1;
     }
   }
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
-    Entity *enemy = &game->enemies[i].base;
+    Entity *enemy = &game->enemies[i];
     if (enemy->active) {
       if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
         fprintf(stderr, "draw_game: failed to draw enemy sprite at index %d.", i);

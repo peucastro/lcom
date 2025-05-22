@@ -9,66 +9,76 @@
  *
  * Module for managing game entities
  *
- * This module provides the core entity functionality for the game,
- * defining the base Entity struct that other game objects extend.
- * It handles common entity operations like initialization and reset.
+ * Provides core functionality for game objects like players, enemies, and bombs.
+ * Defines the base Entity struct and common operations for all entity types.
  */
 
 struct Entity; // forward-declaration
 
 /**
- * @brief Function pointer type for entity-specific update behavior
+ * @brief Function pointer type for entity-specific behavior
  *
- * Defines the signature for entity update functions that handle
- * entity-specific logic during game updates. Different entity types
- * will implement their own update functions following this signature.
- *
- * @param self Pointer to the entity being updated
- * @param board Pointer to the game board for spatial queries
- * @param context Optional additional data needed for updates (movement info, etc.)
+ * @param self Entity being updated
+ * @param g Game state containing the board and other entities
+ * @param context Optional data needed for updates (e.g., movement direction)
  */
-typedef void (*UpdateFunc)(struct Entity *self, GameBoard *board, void *context);
+typedef void (*UpdateFunc)(struct Entity *self, void *g, void *context);
 
 /**
- * @brief Struct representing an entity in the game
+ * @brief Movement direction for player entities
+ */
+typedef struct {
+  int16_t xmov; /**< Horizontal movement (-1: left, 0: none, 1: right) */
+  int16_t ymov; /**< Vertical movement (-1: up, 0: none, 1: down) */
+} PlayerMove;
+
+/**
+ * @brief Base game entity structure
  *
- * An entity represents a game object with a position, a sprite, and a status.
- * Entities are stored in fixed-size arrays to avoid dynamic memory allocation.
- * This serves as the base structure for all game objects (player, enemies, etc.).
+ * Represents any game object with position, visual representation, and behavior.
  */
 typedef struct Entity {
-  int16_t x, y;         /**< @brief x and y coordinates of the entity's position */
-  Sprite *sprite;       /**< @brief Pointer to the entity's sprite (not owned by the entity) */
-  bool active;          /**< @brief Indicates whether the entity is currently active/valid in the game */
-  UpdateFunc on_update; /**< @brief Entity-specific update function called during game loop */
+  int16_t x, y;         /**< Position coordinates */
+  Sprite *sprite;       /**< Visual representation */
+  bool active;          /**< Whether entity is currently in play */
+  int16_t data;         /**< Entity-specific data (lives, damage, etc.) */
+  UpdateFunc on_update; /**< Entity behavior function */
 } Entity;
 
 /**
- * @brief Initializes an entity with the given parameters
+ * @brief Initialize an entity
  *
- * Sets the entity's position and sprite, and marks it as active.
- * The update function is not assigned here and should be set by derived entities.
- *
- * @param e Pointer to the entity to initialize
- * @param x The x-coordinate of the entity's position
- * @param y The y-coordinate of the entity's position
- * @param sp Pointer to the sprite associated with the entity
- *
- * @return 0 upon success, non-zero otherwise
+ * @param e Entity to initialize
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param sp Sprite for visual representation
+ * @param data Entity-specific data value
+ * @param update_func Behavior function
+ * @return 0 on success, non-zero otherwise
  */
-int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp);
+int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data, UpdateFunc update_func);
 
 /**
- * @brief Resets an entity to its inactive state
+ * @brief Reset an entity to inactive state
  *
- * Clears the entity's position and marks it as inactive.
- * This prepares the entity for reuse or removal from the game.
- *
- * @param e Pointer to the entity to reset
- *
- * @return 0 upon success, non-zero otherwise
+ * @param e Entity to reset
+ * @return 0 on success, non-zero otherwise
  */
 int(reset_entity)(Entity *e);
+
+/**
+ * @brief Player update function
+ *
+ * Handles player movement, collision detection, and sprite updates
+ */
+void(update_player)(Entity *e, void *g, void *context);
+
+/**
+ * @brief Enemy update function
+ *
+ * Handles random enemy movement and collision detection
+ */
+void(update_enemy)(Entity *e, void *g, void *context);
 
 /**@}*/
 
