@@ -1,9 +1,10 @@
 #include <lcom/lcf.h>
 
-#include "model/entity/entity.h"
 #include "model/game/game.h"
 
-int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data, UpdateFunc update_func) {
+#include "model/entity/entity.h"
+
+int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data) {
   if (e == NULL) {
     fprintf(stderr, "init_entity: entity pointer cannot be null.");
     return 1;
@@ -19,7 +20,6 @@ int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data, Upda
   e->sprite = sp;
   e->active = true;
   e->data = data;
-  e->on_update = update_func;
 
   return 0;
 }
@@ -34,27 +34,25 @@ int(reset_entity)(Entity *e) {
   e->y = 0;
   e->sprite = NULL;
   e->active = false;
-  e->on_update = NULL;
 
   return 0;
 }
 
-void(update_player)(Entity *e, void *g, void *context) {
-  if (e == NULL || g == NULL) {
-    fprintf(stderr, "update_player: invalid entity or game pointer.");
+void(update_player)(Entity *p, void *g, int16_t xmov, int16_t ymov) {
+  if (p == NULL || g == NULL) {
+    fprintf(stderr, "update_player: invalid player or game pointer.");
     return;
   }
 
-  PlayerMove *move = (PlayerMove *) context;
   Game *game = (Game *) g;
 
-  if (!e->active) {
+  if (!p->active) {
     fprintf(stderr, "update_player: player not active.");
     return;
   }
 
-  int16_t new_x = e->x + move->xmov;
-  int16_t new_y = e->y + move->ymov;
+  int16_t new_x = p->x + xmov;
+  int16_t new_y = p->y + ymov;
 
   if (new_x < 0 || new_x >= game->board.width ||
       new_y < 0 || new_y >= game->board.height) {
@@ -68,17 +66,17 @@ void(update_player)(Entity *e, void *g, void *context) {
     return;
   }
 
-  if (move->xmov > 0) {
-    e->sprite = resources->player_right_sprite;
+  if (xmov > 0) {
+    p->sprite = resources->player_right_sprite;
   }
-  else if (move->xmov < 0) {
-    e->sprite = resources->player_left_sprite;
+  else if (xmov < 0) {
+    p->sprite = resources->player_left_sprite;
   }
-  else if (move->ymov > 0) {
-    e->sprite = resources->player_down_sprite;
+  else if (ymov > 0) {
+    p->sprite = resources->player_down_sprite;
   }
-  else if (move->ymov < 0) {
-    e->sprite = resources->player_up_sprite;
+  else if (ymov < 0) {
+    p->sprite = resources->player_up_sprite;
   }
 
   board_element_t destination = game->board.elements[new_y][new_x];
@@ -86,10 +84,10 @@ void(update_player)(Entity *e, void *g, void *context) {
   switch (destination) {
     case EMPTY_SPACE:
     case POWERUP:
-      game->board.elements[e->y][e->x] = EMPTY_SPACE;
+      game->board.elements[p->y][p->x] = EMPTY_SPACE;
       game->board.elements[new_y][new_x] = PLAYER;
-      e->x = new_x;
-      e->y = new_y;
+      p->x = new_x;
+      p->y = new_y;
       break;
 
     case WALL:
@@ -104,9 +102,9 @@ void(update_player)(Entity *e, void *g, void *context) {
   }
 }
 
-void(update_enemy)(Entity *e, void *g, void *context) {
+void(update_enemy)(Entity *e, void *g) {
   if (e == NULL || g == NULL) {
-    fprintf(stderr, "update_enemy: invalid entity or game pointer.");
+    fprintf(stderr, "update_enemy: invalid enemy or game pointer.");
     return;
   }
 

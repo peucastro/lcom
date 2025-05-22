@@ -56,7 +56,7 @@ int(init_game)(Game *game) {
       board_element_t el = game->board.elements[r][c];
       switch (el) {
         case PLAYER:
-          if (init_entity(&game->player, c, r, resources->player_down_sprite, 3, update_player) != 0) {
+          if (init_entity(&game->player, c, r, resources->player_down_sprite, 3) != 0) {
             fprintf(stderr, "init_game: failed to initialize player entity.");
             return 1;
           }
@@ -64,7 +64,7 @@ int(init_game)(Game *game) {
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
-            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 100, update_enemy) != 0) {
+            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 100) != 0) {
               fprintf(stderr, "init_game: failed to initialize enemy entity at index %d.", ei);
               return 1;
             }
@@ -73,7 +73,7 @@ int(init_game)(Game *game) {
           break;
         case BRICK:
           if (bri < MAX_BRICKS) {
-            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 0, NULL) != 0) {
+            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 0) != 0) {
               fprintf(stderr, "init_game: failed to initialize brick entity at index %d.", bri);
               return 1;
             }
@@ -82,7 +82,7 @@ int(init_game)(Game *game) {
           break;
         case WALL:
           if (wi < MAX_WALLS) {
-            if (init_entity(&game->walls[wi], c, r, resources->wall_sprite, 0, NULL) != 0) {
+            if (init_entity(&game->walls[wi], c, r, resources->wall_sprite, 0) != 0) {
               fprintf(stderr, "init_game: failed to initialize wall entity at index %d.", wi);
               return 1;
             }
@@ -91,7 +91,7 @@ int(init_game)(Game *game) {
           break;
         case BOMB:
           if (boi < MAX_BOMBS) {
-            if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprite, 0, NULL) != 0) {
+            if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprite, 0) != 0) {
               fprintf(stderr, "init_game: failed to initialize bomb entity at index %d.", boi);
               return 1;
             }
