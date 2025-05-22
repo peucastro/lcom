@@ -12,7 +12,7 @@
  * Uses composition pattern with the Entity struct as its first member
  * to allow safe casting between Player* and Entity*.
  */
-typedef struct Player {
+typedef struct {
   Entity base;   /**< @brief Base entity structure providing core functionality */
   int16_t lives; /**< @brief Number of lives remaining for the player */
 } Player;

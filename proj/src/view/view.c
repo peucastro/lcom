@@ -36,7 +36,7 @@ int(draw_game)(Game *game) {
   }
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
-    Entity *enemy = &game->enemies[i];
+    Entity *enemy = &game->enemies[i].base;
     if (enemy->active) {
       if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
         fprintf(stderr, "draw_game: failed to draw enemy sprite at index %d.", i);
