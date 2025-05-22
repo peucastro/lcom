@@ -2,17 +2,31 @@
 #define __PROJ_PLAYER_H
 
 #include "model/entity/entity.h"
+#include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
 
 /**
  * @brief Struct representing a player in the game
  *
  * Extends the base Entity struct with player-specific attributes.
+ * Uses composition pattern with the Entity struct as its first member
+ * to allow safe casting between Player* and Entity*.
  */
-typedef struct {
-  Entity base;   /**< @brief Base entity structure */
+typedef struct Player {
+  Entity base;   /**< @brief Base entity structure providing core functionality */
   int16_t lives; /**< @brief Number of lives remaining for the player */
 } Player;
+
+/**
+ * @brief Struct representing a player movement direction
+ *
+ * Contains horizontal and vertical movement values that indicate
+ * the direction and magnitude of player movement requests.
+ */
+typedef struct {
+  int16_t xmov; /**< @brief Horizontal movement (-1 for left, 0 for none, 1 for right) */
+  int16_t ymov; /**< @brief Vertical movement (-1 for up, 0 for none, 1 for down) */
+} PlayerMove;
 
 /**
  * @brief Initializes a player with the given parameters
@@ -47,9 +61,13 @@ int(reset_player)(Player *p);
  *
  * This function handles player-specific update logic and is assigned
  * to the on_update function pointer in the base Entity struct.
+ * It processes movement requests, handles collisions with board elements,
+ * and updates the player's sprite based on movement direction.
  *
- * @param p Pointer to the entity to update (cast to Player as needed)
+ * @param e Pointer to the entity to update (cast to Player internally)
+ * @param board Pointer to the game board for collision detection and movement validation
+ * @param context Pointer to a PlayerMove struct containing movement direction data
  */
-void(update_player)(struct Entity *p);
+void(update_player)(Entity *e, GameBoard *board, void *context);
 
 #endif /* __PROJ_PLAYER_H */
