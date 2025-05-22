@@ -214,51 +214,37 @@ void(update_enemy)(Entity *e, Game *game) {
     return;
   }
 
-  int direction = rand() % 4;
+  const int8_t dx[4] = {0, 1, 0, -1};
+  const int8_t dy[4] = {-1, 0, 1, 0};
 
-  int16_t new_x = e->x;
-  int16_t new_y = e->y;
+  int valid_directions[4];
+  int valid_count = 0;
 
-  switch (direction) {
-    case 0: // up
-      new_y--;
-      break;
-    case 1: // right
-      new_x++;
-      break;
-    case 2: // down
-      new_y++;
-      break;
-    case 3: // left
-      new_x--;
-      break;
+  for (int i = 0; i < 4; i++) {
+    int16_t new_x = e->x + dx[i];
+    int16_t new_y = e->y + dy[i];
+
+    if (new_x < 0 || new_x >= game->board.width ||
+        new_y < 0 || new_y >= game->board.height) {
+      continue;
+    }
+
+    board_element_t destination = game->board.elements[new_y][new_x];
+    if (destination == EMPTY_SPACE || destination == POWERUP || destination == PLAYER) {
+      valid_directions[valid_count++] = i;
+    }
   }
 
-  if (new_x < 0 || new_x >= game->board.width ||
-      new_y < 0 || new_y >= game->board.height) {
+  if (valid_count == 0) {
     return;
   }
 
-  board_element_t destination = game->board.elements[new_y][new_x];
+  int chosen_dir = valid_directions[rand() % valid_count];
+  int16_t new_x = e->x + dx[chosen_dir];
+  int16_t new_y = e->y + dy[chosen_dir];
 
-  switch (destination) {
-    case EMPTY_SPACE:
-    case POWERUP:
-      game->board.elements[e->y][e->x] = EMPTY_SPACE;
-      game->board.elements[new_y][new_x] = ENEMY;
-      e->x = new_x;
-      e->y = new_y;
-      break;
-
-    case WALL:
-    case BRICK:
-    case BOMB:
-    case ENEMY:
-    case PLAYER:
-      // don't move if blocked
-      break;
-    default:
-      fprintf(stderr, "update_enemy: invalid destination.");
-      return;
-  }
+  game->board.elements[e->y][e->x] = EMPTY_SPACE;
+  game->board.elements[new_y][new_x] = ENEMY;
+  e->x = new_x;
+  e->y = new_y;
 }

@@ -31,6 +31,7 @@ int(reset_entity)(Entity *e) {
   e->x = 0;
   e->y = 0;
   e->sprite = NULL;
+  e->data = 0;
   e->active = false;
 
   return 0;

@@ -87,7 +87,8 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
 /**
  * @brief Updates an enemy entity with random movement
  *
- * Generates random movement in one of four directions (up, right, down, left),
+ * Generates random movement in one of four directions (up, right, down, left).
+ * Only moves to empty spaces, powerups or the player.
  *
  * @param e Pointer to the enemy entity
  * @param game Pointer to the current game state

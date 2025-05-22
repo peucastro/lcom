@@ -14,10 +14,6 @@
  */
 
 /**
- * @brief Movement direction for player entities
- */
-
-/**
  * @brief Base game entity structure
  *
  * Represents any game object with position, visual representation, and behavior.
