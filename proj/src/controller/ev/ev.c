@@ -39,17 +39,29 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
           game->state = PAUSE;
           break;
         case 0x48: // UP
-          move_player(game, 0, -1);
+        {
+          PlayerMove moveUp = {0, -1};
+          update_player(&game->player.base, &game->board, &moveUp);
           break;
+        }
         case 0x4D: // RIGHT
-          move_player(game, 1, 0);
+        {
+          PlayerMove moveRight = {1, 0};
+          update_player(&game->player.base, &game->board, &moveRight);
           break;
+        }
         case 0x50: // DOWN
-          move_player(game, 0, 1);
+        {
+          PlayerMove moveDown = {0, 1};
+          update_player(&game->player.base, &game->board, &moveDown);
           break;
+        }
         case 0x4B: // LEFT
-          move_player(game, -1, 0);
+        {
+          PlayerMove moveLeft = {-1, 0};
+          update_player(&game->player.base, &game->board, &moveLeft);
           break;
+        }
         default:
           break;
       }
