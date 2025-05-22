@@ -2,6 +2,43 @@
 
 #include "controller/ev/ev.h"
 
+int(handle_timer_event)(Game *game, uint32_t counter) {
+  if (game == NULL) {
+    fprintf(stderr, "handle_kbd_event: game pointer cannot be null.");
+    return 1;
+  }
+
+  switch (game->state) {
+    case START:
+      /* code */
+      break;
+
+    case PAUSE:
+      /* code */
+      break;
+
+    case GAME:
+      if (counter % 60 == 0) {
+        for (uint8_t i = 0; i < game->num_enemies; i++) {
+          if (game->enemies[i].base.active && game->enemies[i].base.on_update != NULL) {
+            game->enemies[i].base.on_update(&game->enemies[i].base, &game->board, NULL);
+          }
+        }
+      }
+      break;
+
+    case EXIT:
+      /* code */
+      break;
+
+    default:
+      fprintf(stderr, "handle_timer_event: invalid game state.");
+      return 1;
+  }
+
+  return 0;
+}
+
 int(handle_kbd_event)(Game *game, uint8_t scancode) {
   if (game == NULL) {
     fprintf(stderr, "handle_kbd_event: game pointer cannot be null.");

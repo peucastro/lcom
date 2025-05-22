@@ -12,6 +12,16 @@
  */
 
 /**
+ * @brief Handles timer events
+ *
+ * @param game Pointer to the game instance
+ * @param counter The timer counter
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(handle_timer_event)(Game *game, uint32_t counter);
+
+/**
  * @brief Handles keyboard events
  *
  * Processes a scancode event and updates the game state or player position accordingly.

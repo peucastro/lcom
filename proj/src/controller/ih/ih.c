@@ -66,7 +66,11 @@ void(timer_handler)(Game *game) {
   timer_int_handler();
   draw_next_frame(game);
   vbe_flip_page();
-  // TODO: handle events related to the timer
+
+  if (handle_timer_event(game, timer_get_counter()) != 0) {
+    fprintf(stderr, "timer_handler: failed to call hanble_timer_event.");
+    return;
+  }
 }
 
 void(kbd_handler)(Game *game) {
