@@ -50,20 +50,6 @@ int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data);
  */
 int(reset_entity)(Entity *e);
 
-/**
- * @brief Player update function
- *
- * Handles player movement, collision detection, and sprite updates
- */
-void(update_player)(Entity *p, void *g, int16_t xmov, int16_t ymov);
-
-/**
- * @brief Enemy update function
- *
- * Handles random enemy movement and collision detection
- */
-void(update_enemy)(Entity *e, void *g);
-
 /**@}*/
 
 #endif /* __PROJ_ENTITY_H */

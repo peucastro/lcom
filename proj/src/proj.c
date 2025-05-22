@@ -102,7 +102,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
 
-  if (destroy_game(&game) != 0) {
+  if (reset_game(&game) != 0) {
     fprintf(stderr, "proj_main_loop: failed to destroy game.");
     return 1;
   }
