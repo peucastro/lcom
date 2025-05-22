@@ -28,6 +28,9 @@ model/board/board.o: model/board/board.c model/board/board.h
 model/entity/entity.o: model/entity/entity.c model/entity/entity.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+model/entity/player.o: model/entity/player.c model/entity/player.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 model/resources/resources.o: model/resources/resources.c model/resources/resources.h
 	${CC} ${CFLAGS} -c $< -o $@
 
