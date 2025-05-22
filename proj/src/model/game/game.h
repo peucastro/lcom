@@ -3,6 +3,7 @@
 
 #include "model/board/board.h"
 #include "model/entity/entity.h"
+#include "model/entity/player.h"
 #include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
 
@@ -37,7 +38,7 @@ typedef enum {
 typedef struct {
   game_state_t state;          /**< @brief Current state of the game */
   GameBoard board;             /**< @brief Current game board */
-  Entity player;               /**< @brief The player entity */
+  Player player;               /**< @brief The player entity */
   Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
   Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
@@ -84,7 +85,7 @@ int(destroy_game)(Game *game);
  * @param game Pointer to the game
  * @param xmov The amount to move in the x direction (-1, 0, or 1)
  * @param ymov The amount to move in the y direction (-1, 0, or 1)
- * 
+ *
  * @return 0 upon success, non-zero otherwise
  */
 int(move_player)(Game *game, int16_t xmov, int16_t ymov);

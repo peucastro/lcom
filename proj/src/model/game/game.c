@@ -56,11 +56,11 @@ int(init_game)(Game *game) {
       board_element_t el = game->board.elements[r][c];
       switch (el) {
         case PLAYER:
-          if (init_entity(&game->player, c, r, resources->player_down_sprite) != 0) {
+          if (init_player(&game->player, c, r, resources->player_down_sprite) != 0) {
             fprintf(stderr, "init_game: failed to initialize player entity.");
             return 1;
           }
-          game->player.active = true;
+          game->player.base.active = true;
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
@@ -142,13 +142,13 @@ int(destroy_game)(Game *game) {
 }
 
 int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
-  if (!game || !game->player.active) {
+  if (!game || !game->player.base.active) {
     fprintf(stderr, "move_player: game not initialized or player not active.");
     return 1;
   }
 
-  int16_t new_x = game->player.x + xmov;
-  int16_t new_y = game->player.y + ymov;
+  int16_t new_x = game->player.base.x + xmov;
+  int16_t new_y = game->player.base.y + ymov;
 
   if (new_x < 0 || new_x >= game->board.width ||
       new_y < 0 || new_y >= game->board.height) {
@@ -163,16 +163,16 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
   }
 
   if (xmov > 0) {
-    game->player.sprite = resources->player_right_sprite;
+    game->player.base.sprite = resources->player_right_sprite;
   }
   else if (xmov < 0) {
-    game->player.sprite = resources->player_left_sprite;
+    game->player.base.sprite = resources->player_left_sprite;
   }
   else if (ymov > 0) {
-    game->player.sprite = resources->player_down_sprite;
+    game->player.base.sprite = resources->player_down_sprite;
   }
   else if (ymov < 0) {
-    game->player.sprite = resources->player_up_sprite;
+    game->player.base.sprite = resources->player_up_sprite;
   }
 
   board_element_t destination = game->board.elements[new_y][new_x];
@@ -180,10 +180,10 @@ int(move_player)(Game *game, int16_t xmov, int16_t ymov) {
   switch (destination) {
     case EMPTY_SPACE:
     case POWERUP:
-      game->board.elements[game->player.y][game->player.x] = EMPTY_SPACE;
+      game->board.elements[game->player.base.y][game->player.base.x] = EMPTY_SPACE;
       game->board.elements[new_y][new_x] = PLAYER;
-      game->player.x = new_x;
-      game->player.y = new_y;
+      game->player.base.x = new_x;
+      game->player.base.y = new_y;
       break;
 
     case WALL:

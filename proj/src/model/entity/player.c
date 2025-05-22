@@ -18,7 +18,7 @@ int(init_player)(Player *p, int16_t x, int16_t y, Sprite *sp) {
     return 1;
   }
 
-  p->base.on_update = player_update;
+  p->base.on_update = update_player;
   p->lives = 3;
   return 0;
 }
@@ -38,6 +38,6 @@ int(reset_player)(Player *p) {
   return 0;
 }
 
-void(player_update)(struct Entity *p) {
+void(update_player)(struct Entity *p) {
   // how to update the player?
 }

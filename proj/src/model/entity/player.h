@@ -18,7 +18,7 @@ typedef struct {
  * @brief Initializes a player with the given parameters
  *
  * Sets the player's position and sprite, marks it as active,
- * assigns the player_update function as the update handler,
+ * assigns the update_player function as the update handler,
  * and initializes player-specific attributes like lives.
  *
  * @param p Pointer to the player to initialize
@@ -50,6 +50,6 @@ int(reset_player)(Player *p);
  *
  * @param p Pointer to the entity to update (cast to Player as needed)
  */
-void(player_update)(struct Entity *p);
+void(update_player)(struct Entity *p);
 
 #endif /* __PROJ_PLAYER_H */
