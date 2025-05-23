@@ -9,6 +9,7 @@ int(init_game)(Game *game) {
   }
 
   game->state = START;
+  game->menu_option = 0;
   game->num_enemies = 0;
   game->num_bricks = 0;
   game->num_walls = 0;

@@ -65,10 +65,14 @@ int(create_resources)(void) {
     return 1;
   }
 
-  resources.menu_sprite = create_sprite(menu_xpm);
-  if (resources.menu_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to load menu sprite.");
-    return 1;
+  resources.menu_sprite[0] = create_sprite(menu_default_xpm);
+  resources.menu_sprite[1] = create_sprite(menu_start_xpm);
+  resources.menu_sprite[2] = create_sprite(menu_exit_xpm);
+  for (int i = 0; i < 3; i++){
+    if (resources.menu_sprite[i] == NULL) {
+      fprintf(stderr, "create_resources: failed to load menu sprite.");
+      return 1;
+    }
   }
 
   return 0;
@@ -125,9 +129,11 @@ void(destroy_resources)(void) {
     resources.wall_sprite = NULL;
   }
 
-  if (resources.menu_sprite != NULL) {
-    destroy_sprite(resources.menu_sprite);
-    resources.menu_sprite = NULL;
+  for (int i = 0; i < 3; i++) {
+    if (resources.menu_sprite[i]) {
+      destroy_sprite(resources.menu_sprite[i]);
+      resources.menu_sprite[i] = NULL;
+    }
   }
 }
 

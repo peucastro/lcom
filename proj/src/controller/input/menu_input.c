@@ -20,5 +20,26 @@ void handle_menu_input(Game *game, Key k) {
         default: break;
     }
     
+  switch (k) {
+      case KEY_LEFT:
+        game->menu_option = 1;
+        break;
+
+      case KEY_RIGHT:
+        game->menu_option = 2;
+        break;
+
+      case KEY_ENTER:
+        if      (game->menu_option == 1) game->state = GAME;
+        else if (game->menu_option == 2) game->state = EXIT;
+        break;
+
+      case KEY_ESCAPE: 
+        game->state = EXIT; 
+        break;
+
+      default:
+        break;
+  }
 }
 
