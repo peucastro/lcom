@@ -15,6 +15,7 @@ int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data) {
 
   e->x = x;
   e->y = y;
+  e->dir = RIGHT;
   e->sprite = sp;
   e->active = true;
   e->data = data;

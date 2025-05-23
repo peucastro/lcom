@@ -181,15 +181,19 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 
   if (xmov > 0) {
     p->sprite = resources->player_right_sprite;
+    p->dir = RIGHT;
   }
   else if (xmov < 0) {
     p->sprite = resources->player_left_sprite;
+    p->dir = LEFT;
   }
   else if (ymov > 0) {
     p->sprite = resources->player_down_sprite;
+    p->dir = DOWN;
   }
   else if (ymov < 0) {
     p->sprite = resources->player_up_sprite;
+    p->dir = UP;
   }
 
   board_element_t destination = game->board.elements[new_y][new_x];
@@ -261,19 +265,42 @@ void(move_enemy)(Entity *e, Game *game) {
   e->y = new_y;
 }
 
-void(drop_bomb)(Game *game, int16_t x, int16_t y) {
+void(drop_bomb)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "drop_bomb: game pointer cannot be null.");
     return;
   }
-  if (x >= game->board.width || y >= game->board.height) {
-    fprintf(stderr, "drop_bomb: invalid coordinates.");
+
+  if (!game->player.active) {
+    fprintf(stderr, "drop_bomb: player is not active.");
     return;
   }
 
-  board_element_t target = game->board.elements[y][x];
-  if (target != EMPTY_SPACE) {
-    fprintf(stderr, "drop_bomb: destination is not empty.");
+  int16_t x = game->player.x;
+  int16_t y = game->player.y;
+
+  switch (game->player.dir) {
+    case UP:
+      y++;
+      break;
+    case RIGHT:
+      x--;
+      break;
+    case DOWN:
+      y--;
+      break;
+    case LEFT:
+      x++;
+      break;
+  }
+
+  if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
+    fprintf(stderr, "drop_bomb: target position out of bounds.\n");
+    return;
+  }
+
+  if (game->board.elements[y][x] != EMPTY_SPACE) {
+    fprintf(stderr, "drop_bomb: cannot place bomb at target position.\n");
     return;
   }
 
@@ -296,6 +323,8 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   }
 
   game->board.elements[y][x] = BOMB;
-  game->num_bombs++;
   game->bombs[bomb_index].active = true;
+  game->num_bombs++;
+
+  return;
 }

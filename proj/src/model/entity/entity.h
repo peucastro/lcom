@@ -14,12 +14,23 @@
  */
 
 /**
+ * @brief Enum representing entity facing directions
+ */
+typedef enum {
+  UP,    /**< @brief Entity is facing upward */
+  RIGHT, /**< @brief Entity is facing right */
+  DOWN,  /**< @brief Entity is facing downward */
+  LEFT   /**< @brief Entity is facing left */
+} Direction;
+
+/**
  * @brief Base game entity structure
  *
  * Represents any game object with position, visual representation, and behavior.
  */
 typedef struct Entity {
   int16_t x, y;   /**< Position coordinates */
+  Direction dir;  /**< Entity's facing direction */
   Sprite *sprite; /**< Visual representation */
   bool active;    /**< Whether entity is currently in play */
   int16_t data;   /**< Entity-specific data (lives, damage, etc.) */

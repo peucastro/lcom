@@ -95,7 +95,18 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
  */
 void(move_enemy)(Entity *e, Game *game);
 
-void(drop_bomb)(Game *game, int16_t x, int16_t y);
+/**
+ * @brief Drops a bomb at the player's current position
+ *
+ * Places a bomb at the player's feet if possible. The bomb is placed on
+ * the board and initialized as an entity. Bombs can only be placed on
+ * empty spaces. The player remains standing on the newly placed bomb.
+ *
+ * @param game Pointer to the current game state
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+void(drop_bomb)(Game *game);
 
 /**@}*/
 

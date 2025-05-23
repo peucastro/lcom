@@ -23,18 +23,6 @@ int(draw_pause_menu)(void) {
 int(draw_game)(Game *game) {
   const uint8_t cell_size = 64;
 
-  if (graphics_draw_rectangle(0, 0, 1024, cell_size, 0xB0B0B0) != 0) {
-    fprintf(stderr, "draw_game: failed to draw top bar.");
-    return 1;
-  }
-
-  if (game->player.active) {
-    if (draw_sprite(game->player.sprite, game->player.x * cell_size, cell_size + game->player.y * cell_size) != 0) {
-      fprintf(stderr, "draw_game: failed to draw player sprite.");
-      return 1;
-    }
-  }
-
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     Entity *enemy = &game->enemies[i];
     if (enemy->active) {
@@ -72,6 +60,13 @@ int(draw_game)(Game *game) {
         fprintf(stderr, "draw_game: failed to draw bomb sprite at index %d.", i);
         return 1;
       }
+    }
+  }
+
+  if (game->player.active) {
+    if (draw_sprite(game->player.sprite, game->player.x * cell_size, cell_size + game->player.y * cell_size) != 0) {
+      fprintf(stderr, "draw_game: failed to draw player sprite.");
+      return 1;
     }
   }
 
