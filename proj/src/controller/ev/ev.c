@@ -19,12 +19,7 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
 
     case GAME:
       if (counter % 60 == 0) {
-        for (uint8_t i = 0; i < game->num_enemies; i++) {
-          if (game->enemies[i].active) {
-            move_enemy(&game->enemies[i], game);
-          }
-        }
-
+        update_enemies(game);
         update_bombs(game);
       }
       break;

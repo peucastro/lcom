@@ -96,6 +96,16 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
 void(move_enemy)(Entity *e, Game *game);
 
 /**
+ * @brief Updates all active enemies in the game
+ *
+ * Iterates through all enemies in the game and moves each active one.
+ * This function should be called periodically during gameplay.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_enemies)(Game *game);
+
+/**
  * @brief Drops a bomb at the player's current position
  *
  * Places a bomb at the player's feet if possible. The bomb is placed on

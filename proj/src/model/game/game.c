@@ -265,6 +265,19 @@ void(move_enemy)(Entity *e, Game *game) {
   e->y = new_y;
 }
 
+void(update_enemies)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "update_enemies: game pointer cannot be null.");
+    return;
+  }
+
+  for (uint8_t i = 0; i < game->num_enemies; i++) {
+    if (game->enemies[i].active) {
+      move_enemy(&game->enemies[i], game);
+    }
+  }
+}
+
 void(drop_bomb)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "drop_bomb: game pointer cannot be null.");
