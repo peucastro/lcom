@@ -24,6 +24,8 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
             move_enemy(&game->enemies[i], game);
           }
         }
+
+        update_bombs(game);
       }
       break;
 

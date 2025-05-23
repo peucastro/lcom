@@ -108,6 +108,19 @@ void(move_enemy)(Entity *e, Game *game);
  */
 void(drop_bomb)(Game *game);
 
+/**
+ * @brief Updates the state of all active bombs
+ *
+ * This function is called periodically to update all bombs in the game.
+ * For each active bomb, it decrements the countdown timer (stored in the data field).
+ * When a bomb's timer reaches zero, the bomb is deactivated and removed from the board.
+ * The function also compacts the bombs array by moving active bombs to fill gaps
+ * left by deactivated bombs, and updates the total bomb count.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_bombs)(Game *game);
+
 /**@}*/
 
 #endif /* __PROJ_GAME_H */
