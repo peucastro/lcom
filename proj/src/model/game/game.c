@@ -30,20 +30,32 @@ int(init_game)(Game *game) {
     for (uint8_t c = 0; c < game->board.width; c++) {
       switch (game->board.elements[r][c]) {
         case ENEMY:
-          if (game->num_enemies < MAX_ENEMIES)
-            game->num_enemies++;
+          if (game->num_enemies >= MAX_ENEMIES) {
+            fprintf(stderr, "init_game: number of enemies (%u) exceded the maximum (%u).", game->num_enemies, MAX_ENEMIES);
+            return 1;
+          }
+          game->num_enemies++;
           break;
         case BRICK:
-          if (game->num_bricks < MAX_BRICKS)
-            game->num_bricks++;
+          if (game->num_bricks >= MAX_BRICKS) {
+            fprintf(stderr, "init_game: number of bricks (%u) exceded the maximum (%u).", game->num_bricks, MAX_BRICKS);
+            return 1;
+          }
+          game->num_bricks++;
           break;
         case WALL:
-          if (game->num_walls < MAX_WALLS)
-            game->num_walls++;
+          if (game->num_walls >= MAX_WALLS) {
+            fprintf(stderr, "init_game: number of walls (%u) exceded the maximum (%u).", game->num_walls, MAX_WALLS);
+            return 1;
+          }
+          game->num_walls++;
           break;
         case BOMB:
-          if (game->num_bombs < MAX_BOMBS)
-            game->num_bombs++;
+          if (game->num_bombs >= MAX_BOMBS) {
+            fprintf(stderr, "init_game: number of bombs (%u) exceded the maximum (%u).", game->num_enemies, MAX_BOMBS);
+            return 1;
+          }
+          game->num_bombs++;
           break;
         default: break;
       }
@@ -247,4 +259,43 @@ void(move_enemy)(Entity *e, Game *game) {
   game->board.elements[new_y][new_x] = ENEMY;
   e->x = new_x;
   e->y = new_y;
+}
+
+void(drop_bomb)(Game *game, int16_t x, int16_t y) {
+  if (game == NULL) {
+    fprintf(stderr, "drop_bomb: game pointer cannot be null.");
+    return;
+  }
+  if (x >= game->board.width || y >= game->board.height) {
+    fprintf(stderr, "drop_bomb: invalid coordinates.");
+    return;
+  }
+
+  board_element_t target = game->board.elements[y][x];
+  if (target != EMPTY_SPACE) {
+    fprintf(stderr, "drop_bomb: destination is not empty.");
+    return;
+  }
+
+  if (game->num_bombs >= MAX_BOMBS) {
+    fprintf(stderr, "drop_bomb: maximum number of bombs reached.");
+    return;
+  }
+
+  const Resources *resources = get_resources();
+  if (resources == NULL) {
+    fprintf(stderr, "drop_bomb: failed to load resources.");
+    return;
+  }
+
+  uint8_t bomb_index = game->num_bombs;
+
+  if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprite, 300) != 0) {
+    fprintf(stderr, "drop_bomb: failed to initialize bomb entity.");
+    return;
+  }
+
+  game->board.elements[y][x] = BOMB;
+  game->num_bombs++;
+  game->bombs[bomb_index].active = true;
 }

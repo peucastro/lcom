@@ -95,6 +95,8 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
  */
 void(move_enemy)(Entity *e, Game *game);
 
+void(drop_bomb)(Game *game, int16_t x, int16_t y);
+
 /**@}*/
 
 #endif /* __PROJ_GAME_H */

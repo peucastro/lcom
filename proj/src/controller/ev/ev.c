@@ -87,6 +87,9 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
         case 0x4B: // LEFT
           move_player(&game->player, game, -1, 0);
           break;
+        case 0x39: // SPACE
+          drop_bomb(game, 2, 3);
+          break;
         default:
           break;
       }
