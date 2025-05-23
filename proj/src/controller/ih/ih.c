@@ -66,7 +66,11 @@ void(timer_handler)(Game *game) {
   timer_int_handler();
   draw_next_frame(game);
   vbe_flip_page();
-  // TODO: handle events related to the timer
+
+  if (handle_timer_event(game, timer_get_counter()) != 0) {
+    fprintf(stderr, "timer_handler: failed to call hanble_timer_event.");
+    return;
+  }
 }
 
 void(kbd_handler)(Game *game) {
@@ -107,7 +111,11 @@ void(mouse_handler)(Game *game) {
 
   if (mouse_get_index() == 0) {
     pp = mouse_parse_packet();
-    // TODO: handle events related to the mouse
+    mouse_update_info(pp);
+    if (handle_mouse_event(game, mouse_get_info()) != 0) {
+      fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
+      return;
+    }
   }
 }
 

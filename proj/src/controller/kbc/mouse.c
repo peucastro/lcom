@@ -10,9 +10,28 @@ static uint8_t mouse_packet_bytes[3] = {0, 0, 0};
 static uint8_t mouse_index = 0;
 // variable to store the byte read from the KBC output buffer.
 static uint8_t byte = 0;
+// struct storing the mouse position and buttons state
+static mouse_info_t mouse_info = {false, false, 0, 0};
+
+int(init_mouse)(int16_t x, int16_t y) {
+  if (x < 0 || y < 0 || x > vbe_get_h_res() || y > vbe_get_v_res()) {
+    fprintf(stderr, "init_mouse: invalid coordinates");
+    return 1;
+  }
+  mouse_info.rb = false;
+  mouse_info.lb = false;
+  mouse_info.x = x;
+  mouse_info.y = y;
+
+  return 0;
+}
 
 uint8_t(mouse_get_index)(void) {
   return mouse_index;
+}
+
+mouse_info_t(mouse_get_info)(void) {
+  return mouse_info;
 }
 
 int(mouse_subscribe_int)(uint8_t *bit_no) {
@@ -132,6 +151,48 @@ struct packet(mouse_parse_packet)(void) {
   pp.y_ov = pp.bytes[0] & MOUSE_YOV;
 
   return pp;
+}
+
+void(mouse_update_info)(struct packet pp) {
+  mouse_info.rb = pp.rb;
+  mouse_info.lb = pp.lb;
+
+  int16_t new_x = mouse_info.x + pp.delta_x;
+  if (pp.x_ov) {
+    if (pp.delta_x > 0) {
+      new_x = vbe_get_h_res() - 1;
+    }
+    else if (pp.delta_x < 0) {
+      new_x = 0;
+    }
+  }
+
+  int16_t new_y = mouse_info.y - pp.delta_y;
+  if (pp.y_ov) {
+    if (pp.delta_y < 0) {
+      new_y = vbe_get_v_res() - 1;
+    }
+    else if (pp.delta_y > 0) {
+      new_y = 0;
+    }
+  }
+
+  if (new_x < 0) {
+    new_x = 0;
+  }
+  else if (new_x >= vbe_get_h_res() - 16) {
+    new_x = vbe_get_h_res() - 16;
+  }
+
+  if (new_y < 0) {
+    new_y = 0;
+  }
+  else if (new_y >= vbe_get_v_res() - 16) {
+    new_y = vbe_get_v_res() - 16;
+  }
+
+  mouse_info.x = new_x;
+  mouse_info.y = new_y;
 }
 
 void(mouse_ih)(void) {

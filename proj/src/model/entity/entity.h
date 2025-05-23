@@ -1,44 +1,50 @@
 #ifndef __PROJ_ENTITY_H
 #define __PROJ_ENTITY_H
 
+#include "model/board/board.h"
 #include "model/sprite/sprite.h"
 
 /** @defgroup entity entity
  * @{
  *
  * Module for managing game entities
+ *
+ * Provides core functionality for game objects like players, enemies, and bombs.
+ * Defines the base Entity struct and common operations for all entity types.
  */
 
 /**
- * @brief Struct representing an entity in the game
+ * @brief Base game entity structure
  *
- * An entity represents a game object with a position, a sprite, and a status
- * indicating whether it is alive or not.
+ * Represents any game object with position, visual representation, and behavior.
  */
-typedef struct {
-  int16_t x, y;   /**< @brief x and y coordinates of the entity's position */
-  Sprite *sprite; /**< @brief The entity's corresponding sprite */
-  bool alive;     /**< @brief Indicates whether the entity is alive */
+typedef struct Entity {
+  int16_t x, y;   /**< Position coordinates */
+  Sprite *sprite; /**< Visual representation */
+  bool active;    /**< Whether entity is currently in play */
+  int16_t data;   /**< Entity-specific data (lives, damage, etc.) */
 } Entity;
 
 /**
- * @brief Creates a new entity
+ * @brief Initialize an entity
  *
- * @param x The x-coordinate of the entity's position
- * @param y The y-coordinate of the entity's position
- * @param sp Pointer to the sprite associated with the entity
- * @return Pointer to the created entity, or NULL if an error occurs
+ * @param e Entity to initialize
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param sp Sprite for visual representation
+ * @param data Entity-specific data value
+ *
+ * @return 0 on success, non-zero otherwise
  */
-Entity *(create_entity) (int16_t x, int16_t y, Sprite *sp);
+int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data);
 
 /**
- * @brief Destroys an entity and frees its resources
+ * @brief Reset an entity to inactive state
  *
- * @param entity Pointer to the entity to be destroyed
- *
- * @return 0 upon success, non-zero otherwise
+ * @param e Entity to reset
+ * @return 0 on success, non-zero otherwise
  */
-int(destroy_entity)(Entity *entity);
+int(reset_entity)(Entity *e);
 
 /**@}*/
 

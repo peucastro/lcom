@@ -68,6 +68,10 @@ int(proj_main_loop)(int argc, char *argv[]) {
     fprintf(stderr, "proj_main_loop: failed to set video mode.");
     return 1;
   }
+  if (init_mouse(518, 384) != 0) {
+    fprintf(stderr, "proj_main_loop: failed to initialize mouse.");
+    return 1;
+  }
 
   while (game.state != EXIT) {
     /* get a request message. */
@@ -98,7 +102,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
 
-  if (destroy_game(&game) != 0) {
+  if (reset_game(&game) != 0) {
     fprintf(stderr, "proj_main_loop: failed to destroy game.");
     return 1;
   }
