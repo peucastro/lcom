@@ -119,6 +119,22 @@ void(update_enemies)(Game *game);
 void(drop_bomb)(Game *game);
 
 /**
+ * @brief Causes a bomb to explode, damaging entities in its blast radius
+ *
+ * Creates an explosion that extends 3 tiles in each cardinal direction
+ * (up, down, left, right). The explosion damages entities it encounters:
+ * - Reduces player lives
+ * - Reduces enemy lives
+ * - Damages bricks until they break
+ * - Stops at walls
+ * - Can trigger chain reactions with other bombs
+ *
+ * @param game Pointer to the current game state
+ * @param bomb_index Index of the bomb that is exploding
+ */
+void(explode_bomb)(Game *game, uint8_t bomb_index);
+
+/**
  * @brief Updates the state of all active bombs
  *
  * This function is called periodically to update all bombs in the game.

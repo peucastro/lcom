@@ -76,7 +76,7 @@ int(init_game)(Game *game) {
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
-            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 100) != 0) {
+            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 2) != 0) {
               fprintf(stderr, "init_game: failed to initialize enemy entity at index %d.", ei);
               return 1;
             }
@@ -85,7 +85,7 @@ int(init_game)(Game *game) {
           break;
         case BRICK:
           if (bri < MAX_BRICKS) {
-            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 0) != 0) {
+            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 1) != 0) {
               fprintf(stderr, "init_game: failed to initialize brick entity at index %d.", bri);
               return 1;
             }
@@ -342,6 +342,111 @@ void(drop_bomb)(Game *game) {
   return;
 }
 
+void(explode_bomb)(Game *game, uint8_t bomb_index) {
+  if (game == NULL || bomb_index >= game->num_bombs) {
+    fprintf(stderr, "explode_bomb: invalid arguments.");
+    return;
+  }
+
+  Entity *bomb = &game->bombs[bomb_index];
+
+  if (!bomb->active) {
+    fprintf(stderr, "explode_bomb: trying to explode inactive bomb.");
+    return;
+  }
+
+  int16_t bomb_x = bomb->x;
+  int16_t bomb_y = bomb->y;
+
+  const int8_t dx[4] = {0, 1, 0, -1};
+  const int8_t dy[4] = {-1, 0, 1, 0};
+
+  for (int dir = 0; dir < 4; dir++) {
+    for (int range = 1; range <= 3; range++) {
+      int16_t cell_x = bomb_x + dx[dir] * range;
+      int16_t cell_y = bomb_y + dy[dir] * range;
+
+      if (cell_x < 0 || cell_x >= game->board.width ||
+          cell_y < 0 || cell_y >= game->board.height) {
+        break;
+      }
+
+      board_element_t cell = game->board.elements[cell_y][cell_x];
+
+      switch (cell) {
+        case PLAYER:
+          if (game->player.x == cell_x && game->player.y == cell_y) {
+            game->player.data--;
+            if (game->player.data <= 0) {
+              game->player.active = false;
+              game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+            }
+          }
+          break;
+
+        case ENEMY:
+          for (uint8_t i = 0; i < game->num_enemies; i++) {
+            if (game->enemies[i].active &&
+                game->enemies[i].x == cell_x &&
+                game->enemies[i].y == cell_y) {
+              game->enemies[i].data--;
+              if (game->enemies[i].data <= 0) {
+                game->enemies[i].active = false;
+                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+              }
+              break;
+            }
+          }
+          break;
+
+        case BRICK:
+          for (uint8_t i = 0; i < game->num_bricks; i++) {
+            if (game->bricks[i].active &&
+                game->bricks[i].x == cell_x &&
+                game->bricks[i].y == cell_y) {
+              game->bricks[i].data--;
+              if (game->bricks[i].data <= 0) {
+                game->bricks[i].active = false;
+                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+              }
+              break;
+            }
+          }
+          break;
+
+        case WALL:
+          break;
+
+        case BOMB:
+          for (uint8_t i = 0; i < game->num_bombs; i++) {
+            if (i != bomb_index && game->bombs[i].active &&
+                game->bombs[i].x == cell_x &&
+                game->bombs[i].y == cell_y) {
+              game->bombs[i].data = 1;
+              break;
+            }
+          }
+          break;
+
+        case EMPTY_SPACE:
+        case POWERUP:
+          continue;
+
+        default:
+          fprintf(stderr, "explode_bomb: unknown board element type %d\n", cell);
+          break;
+      }
+
+      if (cell == WALL || cell == BRICK || cell == BOMB) {
+        break;
+      }
+    }
+  }
+
+  bomb->active = false;
+  game->board.elements[bomb_y][bomb_x] = EMPTY_SPACE;
+}
+
 void(update_bombs)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "update_bombs: game pointer cannot be null.");
@@ -355,9 +460,7 @@ void(update_bombs)(Game *game) {
       game->bombs[i].data--;
 
       if (game->bombs[i].data == 0) {
-        // explode_bomb(game, i);
-        game->bombs[i].active = false;
-        game->board.elements[game->bombs[i].y][game->bombs[i].x] = EMPTY_SPACE;
+        explode_bomb(game, i);
       }
       else {
         if (i != active_bombs) {
