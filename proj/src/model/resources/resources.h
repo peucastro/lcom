@@ -14,7 +14,6 @@
 #include "assets/xpm/player_up.xpm"
 #include "assets/xpm/wall.xpm"
 
-#include "assets/xpm/menu.xpm"
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_start.xpm"
 #include "assets/xpm/menu_exit.xpm"
