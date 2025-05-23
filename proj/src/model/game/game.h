@@ -82,7 +82,7 @@ int(reset_game)(Game *game);
  * @param xmov Horizontal movement (-1: left, 0: none, 1: right)
  * @param ymov Vertical movement (-1: up, 0: none, 1: down)
  */
-void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
+void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
 
 /**
  * @brief Updates an enemy entity with random movement
@@ -93,7 +93,7 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
  * @param e Pointer to the enemy entity
  * @param game Pointer to the current game state
  */
-void(update_enemy)(Entity *e, Game *game);
+void(move_enemy)(Entity *e, Game *game);
 
 /**@}*/
 

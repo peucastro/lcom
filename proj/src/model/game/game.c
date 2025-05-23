@@ -141,14 +141,14 @@ int(reset_game)(Game *game) {
   return 0;
 }
 
-void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
+void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   if (p == NULL || game == NULL) {
-    fprintf(stderr, "update_player: invalid player or game pointer.");
+    fprintf(stderr, "move_player: invalid player or game pointer.");
     return;
   }
 
   if (!p->active) {
-    fprintf(stderr, "update_player: player not active.");
+    fprintf(stderr, "move_player: player not active.");
     return;
   }
 
@@ -157,13 +157,13 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 
   if (new_x < 0 || new_x >= game->board.width ||
       new_y < 0 || new_y >= game->board.height) {
-    fprintf(stderr, "update_player: invalid coordinate.");
+    fprintf(stderr, "move_player: invalid coordinate.");
     return;
   }
 
   const Resources *resources = get_resources();
   if (resources == NULL) {
-    fprintf(stderr, "update_player: failed to load resources.");
+    fprintf(stderr, "move_player: failed to load resources.");
     return;
   }
 
@@ -198,19 +198,19 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
       // block movement
       break;
     default:
-      fprintf(stderr, "update_player: invalid destination.");
+      fprintf(stderr, "move_player: invalid destination.");
       return;
   }
 }
 
-void(update_enemy)(Entity *e, Game *game) {
+void(move_enemy)(Entity *e, Game *game) {
   if (e == NULL || game == NULL) {
-    fprintf(stderr, "update_enemy: invalid enemy or game pointer.");
+    fprintf(stderr, "move_enemy: invalid enemy or game pointer.");
     return;
   }
 
   if (!e->active) {
-    fprintf(stderr, "update_enemy: enemy not active.");
+    fprintf(stderr, "move_enemy: enemy not active.");
     return;
   }
 

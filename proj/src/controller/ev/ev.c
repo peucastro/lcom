@@ -21,7 +21,7 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
       if (counter % 60 == 0) {
         for (uint8_t i = 0; i < game->num_enemies; i++) {
           if (game->enemies[i].active) {
-            update_enemy(&game->enemies[i], game);
+            move_enemy(&game->enemies[i], game);
           }
         }
       }
@@ -76,16 +76,16 @@ int(handle_kbd_event)(Game *game, uint8_t scancode) {
           game->state = PAUSE;
           break;
         case 0x48: // UP
-          update_player(&game->player, game, 0, -1);
+          move_player(&game->player, game, 0, -1);
           break;
         case 0x4D: // RIGHT
-          update_player(&game->player, game, 1, 0);
+          move_player(&game->player, game, 1, 0);
           break;
         case 0x50: // DOWN
-          update_player(&game->player, game, 0, 1);
+          move_player(&game->player, game, 0, 1);
           break;
         case 0x4B: // LEFT
-          update_player(&game->player, game, -1, 0);
+          move_player(&game->player, game, -1, 0);
           break;
         default:
           break;
