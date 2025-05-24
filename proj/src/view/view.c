@@ -37,10 +37,13 @@ static int(draw_background_cache)(Game *game) {
   }
 
   if (!background_cache_initialized) {
-    size_t cache_size = vbe_get_h_res() * vbe_get_v_res() * vbe_get_bytes_per_pixel();
-    memset(background_cache, 0, cache_size);
-
     vbe_set_video_mem(background_cache);
+
+    if (graphics_draw_rectangle(0, 64, vbe_get_h_res(), vbe_get_v_res() - 64, 0x388700) != 0) {
+      vbe_set_video_mem(NULL);
+      fprintf(stderr, "draw_background_cache: failed to draw green background.");
+      return 1;
+    }
 
     for (uint8_t i = 0; i < game->num_walls; i++) {
       Entity *wall = &game->walls[i];
