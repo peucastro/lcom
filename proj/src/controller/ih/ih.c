@@ -112,6 +112,9 @@ void(mouse_handler)(Game *game) {
   if (mouse_get_index() == 0) {
     pp = mouse_parse_packet();
     mouse_update_info(pp);
+
+    handle_mouse_input(game);
+    
     if (handle_mouse_event(game, mouse_get_info()) != 0) {
       fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
       return;

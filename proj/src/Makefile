@@ -62,16 +62,16 @@ controller/ev/ev.o: controller/ev/ev.c controller/ev/ev.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 
+controller/input/input.o: controller/input/input.c controller/input/input.h
+	${CC} ${CFLAGS} -c $< -o $@
+	
 controller/input/game_input.o: controller/input/game_input.c controller/input/game_input.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 controller/input/menu_input.o: controller/input/menu_input.c controller/input/menu_input.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-controller/input/input.o: controller/input/input.c controller/input/input.h
-	${CC} ${CFLAGS} -c $< -o $@
-
-model/menu/menu.o: model/menu/menu.c model/menu/menu.h
+controller/input/mouse_input.o: controller/input/mouse_input.c controller/input/mouse_input.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 

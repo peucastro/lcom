@@ -11,6 +11,7 @@
 #include "controller/input/input.h"
 #include "controller/input/game_input.h"
 #include "controller/input/menu_input.h"
+#include "controller/input/mouse_input.h"
 
 /** @defgroup ih ih
  * @{
