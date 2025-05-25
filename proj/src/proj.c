@@ -108,7 +108,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
   destroy_resources();
-  cleanup_background_cache();
+  cleanup_cache();
 
   return 0;
 }

@@ -12,12 +12,12 @@
  */
 
 /**
- * @brief Cleans up background cache memory
+ * @brief Cleans up frame cache memory
  *
- * Frees the memory allocated for the background cache and resets
+ * Frees the memory allocated for the frame cache and resets
  * the cache state. Should be called during game cleanup.
  */
-void(cleanup_background_cache)(void);
+void(cleanup_cache)(void);
 
 /**
  * @brief Draws the start menu
