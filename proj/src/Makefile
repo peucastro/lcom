@@ -58,22 +58,11 @@ controller/graphics/graphics.o: controller/graphics/graphics.c controller/graphi
 controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-controller/ev/ev.o: controller/ev/ev.c controller/ev/ev.h
-	${CC} ${CFLAGS} -c $< -o $@
-
-
 controller/input/input.o: controller/input/input.c controller/input/input.h
 	${CC} ${CFLAGS} -c $< -o $@
-	
-controller/input/game_input.o: controller/input/game_input.c controller/input/game_input.h
-	${CC} ${CFLAGS} -c $< -o $@
 
-controller/input/menu_input.o: controller/input/menu_input.c controller/input/menu_input.h
+controller/ev/ev.o: controller/ev/ev.c controller/ev/ev.h
 	${CC} ${CFLAGS} -c $< -o $@
-
-controller/input/mouse_input.o: controller/input/mouse_input.c controller/input/mouse_input.h
-	${CC} ${CFLAGS} -c $< -o $@
-
 
 # include LCOM's makefile that does all the "heavy lifting"
 .include <minix.lcom.mk>

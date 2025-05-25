@@ -2,16 +2,12 @@
 #define __PROJ_IH_H
 
 #include "controller/ev/ev.h"
+#include "controller/input/input.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"
 #include "model/game/game.h"
 #include "view/view.h"
-
-#include "controller/input/input.h"
-#include "controller/input/game_input.h"
-#include "controller/input/menu_input.h"
-#include "controller/input/mouse_input.h"
 
 /** @defgroup ih ih
  * @{
