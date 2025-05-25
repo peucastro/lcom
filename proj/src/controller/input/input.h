@@ -1,13 +1,10 @@
 #ifndef __PROJ_INPUT_H
 #define __PROJ_INPUT_H
 
-#include "controller/kbc/mouse.h"
-#include "model/game/game.h"
-
 /** @defgroup input input
  * @{
  *
- * Functions for handling user input (keyboard and mouse)
+ * Functions for handling user input
  */
 
 /**
@@ -40,27 +37,6 @@ typedef enum {
  * @return The corresponding Key enum value, or KEY_NONE if not recognized
  */
 Key(translate_scancode)(uint8_t scancode);
-
-/**
- * @brief Handles keyboard input based on current game state
- *
- * Processes keyboard input and updates the game state accordingly.
- * Handles both menu navigation and in-game controls.
- *
- * @param game Pointer to the game instance
- * @param key The key that was pressed
- */
-void(handle_keyboard_input)(Game *game, Key key);
-
-/**
- * @brief Handles mouse input based on current game state
- *
- * Processes mouse movement and button clicks.
- * Updates menu selection and handles game interactions.
- *
- * @param game Pointer to the game instance
- */
-void(handle_mouse_input)(Game *game);
 
 /**@}*/
 

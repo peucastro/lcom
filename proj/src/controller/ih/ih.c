@@ -89,8 +89,7 @@ void(kbd_handler)(Game *game) {
 
   i = 0;
 
-  Key k = translate_scancode(get_scancode());
-  handle_keyboard_input(game, k);
+  handle_kbd_event(game, translate_scancode(get_scancode()));
 }
 
 void(mouse_handler)(Game *game) {
@@ -106,10 +105,8 @@ void(mouse_handler)(Game *game) {
     pp = mouse_parse_packet();
     mouse_update_info(pp);
 
-    handle_mouse_input(game);
-
     if (handle_mouse_event(game, mouse_get_info()) != 0) {
-      fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
+      fprintf(stderr, "mouse_handler: failed to call handle_mouse_event.");
       return;
     }
   }
