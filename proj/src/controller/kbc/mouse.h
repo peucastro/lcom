@@ -3,6 +3,7 @@
 
 #include "controller/graphics/vbe.h"
 #include "controller/kbc/kbc.h"
+#include <stdbool.h>
 
 /** @defgroup mouse mouse
  * @{

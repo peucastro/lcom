@@ -88,10 +88,8 @@ void(kbd_handler)(Game *game) {
   }
 
   i = 0;
-  if (handle_kbd_event(game, get_scancode()) != 0) {
-    fprintf(stderr, "kbd_handler: failed to call hanble_kbd_event.");
-    return;
-  }
+
+  handle_kbd_event(game, translate_scancode(get_scancode()));
 }
 
 void(mouse_handler)(Game *game) {
@@ -106,8 +104,9 @@ void(mouse_handler)(Game *game) {
   if (mouse_get_index() == 0) {
     pp = mouse_parse_packet();
     mouse_update_info(pp);
+
     if (handle_mouse_event(game, mouse_get_info()) != 0) {
-      fprintf(stderr, "mouse_handler: failed to call hanble_mouse_event.");
+      fprintf(stderr, "mouse_handler: failed to call handle_mouse_event.");
       return;
     }
   }

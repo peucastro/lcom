@@ -26,7 +26,7 @@ void(cleanup_background_cache)(void);
  *
  * @return 0 upon success, non-zero otherwise
  */
-int(draw_start_menu)(void);
+int(draw_start_menu)(Game *game);
 
 /**
  * @brief Draws the pause menu

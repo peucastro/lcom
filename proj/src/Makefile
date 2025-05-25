@@ -58,6 +58,9 @@ controller/graphics/graphics.o: controller/graphics/graphics.c controller/graphi
 controller/ih/ih.o: controller/ih/ih.c controller/ih/ih.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+controller/input/input.o: controller/input/input.c controller/input/input.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 controller/ev/ev.o: controller/ev/ev.c controller/ev/ev.h
 	${CC} ${CFLAGS} -c $< -o $@
 

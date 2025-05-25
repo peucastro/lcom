@@ -66,9 +66,30 @@ static int(draw_background_cache)(Game *game) {
   return 0;
 }
 
-int(draw_start_menu)(void) {
-  if (graphics_draw_rectangle(0, 0, 1024, 768, 0xFF0000) != 0) {
-    fprintf(stderr, "draw_start_menu: failed to draw start menu background.");
+int(draw_start_menu)(Game *game) {
+  if (!game) {
+    fprintf(stderr, "draw_start_menu: game pointer is NULL\n");
+    return 1;
+  }
+
+  const Resources *res = get_resources();
+  if (!res) {
+    fprintf(stderr, "draw_start_menu: resources not loaded\n");
+    return 1;
+  }
+
+  /* clamp menu_option to [0,2] just in case */
+  uint8_t idx = game->menu_option;
+  if (idx > 2) idx = 0;
+
+  Sprite *menu_img = res->menu_sprite[idx];
+  if (!menu_img) {
+    fprintf(stderr, "draw_start_menu: menu_sprite[%u] is NULL\n", idx);
+    return 1;
+  }
+
+  if (draw_sprite(menu_img, 0, 0) != 0) {
+    fprintf(stderr, "draw_start_menu: failed to blit menu sprite\n");
     return 1;
   }
 
@@ -173,11 +194,7 @@ void(draw_next_frame)(Game *game) {
 
   switch (game->state) {
     case START:
-      if (graphics_clear_screen() != 0) {
-        fprintf(stderr, "draw_next_frame: failed to clear screen.");
-        return;
-      }
-      if (draw_start_menu() != 0) {
+      if (draw_start_menu(game) != 0) {
         fprintf(stderr, "draw_next_frame: failed to draw start menu.");
         return;
       }

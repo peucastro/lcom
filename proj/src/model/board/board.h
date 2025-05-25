@@ -11,7 +11,7 @@
  * Functions for parsing game board from text files
  */
 
-#define MAX_BOARD_WIDTH 16                    /**< @brief Maximum width of the game board */
+#define MAX_BOARD_WIDTH 17                    /**< @brief Maximum width of the game board */
 #define MAX_BOARD_HEIGHT 11                   /**< @brief Maximum height of the game board */
 #define MAX_LINE_LENGTH (MAX_BOARD_WIDTH + 2) /**< @brief Maximum line length for reading board files */
 

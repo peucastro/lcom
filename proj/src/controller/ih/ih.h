@@ -2,6 +2,7 @@
 #define __PROJ_IH_H
 
 #include "controller/ev/ev.h"
+#include "controller/input/input.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
 #include "controller/timer/timer.h"

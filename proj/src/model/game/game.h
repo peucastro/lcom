@@ -36,6 +36,7 @@ typedef enum {
  */
 typedef struct {
   game_state_t state;          /**< @brief Current state of the game */
+  uint8_t menu_option;         /**< @brief Current selected menu option */
   GameBoard board;             /**< @brief Current game board */
   Entity player;               /**< @brief The player entity */
   Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
