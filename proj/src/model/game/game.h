@@ -83,7 +83,7 @@ int(reset_game)(Game *game);
  * @param xmov Horizontal movement (-1: left, 0: none, 1: right)
  * @param ymov Vertical movement (-1: up, 0: none, 1: down)
  */
-void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
+void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
 
 /**
  * @brief Updates an enemy entity with random movement
@@ -94,7 +94,59 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
  * @param e Pointer to the enemy entity
  * @param game Pointer to the current game state
  */
-void(update_enemy)(Entity *e, Game *game);
+void(move_enemy)(Entity *e, Game *game);
+
+/**
+ * @brief Updates all active enemies in the game
+ *
+ * Iterates through all enemies in the game and moves each active one.
+ * This function should be called periodically during gameplay.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_enemies)(Game *game);
+
+/**
+ * @brief Drops a bomb at the player's current position
+ *
+ * Places a bomb at the player's feet if possible. The bomb is placed on
+ * the board and initialized as an entity. Bombs can only be placed on
+ * empty spaces. The player remains standing on the newly placed bomb.
+ *
+ * @param game Pointer to the current game state
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+void(drop_bomb)(Game *game);
+
+/**
+ * @brief Causes a bomb to explode, damaging entities in its blast radius
+ *
+ * Creates an explosion that extends 3 tiles in each cardinal direction
+ * (up, down, left, right). The explosion damages entities it encounters:
+ * - Reduces player lives
+ * - Reduces enemy lives
+ * - Damages bricks until they break
+ * - Stops at walls
+ * - Can trigger chain reactions with other bombs
+ *
+ * @param game Pointer to the current game state
+ * @param bomb_index Index of the bomb that is exploding
+ */
+void(explode_bomb)(Game *game, uint8_t bomb_index);
+
+/**
+ * @brief Updates the state of all active bombs
+ *
+ * This function is called periodically to update all bombs in the game.
+ * For each active bomb, it decrements the countdown timer (stored in the data field).
+ * When a bomb's timer reaches zero, the bomb is deactivated and removed from the board.
+ * The function also compacts the bombs array by moving active bombs to fill gaps
+ * left by deactivated bombs, and updates the total bomb count.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_bombs)(Game *game);
 
 /**@}*/
 

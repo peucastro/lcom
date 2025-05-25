@@ -16,6 +16,7 @@
 #include "model/resources/resources.h"
 #include "model/sprite/sprite.h"
 #include "utils/utils.h"
+#include "view/view.h"
 
 int(main)(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -107,6 +108,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
     return 1;
   }
   destroy_resources();
+  cleanup_cache();
 
   return 0;
 }

@@ -35,6 +35,16 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.menu_sprite[0] = create_sprite(menu_default_xpm);
+  resources.menu_sprite[1] = create_sprite(menu_start_xpm);
+  resources.menu_sprite[2] = create_sprite(menu_exit_xpm);
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.menu_sprite[i] == NULL) {
+      fprintf(stderr, "create_resources: failed to load menu sprite.");
+      return 1;
+    }
+  }
+
   resources.player_down_sprite = create_sprite(player_down_xpm);
   if (resources.player_down_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create player down sprite.");
@@ -63,16 +73,6 @@ int(create_resources)(void) {
   if (resources.wall_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create wall sprite.");
     return 1;
-  }
-
-  resources.menu_sprite[0] = create_sprite(menu_default_xpm);
-  resources.menu_sprite[1] = create_sprite(menu_start_xpm);
-  resources.menu_sprite[2] = create_sprite(menu_exit_xpm);
-  for (int i = 0; i < 3; i++){
-    if (resources.menu_sprite[i] == NULL) {
-      fprintf(stderr, "create_resources: failed to load menu sprite.");
-      return 1;
-    }
   }
 
   return 0;
@@ -104,6 +104,13 @@ void(destroy_resources)(void) {
     resources.handpointing_sprite = NULL;
   }
 
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.menu_sprite[i]) {
+      destroy_sprite(resources.menu_sprite[i]);
+      resources.menu_sprite[i] = NULL;
+    }
+  }
+
   if (resources.player_down_sprite != NULL) {
     destroy_sprite(resources.player_down_sprite);
     resources.player_down_sprite = NULL;
@@ -127,13 +134,6 @@ void(destroy_resources)(void) {
   if (resources.wall_sprite != NULL) {
     destroy_sprite(resources.wall_sprite);
     resources.wall_sprite = NULL;
-  }
-
-  for (int i = 0; i < 3; i++) {
-    if (resources.menu_sprite[i]) {
-      destroy_sprite(resources.menu_sprite[i]);
-      resources.menu_sprite[i] = NULL;
-    }
   }
 }
 

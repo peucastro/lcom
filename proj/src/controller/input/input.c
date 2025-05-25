@@ -17,6 +17,7 @@ Key(translate_scancode)(uint8_t sc) {
     case 0x20: return KEY_RIGHT;
 
     case 0x1C: return KEY_ENTER;
+    case 0x39: return KEY_SPACE;
     case 0x01: return KEY_ESCAPE;
     default: return KEY_NONE;
   }

@@ -17,6 +17,7 @@ typedef enum {
   KEY_LEFT,
   KEY_RIGHT,
   KEY_ENTER,
+  KEY_SPACE,
   KEY_ESCAPE,
 } Key;
 

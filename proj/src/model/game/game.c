@@ -31,20 +31,32 @@ int(init_game)(Game *game) {
     for (uint8_t c = 0; c < game->board.width; c++) {
       switch (game->board.elements[r][c]) {
         case ENEMY:
-          if (game->num_enemies < MAX_ENEMIES)
-            game->num_enemies++;
+          if (game->num_enemies >= MAX_ENEMIES) {
+            fprintf(stderr, "init_game: number of enemies (%u) exceded the maximum (%u).", game->num_enemies, MAX_ENEMIES);
+            return 1;
+          }
+          game->num_enemies++;
           break;
         case BRICK:
-          if (game->num_bricks < MAX_BRICKS)
-            game->num_bricks++;
+          if (game->num_bricks >= MAX_BRICKS) {
+            fprintf(stderr, "init_game: number of bricks (%u) exceded the maximum (%u).", game->num_bricks, MAX_BRICKS);
+            return 1;
+          }
+          game->num_bricks++;
           break;
         case WALL:
-          if (game->num_walls < MAX_WALLS)
-            game->num_walls++;
+          if (game->num_walls >= MAX_WALLS) {
+            fprintf(stderr, "init_game: number of walls (%u) exceded the maximum (%u).", game->num_walls, MAX_WALLS);
+            return 1;
+          }
+          game->num_walls++;
           break;
         case BOMB:
-          if (game->num_bombs < MAX_BOMBS)
-            game->num_bombs++;
+          if (game->num_bombs >= MAX_BOMBS) {
+            fprintf(stderr, "init_game: number of bombs (%u) exceded the maximum (%u).", game->num_enemies, MAX_BOMBS);
+            return 1;
+          }
+          game->num_bombs++;
           break;
         default: break;
       }
@@ -65,7 +77,7 @@ int(init_game)(Game *game) {
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
-            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 100) != 0) {
+            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 2) != 0) {
               fprintf(stderr, "init_game: failed to initialize enemy entity at index %d.", ei);
               return 1;
             }
@@ -74,7 +86,7 @@ int(init_game)(Game *game) {
           break;
         case BRICK:
           if (bri < MAX_BRICKS) {
-            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 0) != 0) {
+            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 1) != 0) {
               fprintf(stderr, "init_game: failed to initialize brick entity at index %d.", bri);
               return 1;
             }
@@ -142,14 +154,14 @@ int(reset_game)(Game *game) {
   return 0;
 }
 
-void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
+void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   if (p == NULL || game == NULL) {
-    fprintf(stderr, "update_player: invalid player or game pointer.");
+    fprintf(stderr, "move_player: invalid player or game pointer.");
     return;
   }
 
   if (!p->active) {
-    fprintf(stderr, "update_player: player not active.");
+    fprintf(stderr, "move_player: player not active.");
     return;
   }
 
@@ -158,27 +170,31 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 
   if (new_x < 0 || new_x >= game->board.width ||
       new_y < 0 || new_y >= game->board.height) {
-    fprintf(stderr, "update_player: invalid coordinate.");
+    fprintf(stderr, "move_player: invalid coordinate.");
     return;
   }
 
   const Resources *resources = get_resources();
   if (resources == NULL) {
-    fprintf(stderr, "update_player: failed to load resources.");
+    fprintf(stderr, "move_player: failed to load resources.");
     return;
   }
 
   if (xmov > 0) {
     p->sprite = resources->player_right_sprite;
+    p->dir = RIGHT;
   }
   else if (xmov < 0) {
     p->sprite = resources->player_left_sprite;
+    p->dir = LEFT;
   }
   else if (ymov > 0) {
     p->sprite = resources->player_down_sprite;
+    p->dir = DOWN;
   }
   else if (ymov < 0) {
     p->sprite = resources->player_up_sprite;
+    p->dir = UP;
   }
 
   board_element_t destination = game->board.elements[new_y][new_x];
@@ -199,19 +215,19 @@ void(update_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
       // block movement
       break;
     default:
-      fprintf(stderr, "update_player: invalid destination.");
+      fprintf(stderr, "move_player: invalid destination.");
       return;
   }
 }
 
-void(update_enemy)(Entity *e, Game *game) {
+void(move_enemy)(Entity *e, Game *game) {
   if (e == NULL || game == NULL) {
-    fprintf(stderr, "update_enemy: invalid enemy or game pointer.");
+    fprintf(stderr, "move_enemy: invalid enemy or game pointer.");
     return;
   }
 
   if (!e->active) {
-    fprintf(stderr, "update_enemy: enemy not active.");
+    fprintf(stderr, "move_enemy: enemy not active.");
     return;
   }
 
@@ -248,4 +264,213 @@ void(update_enemy)(Entity *e, Game *game) {
   game->board.elements[new_y][new_x] = ENEMY;
   e->x = new_x;
   e->y = new_y;
+}
+
+void(update_enemies)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "update_enemies: game pointer cannot be null.");
+    return;
+  }
+
+  for (uint8_t i = 0; i < game->num_enemies; i++) {
+    if (game->enemies[i].active) {
+      move_enemy(&game->enemies[i], game);
+    }
+  }
+}
+
+void(drop_bomb)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "drop_bomb: game pointer cannot be null.");
+    return;
+  }
+
+  if (!game->player.active) {
+    fprintf(stderr, "drop_bomb: player is not active.");
+    return;
+  }
+
+  int16_t x = game->player.x;
+  int16_t y = game->player.y;
+
+  switch (game->player.dir) {
+    case UP:
+      y++;
+      break;
+    case RIGHT:
+      x--;
+      break;
+    case DOWN:
+      y--;
+      break;
+    case LEFT:
+      x++;
+      break;
+  }
+
+  if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
+    fprintf(stderr, "drop_bomb: target position out of bounds.\n");
+    return;
+  }
+
+  if (game->board.elements[y][x] != EMPTY_SPACE) {
+    fprintf(stderr, "drop_bomb: cannot place bomb at target position.\n");
+    return;
+  }
+
+  if (game->num_bombs >= MAX_BOMBS) {
+    fprintf(stderr, "drop_bomb: maximum number of bombs reached.");
+    return;
+  }
+
+  const Resources *resources = get_resources();
+  if (resources == NULL) {
+    fprintf(stderr, "drop_bomb: failed to load resources.");
+    return;
+  }
+
+  uint8_t bomb_index = game->num_bombs;
+
+  if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprite, 5) != 0) {
+    fprintf(stderr, "drop_bomb: failed to initialize bomb entity.");
+    return;
+  }
+
+  game->board.elements[y][x] = BOMB;
+  game->bombs[bomb_index].active = true;
+  game->num_bombs++;
+
+  return;
+}
+
+void(explode_bomb)(Game *game, uint8_t bomb_index) {
+  if (game == NULL || bomb_index >= game->num_bombs) {
+    fprintf(stderr, "explode_bomb: invalid arguments.");
+    return;
+  }
+
+  Entity *bomb = &game->bombs[bomb_index];
+
+  if (!bomb->active) {
+    fprintf(stderr, "explode_bomb: trying to explode inactive bomb.");
+    return;
+  }
+
+  int16_t bomb_x = bomb->x;
+  int16_t bomb_y = bomb->y;
+
+  const int8_t dx[4] = {0, 1, 0, -1};
+  const int8_t dy[4] = {-1, 0, 1, 0};
+
+  for (int dir = 0; dir < 4; dir++) {
+    for (int range = 1; range <= 3; range++) {
+      int16_t cell_x = bomb_x + dx[dir] * range;
+      int16_t cell_y = bomb_y + dy[dir] * range;
+
+      if (cell_x < 0 || cell_x >= game->board.width ||
+          cell_y < 0 || cell_y >= game->board.height) {
+        break;
+      }
+
+      board_element_t cell = game->board.elements[cell_y][cell_x];
+
+      switch (cell) {
+        case PLAYER:
+          if (game->player.x == cell_x && game->player.y == cell_y) {
+            game->player.data--;
+            if (game->player.data <= 0) {
+              game->player.active = false;
+              game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+            }
+          }
+          break;
+
+        case ENEMY:
+          for (uint8_t i = 0; i < game->num_enemies; i++) {
+            if (game->enemies[i].active &&
+                game->enemies[i].x == cell_x &&
+                game->enemies[i].y == cell_y) {
+              game->enemies[i].data--;
+              if (game->enemies[i].data <= 0) {
+                game->enemies[i].active = false;
+                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+              }
+              break;
+            }
+          }
+          break;
+
+        case BRICK:
+          for (uint8_t i = 0; i < game->num_bricks; i++) {
+            if (game->bricks[i].active &&
+                game->bricks[i].x == cell_x &&
+                game->bricks[i].y == cell_y) {
+              game->bricks[i].data--;
+              if (game->bricks[i].data <= 0) {
+                game->bricks[i].active = false;
+                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+              }
+              break;
+            }
+          }
+          break;
+
+        case WALL:
+          break;
+
+        case BOMB:
+          for (uint8_t i = 0; i < game->num_bombs; i++) {
+            if (i != bomb_index && game->bombs[i].active &&
+                game->bombs[i].x == cell_x &&
+                game->bombs[i].y == cell_y) {
+              game->bombs[i].data = 1;
+              break;
+            }
+          }
+          break;
+
+        case EMPTY_SPACE:
+        case POWERUP:
+          continue;
+
+        default:
+          fprintf(stderr, "explode_bomb: unknown board element type %d\n", cell);
+          break;
+      }
+
+      if (cell == WALL || cell == BRICK || cell == BOMB) {
+        break;
+      }
+    }
+  }
+
+  bomb->active = false;
+  game->board.elements[bomb_y][bomb_x] = EMPTY_SPACE;
+}
+
+void(update_bombs)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "update_bombs: game pointer cannot be null.");
+    return;
+  }
+
+  uint8_t active_bombs = 0;
+
+  for (uint8_t i = 0; i < game->num_bombs; i++) {
+    if (game->bombs[i].active) {
+      game->bombs[i].data--;
+
+      if (game->bombs[i].data == 0) {
+        explode_bomb(game, i);
+      }
+      else {
+        if (i != active_bombs) {
+          game->bombs[active_bombs] = game->bombs[i];
+        }
+        active_bombs++;
+      }
+    }
+  }
+
+  game->num_bombs = active_bombs;
 }

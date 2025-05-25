@@ -12,6 +12,14 @@
  */
 
 /**
+ * @brief Cleans up frame cache memory
+ *
+ * Frees the memory allocated for the frame cache and resets
+ * the cache state. Should be called during game cleanup.
+ */
+void(cleanup_cache)(void);
+
+/**
  * @brief Draws the start menu
  *
  * Renders the start menu to the screen.

@@ -19,11 +19,8 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
 
     case GAME:
       if (counter % 60 == 0) {
-        for (uint8_t i = 0; i < game->num_enemies; i++) {
-          if (game->enemies[i].active) {
-            update_enemy(&game->enemies[i], game);
-          }
-        }
+        update_enemies(game);
+        update_bombs(game);
       }
       break;
 
@@ -74,16 +71,22 @@ int(handle_kbd_event)(Game *game, Key key) {
     case GAME:
       switch (key) {
         case KEY_UP:
-          update_player(&game->player, game, 0, -1);
+          move_player(&game->player, game, 0, -1);
           break;
         case KEY_RIGHT:
-          update_player(&game->player, game, 1, 0);
+          move_player(&game->player, game, 1, 0);
           break;
         case KEY_DOWN:
-          update_player(&game->player, game, 0, 1);
+          move_player(&game->player, game, 0, 1);
           break;
         case KEY_LEFT:
-          update_player(&game->player, game, -1, 0);
+          move_player(&game->player, game, -1, 0);
+          break;
+        case KEY_ENTER:
+          game->state = PAUSE;
+          break;
+        case KEY_SPACE:
+          drop_bomb(game);
           break;
         case KEY_ESCAPE:
           game->state = START;
