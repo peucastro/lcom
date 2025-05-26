@@ -158,12 +158,14 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
       }
       break;
 
-    case GAME:
-      if (mouse_info.rb)
-        printf("%d : %d -> right click\n", mouse_info.x, mouse_info.y);
-      else if (mouse_info.lb)
-        printf("%d : %d -> left click\n", mouse_info.x, mouse_info.y);
-      break;
+    case GAME: {
+      if (mouse_info.lb) {
+        const int16_t cell_size = 64;
+        int16_t x_tile = mouse_info.x / cell_size;
+        int16_t y_tile = mouse_info.y / cell_size - 1;
+        drop_bomb(game, x_tile, y_tile);
+      }
+    } break;
 
     case EXIT:
       break;

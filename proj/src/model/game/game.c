@@ -289,22 +289,22 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   }
 
   if (!game->player.active) {
-    fprintf(stderr, "drop_bomb: player is not active.");
+    return;
+  }
+
+  if (x - game->player.x > 1 || y - game->player.y > 1) {
     return;
   }
 
   if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
-    fprintf(stderr, "drop_bomb: target position out of bounds.\n");
     return;
   }
 
   if (game->board.elements[y][x] != EMPTY_SPACE) {
-    fprintf(stderr, "drop_bomb: cannot place bomb at target position.\n");
     return;
   }
 
   if (game->num_bombs >= MAX_BOMBS) {
-    fprintf(stderr, "drop_bomb: maximum number of bombs reached.");
     return;
   }
 
