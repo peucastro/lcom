@@ -19,7 +19,13 @@ int(create_resources)(void) {
 
   resources.enemy_left_sprite = create_sprite(enemy_left_xpm);
   if (resources.enemy_left_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create enemy sprite.");
+    fprintf(stderr, "create_resources: failed to create enemy left sprite.");
+    return 1;
+  }
+
+  resources.enemy_right_sprite = create_sprite(enemy_right_xpm);
+  if (resources.enemy_right_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create enemy right sprite.");
     return 1;
   }
 
@@ -92,6 +98,11 @@ void(destroy_resources)(void) {
   if (resources.enemy_left_sprite != NULL) {
     destroy_sprite(resources.enemy_left_sprite);
     resources.enemy_left_sprite = NULL;
+  }
+
+  if (resources.enemy_right_sprite != NULL) {
+    destroy_sprite(resources.enemy_right_sprite);
+    resources.enemy_right_sprite = NULL;
   }
 
   if (resources.handopen_sprite != NULL) {

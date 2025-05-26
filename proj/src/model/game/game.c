@@ -255,6 +255,13 @@ void(move_enemy)(Entity *e, Game *game) {
   int16_t new_x = e->x + dx[chosen_dir];
   int16_t new_y = e->y + dy[chosen_dir];
 
+  if (new_x > e->x) {
+    e->sprite = get_resources()->enemy_right_sprite;
+  }
+  else if (new_x < e->x) {
+    e->sprite = get_resources()->enemy_left_sprite;
+  }
+
   game->board.elements[e->y][e->x] = EMPTY_SPACE;
   game->board.elements[new_y][new_x] = ENEMY;
   e->x = new_x;
