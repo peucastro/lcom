@@ -43,7 +43,7 @@ int(load_next_level)(Game *game) {
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
-            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 2) != 0) {
+            if (init_entity(&game->enemies[ei], c, r, resources->enemy_left_sprite, 2) != 0) {
               fprintf(stderr, "init_game: failed to initialize enemy entity at index %d.", ei);
               return 1;
             }
