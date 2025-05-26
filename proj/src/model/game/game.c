@@ -2,66 +2,32 @@
 
 #include "model/game/game.h"
 
-int(init_game)(Game *game) {
+int(load_next_level)(Game *game) {
   if (game == NULL) {
-    fprintf(stderr, "init_game: game pointer cannot be null.");
+    fprintf(stderr, "load_next_level: game pointer cannot be null.");
     return 1;
   }
 
-  game->state = START;
-  game->menu_option = 0;
-  game->num_enemies = 0;
-  game->num_bricks = 0;
-  game->num_walls = 0;
-  game->num_bombs = 0;
+  uint8_t lives = game->player.data;
+  game->level++;
+  char board_path[128];
+  snprintf(board_path, sizeof(board_path), "/home/lcom/labs/proj/src/assets/boards/level%u.txt", game->level);
 
-  if (load_board(&game->board, "/home/lcom/labs/proj/src/assets/boards/level1.txt") != 0) {
-    fprintf(stderr, "init_game: failed to load game board.");
-    return 1;
+  if (load_board(&game->board, board_path) != 0) {
+    fprintf(stderr, "load_next_level: failed to load board %s\n.", board_path);
+    return 1; // TODO: win state
   }
 
   const Resources *resources = get_resources();
   if (resources == NULL) {
-    fprintf(stderr, "init_game: failed to load resources.");
-    reset_board(&game->board);
+    fprintf(stderr, "load_next_level: failed to load resources.");
     return 1;
   }
 
-  for (uint8_t r = 0; r < game->board.height; r++) {
-    for (uint8_t c = 0; c < game->board.width; c++) {
-      switch (game->board.elements[r][c]) {
-        case ENEMY:
-          if (game->num_enemies >= MAX_ENEMIES) {
-            fprintf(stderr, "init_game: number of enemies (%u) exceded the maximum (%u).", game->num_enemies, MAX_ENEMIES);
-            return 1;
-          }
-          game->num_enemies++;
-          break;
-        case BRICK:
-          if (game->num_bricks >= MAX_BRICKS) {
-            fprintf(stderr, "init_game: number of bricks (%u) exceded the maximum (%u).", game->num_bricks, MAX_BRICKS);
-            return 1;
-          }
-          game->num_bricks++;
-          break;
-        case WALL:
-          if (game->num_walls >= MAX_WALLS) {
-            fprintf(stderr, "init_game: number of walls (%u) exceded the maximum (%u).", game->num_walls, MAX_WALLS);
-            return 1;
-          }
-          game->num_walls++;
-          break;
-        case BOMB:
-          if (game->num_bombs >= MAX_BOMBS) {
-            fprintf(stderr, "init_game: number of bombs (%u) exceded the maximum (%u).", game->num_enemies, MAX_BOMBS);
-            return 1;
-          }
-          game->num_bombs++;
-          break;
-        default: break;
-      }
-    }
-  }
+  game->num_enemies = 0;
+  game->num_bricks = 0;
+  game->num_walls = 0;
+  game->num_bombs = 0;
 
   uint8_t ei = 0, bri = 0, wi = 0, boi = 0;
   for (uint8_t r = 0; r < game->board.height; r++) {
@@ -69,8 +35,8 @@ int(init_game)(Game *game) {
       board_element_t el = game->board.elements[r][c];
       switch (el) {
         case PLAYER:
-          if (init_entity(&game->player, c, r, resources->player_down_sprite, 3) != 0) {
-            fprintf(stderr, "init_game: failed to initialize player entity.");
+          if (init_entity(&game->player, c, r, resources->player_down_sprite, lives) != 0) {
+            fprintf(stderr, "load_next_level: failed to initialize player entity.");
             return 1;
           }
           game->player.active = true;
@@ -116,6 +82,35 @@ int(init_game)(Game *game) {
           break;
       }
     }
+  }
+  game->num_enemies = ei;
+  game->num_bricks = bri;
+  game->num_walls = wi;
+  game->num_bombs = boi;
+
+  return 0;
+}
+
+int(init_game)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "init_game: game pointer cannot be null.");
+    return 1;
+  }
+
+  game->state = START;
+  game->menu_option = 0;
+  game->level = 0;
+
+  game->num_enemies = 0;
+  game->num_bricks = 0;
+  game->num_walls = 0;
+  game->num_bombs = 0;
+
+  game->player.data = 3;
+
+  if (load_next_level(game) != 0) {
+    fprintf(stderr, "init_game: failed to load next level.");
+    return 1;
   }
 
   return 0;
@@ -446,6 +441,21 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
 
   bomb->active = false;
   game->board.elements[bomb_y][bomb_x] = EMPTY_SPACE;
+
+  uint8_t active_bricks = 0;
+  for (uint8_t i = 0; i < game->num_bricks; i++) {
+    if (game->bricks[i].active) {
+      active_bricks++;
+    }
+  }
+
+  game->num_bricks = active_bricks;
+
+  if (active_bricks == 0) {
+    if (load_next_level(game) != 0) {
+      game->state = EXIT;
+    }
+  }
 }
 
 void(update_bombs)(Game *game) {

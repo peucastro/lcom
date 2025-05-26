@@ -47,7 +47,10 @@ typedef struct {
   uint8_t num_bricks;          /**< @brief Number of bricks in the game */
   uint8_t num_walls;           /**< @brief Number of walls in the game */
   uint8_t num_bombs;           /**< @brief Number of bombs in the game */
+  uint8_t level;               /**< @brief Current game level */
 } Game;
+
+int(load_next_level)(Game *game);
 
 /**
  * @brief Initializes the game
