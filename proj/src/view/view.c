@@ -6,6 +6,7 @@ static uint8_t *frame_cache = NULL;
 static uint8_t cache_initialized = 0;
 static uint8_t last_menu_option = 255;
 static game_state_t last_game_state = EXIT;
+static uint8_t last_level = 0;
 static uint8_t game_background_cached = 0;
 
 void(cleanup_cache)(void) {
@@ -15,6 +16,7 @@ void(cleanup_cache)(void) {
     cache_initialized = 0;
     last_menu_option = 255;
     last_game_state = EXIT;
+    last_level = 0;
     game_background_cached = 0;
   }
 }
@@ -258,6 +260,11 @@ void(draw_next_frame)(Game *game) {
     cache_initialized = 0;
     game_background_cached = 0;
     last_game_state = game->state;
+  }
+
+  if (game->state == GAME && game->level != last_level) {
+    game_background_cached = 0;
+    last_level = game->level;
   }
 
   switch (game->state) {
