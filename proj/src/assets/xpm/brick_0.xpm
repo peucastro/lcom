@@ -1,9 +1,9 @@
 /* XPM */
-static const char * brick_xpm[] = {
+static const char * brick_0_xpm[] = {
 "64 64 3 1",
-" 	c #B53120",
-".	c #FFCCC5",
-"+	c #FF8170",
+" 	c #000001",
+".	c #FFFFFF",
+"+	c #B0B0B0",
 "                                                                ",
 "                                                                ",
 "                                                                ",

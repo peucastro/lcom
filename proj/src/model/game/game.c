@@ -52,7 +52,7 @@ int(load_next_level)(Game *game) {
           break;
         case BRICK:
           if (bri < MAX_BRICKS) {
-            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 1) != 0) {
+            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprites[0], 3) != 0) {
               fprintf(stderr, "init_game: failed to initialize brick entity at index %d.", bri);
               return 1;
             }
@@ -401,7 +401,9 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
               if (game->bricks[i].data <= 0) {
                 game->bricks[i].active = false;
                 game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                break;
               }
+              game->bricks[i].sprite = get_resources()->brick_sprites[3 - game->bricks[i].data];
               break;
             }
           }
