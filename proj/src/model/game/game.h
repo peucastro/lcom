@@ -50,6 +50,17 @@ typedef struct {
   uint8_t level;               /**< @brief Current game level */
 } Game;
 
+/**
+ * @brief Loads the next level of the game
+ *
+ * Increments the level counter, loads the corresponding board file,
+ * and initializes all entities according to the board layout.
+ * Preserves the player's remaining lives between levels.
+ *
+ * @param game Pointer to the current game state
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
 int(load_next_level)(Game *game);
 
 /**

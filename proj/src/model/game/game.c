@@ -267,11 +267,19 @@ void(update_enemies)(Game *game) {
     return;
   }
 
+  uint8_t active_enemies = 0;
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     if (game->enemies[i].active) {
       move_enemy(&game->enemies[i], game);
+
+      if (i != active_enemies) {
+        game->enemies[active_enemies] = game->enemies[i];
+      }
+      active_enemies++;
     }
   }
+
+  game->num_enemies = active_enemies;
 }
 
 void(drop_bomb)(Game *game) {
@@ -358,7 +366,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
   const int8_t dy[4] = {-1, 0, 1, 0};
 
   for (int dir = 0; dir < 4; dir++) {
-    for (int range = 1; range <= 3; range++) {
+    for (int range = 1; range <= 2; range++) {
       int16_t cell_x = bomb_x + dx[dir] * range;
       int16_t cell_y = bomb_y + dy[dir] * range;
 
@@ -445,6 +453,9 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
   uint8_t active_bricks = 0;
   for (uint8_t i = 0; i < game->num_bricks; i++) {
     if (game->bricks[i].active) {
+      if (i != active_bricks) {
+        game->bricks[active_bricks] = game->bricks[i];
+      }
       active_bricks++;
     }
   }
