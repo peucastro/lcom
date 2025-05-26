@@ -128,10 +128,12 @@ void(update_enemies)(Game *game);
  * empty spaces. The player remains standing on the newly placed bomb.
  *
  * @param game Pointer to the current game state
+ * @param x Horizontal position to drop the bomb
+ * @param y Vertial position to drop the bomb
  *
  * @return 0 upon success, non-zero otherwise
  */
-void(drop_bomb)(Game *game);
+void(drop_bomb)(Game *game, int16_t x, int16_t y);
 
 /**
  * @brief Causes a bomb to explode, damaging entities in its blast radius

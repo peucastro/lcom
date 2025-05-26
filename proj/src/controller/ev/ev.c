@@ -85,9 +85,27 @@ int(handle_kbd_event)(Game *game, Key key) {
         case KEY_ENTER:
           game->state = PAUSE;
           break;
-        case KEY_SPACE:
-          drop_bomb(game);
+        case KEY_SPACE: {
+          int16_t x = game->player.x;
+          int16_t y = game->player.y;
+
+          switch (game->player.dir) {
+            case UP:
+              y++;
+              break;
+            case RIGHT:
+              x--;
+              break;
+            case DOWN:
+              y--;
+              break;
+            case LEFT:
+              x++;
+              break;
+          }
+          drop_bomb(game, x, y);
           break;
+        }
         case KEY_ESCAPE:
           game->state = START;
           break;

@@ -282,7 +282,7 @@ void(update_enemies)(Game *game) {
   game->num_enemies = active_enemies;
 }
 
-void(drop_bomb)(Game *game) {
+void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   if (game == NULL) {
     fprintf(stderr, "drop_bomb: game pointer cannot be null.");
     return;
@@ -291,24 +291,6 @@ void(drop_bomb)(Game *game) {
   if (!game->player.active) {
     fprintf(stderr, "drop_bomb: player is not active.");
     return;
-  }
-
-  int16_t x = game->player.x;
-  int16_t y = game->player.y;
-
-  switch (game->player.dir) {
-    case UP:
-      y++;
-      break;
-    case RIGHT:
-      x--;
-      break;
-    case DOWN:
-      y--;
-      break;
-    case LEFT:
-      x++;
-      break;
   }
 
   if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
