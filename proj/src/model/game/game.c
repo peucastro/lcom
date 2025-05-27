@@ -219,9 +219,36 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 
   switch (destination) {
     case EMPTY_SPACE:
-    case POWERUP:
       game->board.elements[p->y][p->x] = EMPTY_SPACE;
       game->board.elements[new_y][new_x] = PLAYER;
+      p->x = new_x;
+      p->y = new_y;
+      break;
+
+    case POWERUP:
+      for (uint8_t i = 0; i < game->num_powerups; i++) {
+        if (game->powerups[i].active &&
+            game->powerups[i].x == new_x &&
+            game->powerups[i].y == new_y) {
+          game->powerups[i].active = false;
+          break;
+        }
+      }
+
+      uint8_t active_powerups = 0;
+      for (uint8_t i = 0; i < game->num_powerups; i++) {
+        if (game->powerups[i].active) {
+          if (i != active_powerups) {
+            game->powerups[active_powerups] = game->powerups[i];
+          }
+          active_powerups++;
+        }
+      }
+      game->num_powerups = active_powerups;
+
+      game->board.elements[p->y][p->x] = EMPTY_SPACE;
+      game->board.elements[new_y][new_x] = PLAYER;
+      game->player.data++;
       p->x = new_x;
       p->y = new_y;
       break;
