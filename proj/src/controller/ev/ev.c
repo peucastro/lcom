@@ -85,9 +85,27 @@ int(handle_kbd_event)(Game *game, Key key) {
         case KEY_ENTER:
           game->state = PAUSE;
           break;
-        case KEY_SPACE:
-          drop_bomb(game);
+        case KEY_SPACE: {
+          int16_t x = game->player.x;
+          int16_t y = game->player.y;
+
+          switch (game->player.dir) {
+            case UP:
+              y++;
+              break;
+            case RIGHT:
+              x--;
+              break;
+            case DOWN:
+              y--;
+              break;
+            case LEFT:
+              x++;
+              break;
+          }
+          drop_bomb(game, x, y);
           break;
+        }
         case KEY_ESCAPE:
           game->state = START;
           break;
@@ -140,12 +158,14 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
       }
       break;
 
-    case GAME:
-      if (mouse_info.rb)
-        printf("%d : %d -> right click\n", mouse_info.x, mouse_info.y);
-      else if (mouse_info.lb)
-        printf("%d : %d -> left click\n", mouse_info.x, mouse_info.y);
-      break;
+    case GAME: {
+      if (mouse_info.lb) {
+        const int16_t cell_size = 64;
+        int16_t x_tile = mouse_info.x / cell_size;
+        int16_t y_tile = mouse_info.y / cell_size - 1;
+        drop_bomb(game, x_tile, y_tile);
+      }
+    } break;
 
     case EXIT:
       break;

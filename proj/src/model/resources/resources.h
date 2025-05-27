@@ -2,8 +2,11 @@
 #define __PROJ_RESOURCES_H
 
 #include "assets/xpm/bomb.xpm"
-#include "assets/xpm/brick.xpm"
-#include "assets/xpm/enemy.xpm"
+#include "assets/xpm/brick_0.xpm"
+#include "assets/xpm/brick_1.xpm"
+#include "assets/xpm/brick_2.xpm"
+#include "assets/xpm/enemy_left.xpm"
+#include "assets/xpm/enemy_right.xpm"
 #include "assets/xpm/handopen.xpm"
 #include "assets/xpm/handpointing.xpm"
 #include "assets/xpm/menu_default.xpm"
@@ -30,8 +33,9 @@
  */
 typedef struct {
   Sprite *bomb_sprite;         /**< @brief Pointer to the bomb sprite */
-  Sprite *brick_sprite;        /**< @brief Pointer to the brick sprite */
-  Sprite *enemy_sprite;        /**< @brief Pointer to the enemy sprite */
+  Sprite *brick_sprites[3];    /**< @brief Array of pointer to the brick sprites */
+  Sprite *enemy_left_sprite;   /**< @brief Pointer to the enemy left sprite */
+  Sprite *enemy_right_sprite;  /**< @brief Pointer to the enemy right sprite */
   Sprite *handopen_sprite;     /**< @brief Pointer to the handopen sprite */
   Sprite *handpointing_sprite; /**< @brief Pointer to the handpointing sprite */
   Sprite *menu_sprite[3];      /**< @brief Array of pointers to the menu sprites */

@@ -43,7 +43,7 @@ int(load_next_level)(Game *game) {
           break;
         case ENEMY:
           if (ei < MAX_ENEMIES) {
-            if (init_entity(&game->enemies[ei], c, r, resources->enemy_sprite, 2) != 0) {
+            if (init_entity(&game->enemies[ei], c, r, resources->enemy_left_sprite, 2) != 0) {
               fprintf(stderr, "init_game: failed to initialize enemy entity at index %d.", ei);
               return 1;
             }
@@ -52,7 +52,7 @@ int(load_next_level)(Game *game) {
           break;
         case BRICK:
           if (bri < MAX_BRICKS) {
-            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprite, 1) != 0) {
+            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprites[0], 3) != 0) {
               fprintf(stderr, "init_game: failed to initialize brick entity at index %d.", bri);
               return 1;
             }
@@ -255,6 +255,13 @@ void(move_enemy)(Entity *e, Game *game) {
   int16_t new_x = e->x + dx[chosen_dir];
   int16_t new_y = e->y + dy[chosen_dir];
 
+  if (new_x > e->x) {
+    e->sprite = get_resources()->enemy_right_sprite;
+  }
+  else if (new_x < e->x) {
+    e->sprite = get_resources()->enemy_left_sprite;
+  }
+
   game->board.elements[e->y][e->x] = EMPTY_SPACE;
   game->board.elements[new_y][new_x] = ENEMY;
   e->x = new_x;
@@ -282,47 +289,29 @@ void(update_enemies)(Game *game) {
   game->num_enemies = active_enemies;
 }
 
-void(drop_bomb)(Game *game) {
+void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   if (game == NULL) {
     fprintf(stderr, "drop_bomb: game pointer cannot be null.");
     return;
   }
 
   if (!game->player.active) {
-    fprintf(stderr, "drop_bomb: player is not active.");
     return;
   }
 
-  int16_t x = game->player.x;
-  int16_t y = game->player.y;
-
-  switch (game->player.dir) {
-    case UP:
-      y++;
-      break;
-    case RIGHT:
-      x--;
-      break;
-    case DOWN:
-      y--;
-      break;
-    case LEFT:
-      x++;
-      break;
+  if (x - game->player.x > 1 || y - game->player.y > 1) {
+    return;
   }
 
   if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
-    fprintf(stderr, "drop_bomb: target position out of bounds.\n");
     return;
   }
 
   if (game->board.elements[y][x] != EMPTY_SPACE) {
-    fprintf(stderr, "drop_bomb: cannot place bomb at target position.\n");
     return;
   }
 
   if (game->num_bombs >= MAX_BOMBS) {
-    fprintf(stderr, "drop_bomb: maximum number of bombs reached.");
     return;
   }
 
@@ -412,7 +401,9 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
               if (game->bricks[i].data <= 0) {
                 game->bricks[i].active = false;
                 game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                break;
               }
+              game->bricks[i].sprite = get_resources()->brick_sprites[3 - game->bricks[i].data];
               break;
             }
           }

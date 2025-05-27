@@ -11,15 +11,25 @@ int(create_resources)(void) {
     return 1;
   }
 
-  resources.brick_sprite = create_sprite(brick_xpm);
-  if (resources.brick_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create brick sprite.");
+  resources.brick_sprites[0] = create_sprite(brick_0_xpm);
+  resources.brick_sprites[1] = create_sprite(brick_1_xpm);
+  resources.brick_sprites[2] = create_sprite(brick_2_xpm);
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.brick_sprites[i] == NULL) {
+      fprintf(stderr, "create_resources: failed to load brick sprite.");
+      return 1;
+    }
+  }
+
+  resources.enemy_left_sprite = create_sprite(enemy_left_xpm);
+  if (resources.enemy_left_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create enemy left sprite.");
     return 1;
   }
 
-  resources.enemy_sprite = create_sprite(enemy_xpm);
-  if (resources.enemy_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create enemy sprite.");
+  resources.enemy_right_sprite = create_sprite(enemy_right_xpm);
+  if (resources.enemy_right_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create enemy right sprite.");
     return 1;
   }
 
@@ -84,14 +94,21 @@ void(destroy_resources)(void) {
     resources.bomb_sprite = NULL;
   }
 
-  if (resources.brick_sprite != NULL) {
-    destroy_sprite(resources.brick_sprite);
-    resources.brick_sprite = NULL;
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.brick_sprites[i]) {
+      destroy_sprite(resources.brick_sprites[i]);
+      resources.brick_sprites[i] = NULL;
+    }
   }
 
-  if (resources.enemy_sprite != NULL) {
-    destroy_sprite(resources.enemy_sprite);
-    resources.enemy_sprite = NULL;
+  if (resources.enemy_left_sprite != NULL) {
+    destroy_sprite(resources.enemy_left_sprite);
+    resources.enemy_left_sprite = NULL;
+  }
+
+  if (resources.enemy_right_sprite != NULL) {
+    destroy_sprite(resources.enemy_right_sprite);
+    resources.enemy_right_sprite = NULL;
   }
 
   if (resources.handopen_sprite != NULL) {
