@@ -70,7 +70,7 @@ int(load_next_level)(Game *game) {
           break;
         case BOMB:
           if (boi < MAX_BOMBS) {
-            if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprite, 0) != 0) {
+            if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprites[0], 3) != 0) {
               fprintf(stderr, "init_game: failed to initialize bomb entity at index %d.", boi);
               return 1;
             }
@@ -323,7 +323,7 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
 
   uint8_t bomb_index = game->num_bombs;
 
-  if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprite, 5) != 0) {
+  if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprites[0], 3) != 0) {
     fprintf(stderr, "drop_bomb: failed to initialize bomb entity.");
     return;
   }
@@ -414,14 +414,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
           break;
 
         case BOMB:
-          for (uint8_t i = 0; i < game->num_bombs; i++) {
-            if (i != bomb_index && game->bombs[i].active &&
-                game->bombs[i].x == cell_x &&
-                game->bombs[i].y == cell_y) {
-              game->bombs[i].data = 1;
-              break;
-            }
-          }
+          // TODO: explode other bombs
           break;
 
         case EMPTY_SPACE:
@@ -472,6 +465,7 @@ void(update_bombs)(Game *game) {
   for (uint8_t i = 0; i < game->num_bombs; i++) {
     if (game->bombs[i].active) {
       game->bombs[i].data--;
+      game->bombs[i].sprite = get_resources()->bomb_sprites[3 - game->bombs->data];
 
       if (game->bombs[i].data == 0) {
         explode_bomb(game, i);

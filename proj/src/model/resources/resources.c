@@ -5,10 +5,14 @@
 static Resources resources;
 
 int(create_resources)(void) {
-  resources.bomb_sprite = create_sprite(bomb_xpm);
-  if (resources.bomb_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create bomb sprite.");
-    return 1;
+  resources.bomb_sprites[0] = create_sprite(bomb_0_xpm);
+  resources.bomb_sprites[1] = create_sprite(bomb_1_xpm);
+  resources.bomb_sprites[2] = create_sprite(bomb_2_xpm);
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.bomb_sprites[i] == NULL) {
+      fprintf(stderr, "create_resources: failed to load bomb sprite.");
+      return 1;
+    }
   }
 
   resources.brick_sprites[0] = create_sprite(brick_0_xpm);
@@ -89,9 +93,11 @@ int(create_resources)(void) {
 }
 
 void(destroy_resources)(void) {
-  if (resources.bomb_sprite != NULL) {
-    destroy_sprite(resources.bomb_sprite);
-    resources.bomb_sprite = NULL;
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.bomb_sprites[i]) {
+      destroy_sprite(resources.bomb_sprites[i]);
+      resources.bomb_sprites[i] = NULL;
+    }
   }
 
   for (uint8_t i = 0; i < 3; i++) {
