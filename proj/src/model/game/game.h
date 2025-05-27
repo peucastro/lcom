@@ -45,6 +45,7 @@ typedef struct {
   Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
   Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
+  Entity powerup;              /**< @brief The powerup entity */
   uint8_t num_enemies;         /**< @brief Number of enemies in the game */
   uint8_t num_bricks;          /**< @brief Number of bricks in the game */
   uint8_t num_walls;           /**< @brief Number of walls in the game */

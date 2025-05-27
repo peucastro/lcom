@@ -83,6 +83,12 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.powerup_sprite = create_sprite(powerup_xpm);
+  if (resources.powerup_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create powerup sprite.");
+    return 1;
+  }
+
   resources.wall_sprite = create_sprite(wall_xpm);
   if (resources.wall_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create wall sprite.");
@@ -152,6 +158,11 @@ void(destroy_resources)(void) {
   if (resources.player_up_sprite != NULL) {
     destroy_sprite(resources.player_up_sprite);
     resources.player_up_sprite = NULL;
+  }
+
+  if (resources.powerup_sprite != NULL) {
+    destroy_sprite(resources.powerup_sprite);
+    resources.powerup_sprite = NULL;
   }
 
   if (resources.wall_sprite != NULL) {

@@ -29,7 +29,7 @@ int(load_next_level)(Game *game) {
   game->num_walls = 0;
   game->num_bombs = 0;
 
-  uint8_t ei = 0, bri = 0, wi = 0, boi = 0;
+  uint8_t ei = 0, bri = 0, wi = 0, boi = 0, pi = 0;
   for (uint8_t r = 0; r < game->board.height; r++) {
     for (uint8_t c = 0; c < game->board.width; c++) {
       board_element_t el = game->board.elements[r][c];
@@ -77,9 +77,24 @@ int(load_next_level)(Game *game) {
             boi++;
           }
           break;
-        default:
+
+        case POWERUP:
+          if (pi < 1) {
+            if (init_entity(&game->powerup, c, r, resources->powerup_sprite, 0) != 0) {
+              fprintf(stderr, "init_game: failed to initialize powerup entity.");
+              return 1;
+            }
+          }
+          pi++;
+          break;
+
+        case EMPTY_SPACE:
           // nothing to do for empty tiles
           break;
+
+        default:
+          fprintf(stderr, "load_next_level: invalid board element.");
+          return 1;
       }
     }
   }
@@ -142,6 +157,9 @@ int(reset_game)(Game *game) {
   }
   game->num_bombs = 0;
 
+  reset_entity(&game->powerup);
+  game->num_bombs = 0;
+
   if (reset_board(&game->board) != 0) {
     fprintf(stderr, "reset_game: failed to reset game board.");
   }
@@ -196,11 +214,22 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 
   switch (destination) {
     case EMPTY_SPACE:
-    case POWERUP:
       game->board.elements[p->y][p->x] = EMPTY_SPACE;
       game->board.elements[new_y][new_x] = PLAYER;
       p->x = new_x;
       p->y = new_y;
+      break;
+
+    case POWERUP:
+      if (game->powerup.active) {
+        game->powerup.active = false;
+
+        game->board.elements[p->y][p->x] = EMPTY_SPACE;
+        game->board.elements[new_y][new_x] = PLAYER;
+        game->player.data++;
+        p->x = new_x;
+        p->y = new_y;
+      }
       break;
 
     case WALL:
@@ -295,23 +324,20 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
     return;
   }
 
-  if (!game->player.active) {
-    return;
-  }
-
-  if (x - game->player.x > 1 || y - game->player.y > 1) {
-    return;
-  }
-
   if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
+    fprintf(stderr, "drop_bomb: coordinates (%d, %d) are out of bounds.", x, y);
     return;
   }
 
-  if (game->board.elements[y][x] != EMPTY_SPACE) {
+  if (!game->player.active) {
+    fprintf(stderr, "drop_bomb: player is not active.");
     return;
   }
 
-  if (game->num_bombs >= MAX_BOMBS) {
+  int16_t dx = abs(x - game->player.x);
+  int16_t dy = abs(y - game->player.y);
+
+  if (game->num_bombs >= MAX_BOMBS || game->board.elements[y][x] != EMPTY_SPACE || dx + dy > 1) {
     return;
   }
 
@@ -322,7 +348,6 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   }
 
   uint8_t bomb_index = game->num_bombs;
-
   if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprites[0], 3) != 0) {
     fprintf(stderr, "drop_bomb: failed to initialize bomb entity.");
     return;
@@ -331,8 +356,6 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   game->board.elements[y][x] = BOMB;
   game->bombs[bomb_index].active = true;
   game->num_bombs++;
-
-  return;
 }
 
 void(explode_bomb)(Game *game, uint8_t bomb_index) {
