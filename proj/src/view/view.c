@@ -132,6 +132,16 @@ static int(draw_dynamic_entities)(Game *game) {
 
   const uint8_t cell_size = 64;
 
+  for (uint8_t i = 0; i < game->num_enemies; i++) {
+    Entity *enemy = &game->enemies[i];
+    if (enemy->active) {
+      if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
+        fprintf(stderr, "draw_dynamic_entities: failed to draw enemy sprite at index %d.", i);
+        return 1;
+      }
+    }
+  }
+
   for (uint8_t i = 0; i < game->num_bricks; i++) {
     Entity *brick = &game->bricks[i];
     if (brick->active) {
@@ -152,13 +162,11 @@ static int(draw_dynamic_entities)(Game *game) {
     }
   }
 
-  for (uint8_t i = 0; i < game->num_enemies; i++) {
-    Entity *enemy = &game->enemies[i];
-    if (enemy->active) {
-      if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
-        fprintf(stderr, "draw_dynamic_entities: failed to draw enemy sprite at index %d.", i);
-        return 1;
-      }
+  Entity *powerup = &game->powerup;
+  if (powerup->active) {
+    if (draw_sprite(powerup->sprite, powerup->x * cell_size, cell_size + powerup->y * cell_size) != 0) {
+      fprintf(stderr, "draw_dynamic_entities: failed to draw powerup sprite.");
+      return 1;
     }
   }
 
