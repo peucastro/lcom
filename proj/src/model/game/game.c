@@ -324,23 +324,20 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
     return;
   }
 
-  if (!game->player.active) {
-    return;
-  }
-
-  if (x - game->player.x > 1 || y - game->player.y > 1) {
-    return;
-  }
-
   if (x < 0 || x >= game->board.width || y < 0 || y >= game->board.height) {
+    fprintf(stderr, "drop_bomb: coordinates (%d, %d) are out of bounds.", x, y);
     return;
   }
 
-  if (game->board.elements[y][x] != EMPTY_SPACE) {
+  if (!game->player.active) {
+    fprintf(stderr, "drop_bomb: player is not active.");
     return;
   }
 
-  if (game->num_bombs >= MAX_BOMBS) {
+  int16_t dx = abs(x - game->player.x);
+  int16_t dy = abs(y - game->player.y);
+
+  if (game->num_bombs >= MAX_BOMBS || game->board.elements[y][x] != EMPTY_SPACE || dx + dy > 1) {
     return;
   }
 
@@ -351,17 +348,14 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   }
 
   uint8_t bomb_index = game->num_bombs;
-
   if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprite, 5) != 0) {
-    fprintf(stderr, "drop_bomb: failed to initialize bomb entity.");
+    fprintf(stderr, "drop_bomb: failed to initialize bomb entity at (%d, %d).", x, y);
     return;
   }
 
   game->board.elements[y][x] = BOMB;
   game->bombs[bomb_index].active = true;
   game->num_bombs++;
-
-  return;
 }
 
 void(explode_bomb)(Game *game, uint8_t bomb_index) {
