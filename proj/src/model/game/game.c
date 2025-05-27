@@ -28,7 +28,6 @@ int(load_next_level)(Game *game) {
   game->num_bricks = 0;
   game->num_walls = 0;
   game->num_bombs = 0;
-  game->num_powerups = 0;
 
   uint8_t ei = 0, bri = 0, wi = 0, boi = 0, pi = 0;
   for (uint8_t r = 0; r < game->board.height; r++) {
@@ -80,13 +79,13 @@ int(load_next_level)(Game *game) {
           break;
 
         case POWERUP:
-          if (pi < MAX_POWERUPS) {
-            if (init_entity(&game->powerups[pi], c, r, resources->powerup_sprite, 0) != 0) {
-              fprintf(stderr, "init_game: failed to initialize powerup entity at index %d.", pi);
+          if (pi < 1) {
+            if (init_entity(&game->powerup, c, r, resources->powerup_sprite, 0) != 0) {
+              fprintf(stderr, "init_game: failed to initialize powerup entity.");
               return 1;
             }
-            pi++;
           }
+          pi++;
           break;
 
         case EMPTY_SPACE:
@@ -103,7 +102,6 @@ int(load_next_level)(Game *game) {
   game->num_bricks = bri;
   game->num_walls = wi;
   game->num_bombs = boi;
-  game->num_powerups = pi;
 
   return 0;
 }
@@ -122,7 +120,6 @@ int(init_game)(Game *game) {
   game->num_bricks = 0;
   game->num_walls = 0;
   game->num_bombs = 0;
-  game->num_powerups = 0;
 
   game->player.data = 3;
 
@@ -160,9 +157,7 @@ int(reset_game)(Game *game) {
   }
   game->num_bombs = 0;
 
-  for (uint8_t i = 0; i < game->num_powerups; i++) {
-    reset_entity(&game->powerups[i]);
-  }
+  reset_entity(&game->powerup);
   game->num_bombs = 0;
 
   if (reset_board(&game->board) != 0) {
@@ -226,31 +221,15 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
       break;
 
     case POWERUP:
-      for (uint8_t i = 0; i < game->num_powerups; i++) {
-        if (game->powerups[i].active &&
-            game->powerups[i].x == new_x &&
-            game->powerups[i].y == new_y) {
-          game->powerups[i].active = false;
-          break;
-        }
-      }
+      if (game->powerup.active) {
+        game->powerup.active = false;
 
-      uint8_t active_powerups = 0;
-      for (uint8_t i = 0; i < game->num_powerups; i++) {
-        if (game->powerups[i].active) {
-          if (i != active_powerups) {
-            game->powerups[active_powerups] = game->powerups[i];
-          }
-          active_powerups++;
-        }
+        game->board.elements[p->y][p->x] = EMPTY_SPACE;
+        game->board.elements[new_y][new_x] = PLAYER;
+        game->player.data++;
+        p->x = new_x;
+        p->y = new_y;
       }
-      game->num_powerups = active_powerups;
-
-      game->board.elements[p->y][p->x] = EMPTY_SPACE;
-      game->board.elements[new_y][new_x] = PLAYER;
-      game->player.data++;
-      p->x = new_x;
-      p->y = new_y;
       break;
 
     case WALL:

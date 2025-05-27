@@ -162,13 +162,11 @@ static int(draw_dynamic_entities)(Game *game) {
     }
   }
 
-  for (uint8_t i = 0; i < game->num_powerups; i++) {
-    Entity *powerup = &game->powerups[i];
-    if (powerup->active) {
-      if (draw_sprite(powerup->sprite, powerup->x * cell_size, cell_size + powerup->y * cell_size) != 0) {
-        fprintf(stderr, "draw_dynamic_entities: failed to draw powerup sprite at index %d.", i);
-        return 1;
-      }
+  Entity *powerup = &game->powerup;
+  if (powerup->active) {
+    if (draw_sprite(powerup->sprite, powerup->x * cell_size, cell_size + powerup->y * cell_size) != 0) {
+      fprintf(stderr, "draw_dynamic_entities: failed to draw powerup sprite.");
+      return 1;
     }
   }
 

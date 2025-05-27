@@ -16,7 +16,6 @@
 #define MAX_BRICKS 50  /**< @brief Maximum number of bricks allowed in the game */
 #define MAX_WALLS 150  /**< @brief Maximum number of walls allowed in the game */
 #define MAX_BOMBS 5    /**< @brief Maximum number of bombs that can exist simultaneously */
-#define MAX_POWERUPS 2 /**< @brief Maximum number of powerups allowed in the game */
 
 /**
  * @brief Enum representing the game state
@@ -36,21 +35,20 @@ typedef enum {
  * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
 typedef struct {
-  game_state_t state;            /**< @brief Current state of the game */
-  uint8_t menu_option;           /**< @brief Current selected menu option */
-  GameBoard board;               /**< @brief Current game board */
-  Entity player;                 /**< @brief The player entity */
-  Entity enemies[MAX_ENEMIES];   /**< @brief Array of enemy entities */
-  Entity bricks[MAX_BRICKS];     /**< @brief Array of brick entities */
-  Entity walls[MAX_WALLS];       /**< @brief Array of wall entities */
-  Entity bombs[MAX_BOMBS];       /**< @brief Array of bomb entities */
-  Entity powerups[MAX_POWERUPS]; /**< @brief Array of powerup entities */
-  uint8_t num_enemies;           /**< @brief Number of enemies in the game */
-  uint8_t num_bricks;            /**< @brief Number of bricks in the game */
-  uint8_t num_walls;             /**< @brief Number of walls in the game */
-  uint8_t num_bombs;             /**< @brief Number of bombs in the game */
-  uint8_t num_powerups;          /**< @brief Number of powerups in the game */
-  uint8_t level;                 /**< @brief Current game level */
+  game_state_t state;          /**< @brief Current state of the game */
+  uint8_t menu_option;         /**< @brief Current selected menu option */
+  GameBoard board;             /**< @brief Current game board */
+  Entity player;               /**< @brief The player entity */
+  Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
+  Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
+  Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
+  Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
+  Entity powerup;              /**< @brief The powerup entity */
+  uint8_t num_enemies;         /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;          /**< @brief Number of bricks in the game */
+  uint8_t num_walls;           /**< @brief Number of walls in the game */
+  uint8_t num_bombs;           /**< @brief Number of bombs in the game */
+  uint8_t level;               /**< @brief Current game level */
 } Game;
 
 /**
