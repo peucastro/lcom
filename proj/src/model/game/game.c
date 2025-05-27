@@ -28,8 +28,9 @@ int(load_next_level)(Game *game) {
   game->num_bricks = 0;
   game->num_walls = 0;
   game->num_bombs = 0;
+  game->num_powerups = 0;
 
-  uint8_t ei = 0, bri = 0, wi = 0, boi = 0;
+  uint8_t ei = 0, bri = 0, wi = 0, boi = 0, pi = 0;
   for (uint8_t r = 0; r < game->board.height; r++) {
     for (uint8_t c = 0; c < game->board.width; c++) {
       board_element_t el = game->board.elements[r][c];
@@ -77,9 +78,24 @@ int(load_next_level)(Game *game) {
             boi++;
           }
           break;
-        default:
+
+        case POWERUP:
+          if (pi < MAX_POWERUPS) {
+            if (init_entity(&game->powerups[pi], c, r, resources->powerup_sprite, 0) != 0) {
+              fprintf(stderr, "init_game: failed to initialize powerup entity at index %d.", pi);
+              return 1;
+            }
+            pi++;
+          }
+          break;
+
+        case EMPTY_SPACE:
           // nothing to do for empty tiles
           break;
+
+        default:
+          fprintf(stderr, "load_next_level: invalid board element.");
+          return 1;
       }
     }
   }
@@ -87,6 +103,7 @@ int(load_next_level)(Game *game) {
   game->num_bricks = bri;
   game->num_walls = wi;
   game->num_bombs = boi;
+  game->num_powerups = pi;
 
   return 0;
 }
@@ -105,6 +122,7 @@ int(init_game)(Game *game) {
   game->num_bricks = 0;
   game->num_walls = 0;
   game->num_bombs = 0;
+  game->num_powerups = 0;
 
   game->player.data = 3;
 
@@ -139,6 +157,11 @@ int(reset_game)(Game *game) {
 
   for (uint8_t i = 0; i < game->num_bombs; i++) {
     reset_entity(&game->bombs[i]);
+  }
+  game->num_bombs = 0;
+
+  for (uint8_t i = 0; i < game->num_powerups; i++) {
+    reset_entity(&game->powerups[i]);
   }
   game->num_bombs = 0;
 
