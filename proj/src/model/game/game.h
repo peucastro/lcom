@@ -48,6 +48,7 @@ typedef struct {
   uint8_t num_walls;           /**< @brief Number of walls in the game */
   uint8_t num_bombs;           /**< @brief Number of bombs in the game */
   uint8_t level;               /**< @brief Current game level */
+  int score;                   /**< @brief Player's current score */
 } Game;
 
 /**

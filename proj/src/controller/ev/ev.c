@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
-
 #include "controller/ev/ev.h"
+#include "view/view.h"
 
 int(handle_timer_event)(Game *game, uint32_t counter) {
   if (game == NULL) {
@@ -21,6 +21,7 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
       if (counter % 60 == 0) {
         update_enemies(game);
         update_bombs(game);
+        draw_next_frame(game);
       }
       break;
 

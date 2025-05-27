@@ -8,6 +8,7 @@ static uint8_t last_menu_option = 255;
 static game_state_t last_game_state = EXIT;
 static uint8_t last_level = 0;
 static uint8_t game_background_cached = 0;
+static int last_score = 0; // Add this line to track the last score value
 
 void(cleanup_cache)(void) {
   if (frame_cache != NULL) {
@@ -18,6 +19,7 @@ void(cleanup_cache)(void) {
     last_game_state = EXIT;
     last_level = 0;
     game_background_cached = 0;
+    last_score = 0; // Reset the last score when cleaning up cache
   }
 }
 
@@ -220,21 +222,146 @@ static int(draw_background_cache)(Game *game) {
   return 0;
 }
 
-int(draw_game)(Game *game) {
-  if (game == NULL) {
-    fprintf(stderr, "draw_game: game pointer cannot be null.");
-    return 1;
-  }
-  if (draw_background_cache(game) != 0) {
-    fprintf(stderr, "draw_game: failed to draw background cache.");
-    return 1;
-  }
-  if (draw_dynamic_entities(game) != 0) {
-    fprintf(stderr, "draw_game: failed to draw dynamic entities.");
-    return 1;
-  }
+static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
+    const uint16_t segment_width = 20;
+    const uint16_t segment_height = 4;
+    //const uint16_t digit_spacing = 30;
+    const uint32_t color = 0xFFFFFF; // White color
 
-  return 0;
+    // Segments layout for digits 0-9
+    const uint8_t segments[10][7] = {
+        {1, 1, 1, 0, 1, 1, 1}, // 0
+        {0, 0, 1, 0, 0, 1, 0}, // 1
+        {1, 0, 1, 1, 1, 0, 1}, // 2
+        {1, 0, 1, 1, 0, 1, 1}, // 3
+        {0, 1, 1, 1, 0, 1, 0}, // 4
+        {1, 1, 0, 1, 0, 1, 1}, // 5
+        {1, 1, 0, 1, 1, 1, 1}, // 6
+        {1, 0, 1, 0, 0, 1, 0}, // 7
+        {1, 1, 1, 1, 1, 1, 1}, // 8
+        {1, 1, 1, 1, 0, 1, 1}  // 9
+    };
+
+    if (digit < 0 || digit > 9) {
+        return 1;
+    }
+
+    // Draw horizontal segments
+    if (segments[digit][0]) // Top
+        graphics_draw_rectangle(x, y, segment_width, segment_height, color);
+    if (segments[digit][3]) // Middle
+        graphics_draw_rectangle(x, y + segment_width, segment_width, segment_height, color);
+    if (segments[digit][6]) // Bottom
+        graphics_draw_rectangle(x, y + segment_width * 2, segment_width, segment_height, color);
+
+    // Draw vertical segments
+    if (segments[digit][1]) // Top left
+        graphics_draw_rectangle(x, y, segment_height, segment_width, color);
+    if (segments[digit][2]) // Top right
+        graphics_draw_rectangle(x + segment_width - segment_height, y, segment_height, segment_width, color);
+    if (segments[digit][4]) // Bottom left
+        graphics_draw_rectangle(x, y + segment_width + segment_height, segment_height, segment_width, color);
+    if (segments[digit][5]) // Bottom right
+        graphics_draw_rectangle(x + segment_width - segment_height, y + segment_width + segment_height, segment_height, segment_width, color);
+
+    return 0;
+}
+
+static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
+    if (game == NULL) {
+        return 1;
+    }
+
+    int score = game->score;
+    const uint16_t digit_spacing = 30;
+    char score_str[32];
+    snprintf(score_str, sizeof(score_str), "SCORE: %d", score);
+
+    // Draw "SCORE:" text using rectangles
+    const uint16_t text_width = 120;
+    const uint16_t text_height = 20;
+    graphics_draw_rectangle(x, y + 10, text_width, text_height, 0xFFFFFF);
+
+    // Convert score to digits and draw each one
+    int temp = (score < 0) ? -score : score;
+    int num_digits = 1;
+    int div = 10;
+
+    while (temp / div > 0) {
+        num_digits++;
+        div *= 10;
+    }
+
+    x += text_width + 20; // Space after "SCORE:"
+
+    // Draw negative sign if needed
+    if (score < 0) {
+        graphics_draw_rectangle(x, y + 20, 20, 4, 0xFFFFFF);
+        x += 30;
+    }
+
+    // Draw each digit
+    div = 1;
+    for (int i = 0; i < num_digits; i++) {
+        div *= 10;
+    }
+
+    while (div > 1) {
+        div /= 10;
+        int digit = (score / div) % 10;
+        if (digit < 0) digit = -digit;
+        draw_digit(x, y, digit);
+        x += digit_spacing;
+    }
+
+    return 0;
+}
+
+static int(draw_score_bar)(Game *game) {
+    if (game == NULL) {
+        fprintf(stderr, "draw_score_bar: game pointer cannot be null.");
+        return 1;
+    }
+
+    // Draw black background for score bar
+    if (graphics_draw_rectangle(0, 0, vbe_get_h_res(), 64, 0x000000) != 0) {
+        fprintf(stderr, "draw_score_bar: failed to draw score background.");
+        return 1;
+    }
+
+    // Draw the score at position (20, 10)
+    if (draw_score(game, 20, 10) != 0) {
+        fprintf(stderr, "draw_score_bar: failed to draw score.");
+        return 1;
+    }
+
+    return 0;
+}
+
+int(draw_game)(Game *game) {
+    if (game == NULL) {
+        fprintf(stderr, "draw_game: game pointer cannot be null.");
+        return 1;
+    }
+
+    if (draw_background_cache(game) != 0) {
+        fprintf(stderr, "draw_game: failed to draw background cache.");
+        return 1;
+    }
+
+    if (draw_dynamic_entities(game) != 0) {
+        fprintf(stderr, "draw_game: failed to draw dynamic entities.");
+        return 1;
+    }
+
+    // Always draw the score bar last so it is not overwritten
+    if (draw_score_bar(game) != 0) {
+        fprintf(stderr, "draw_game: failed to draw score bar.");
+        return 1;
+    }
+    last_score = game->score;
+
+    return 0;
 }
 
 int(draw_mouse)(mouse_info_t mouse_info) {
