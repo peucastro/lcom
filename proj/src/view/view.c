@@ -245,6 +245,24 @@ int(draw_game)(Game *game) {
   return 0;
 }
 
+int(draw_win_screen)(void) {
+  if (graphics_draw_rectangle(0, 0, 1024, 768, 0x008000) != 0) {
+    fprintf(stderr, "draw_win_menu: failed to draw win screen background.");
+    return 1;
+  }
+
+  return 0;
+}
+
+int(draw_lose_screen)(void) {
+  if (graphics_draw_rectangle(0, 0, 1024, 768, 0xFF0000) != 0) {
+    fprintf(stderr, "draw_lose_menu: failed to draw lose screen background.");
+    return 1;
+  }
+
+  return 0;
+}
+
 int(draw_mouse)(mouse_info_t mouse_info) {
   Sprite *mouse_sprite = get_resources()->handpointing_sprite;
   if (mouse_info.rb || mouse_info.lb) {
@@ -295,6 +313,23 @@ void(draw_next_frame)(Game *game) {
         fprintf(stderr, "draw_next_frame: failed to draw game.");
         return;
       }
+      break;
+
+    case WIN:
+      if (draw_win_screen() != 0) {
+        fprintf(stderr, "draw_next_frame: failed to win screen.");
+        return;
+      }
+      break;
+
+    case LOSE:
+      if (draw_lose_screen() != 0) {
+        fprintf(stderr, "draw_next_frame: failed to lose screen.");
+        return;
+      }
+      break;
+
+    case EXIT:
       break;
 
     default:

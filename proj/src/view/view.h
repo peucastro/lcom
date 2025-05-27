@@ -50,6 +50,20 @@ int(draw_pause_menu)(void);
 int(draw_game)(Game *game);
 
 /**
+ * @brief Draws the win screen
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_win_screen)(void);
+
+/**
+ * @brief Draws the lose screen
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_lose_screen)(void);
+
+/**
  * @brief Draws the mouse cursor
  *
  * @param mouse_info Structure containing mouse position and button states
