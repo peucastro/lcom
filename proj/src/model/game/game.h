@@ -24,6 +24,8 @@ typedef enum {
   START, /**< @brief Game is in start menu */
   PAUSE, /**< @brief Game is in pause menu */
   GAME,  /**< @brief Game is being played */
+  WIN,   /**< @brief The player won the game */
+  LOSE,  /**< @brief The player lost the game */
   EXIT   /**< @brief Game is exiting */
 } game_state_t;
 

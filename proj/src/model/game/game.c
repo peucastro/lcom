@@ -15,7 +15,7 @@ int(load_next_level)(Game *game) {
 
   if (load_board(&game->board, board_path) != 0) {
     fprintf(stderr, "load_next_level: failed to load board %s\n.", board_path);
-    return 1; // TODO: win state
+    return 1;
   }
 
   const Resources *resources = get_resources();
@@ -373,6 +373,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
             if (game->player.data <= 0) {
               game->player.active = false;
               game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+              game->state = LOSE;
             }
           }
           break;
@@ -455,7 +456,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
 
   if (active_bricks == 0) {
     if (load_next_level(game) != 0) {
-      game->state = EXIT;
+      game->state = WIN;
     }
   }
 }
