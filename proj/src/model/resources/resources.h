@@ -26,8 +26,35 @@
 #include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
 
+/* down-facing run cycle */
+#include "assets/xpm/player_down_1.xpm"
+#include "assets/xpm/player_down_2.xpm"
+#include "assets/xpm/player_down_3.xpm"
+#include "assets/xpm/player_down_4.xpm"
+
+/* up-facing run cycle */
+#include "assets/xpm/player_up_1.xpm"
+#include "assets/xpm/player_up_2.xpm"
+#include "assets/xpm/player_up_3.xpm"
+#include "assets/xpm/player_up_4.xpm"
+
+/* left-facing run cycle */
+#include "assets/xpm/player_left_1.xpm"
+#include "assets/xpm/player_left_2.xpm"
+#include "assets/xpm/player_left_3.xpm"
+#include "assets/xpm/player_left_4.xpm"
+
+/* right-facing run cycle */
+#include "assets/xpm/player_right_1.xpm"
+#include "assets/xpm/player_right_2.xpm"
+#include "assets/xpm/player_right_3.xpm"
+#include "assets/xpm/player_right_4.xpm"
+
 #define ENEMY_ANIM_FRAMES 4
 #define ENEMY_ANIM_SPEED 2
+
+#define PLAYER_ANIM_FRAMES 4
+#define PLAYER_ANIM_SPEED  8
 
 /** @defgroup resources resources
  * @{
@@ -49,6 +76,12 @@ typedef struct {
   Sprite *handpointing_sprite;                /**< @brief Pointer to the handpointing sprite */
   Sprite *lose_sprite;                        /**< @brief Pointer to the lose sprite */
   Sprite *menu_sprite[3];                     /**< @brief Array of pointers to the menu sprites */
+
+  Sprite *player_up_sprites   [PLAYER_ANIM_FRAMES];
+  Sprite *player_left_sprites [PLAYER_ANIM_FRAMES];
+  Sprite *player_down_sprites [PLAYER_ANIM_FRAMES];
+  Sprite *player_right_sprites[PLAYER_ANIM_FRAMES];
+
   Sprite *player_down_sprite;                 /**< @brief Pointer to the player down sprite */
   Sprite *player_left_sprite;                 /**< @brief Pointer to the player left sprite */
   Sprite *player_right_sprite;                /**< @brief Pointer to the player right sprite */

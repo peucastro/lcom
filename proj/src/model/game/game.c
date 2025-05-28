@@ -374,13 +374,14 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
 
         case ENEMY:
           for (uint8_t i = 0; i < game->num_enemies; i++) {
-            if (game->enemies[i].active &&
-                game->enemies[i].x == cell_x &&
-                game->enemies[i].y == cell_y) {
-              game->enemies[i].data--;
-              if (game->enemies[i].data <= 0) {
-                game->enemies[i].active = false;
-                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+            Entity *e = &game->enemies[i];
+            if (e->active && e->x == cell_x && e->y == cell_y) {
+              e->data--;
+              if (e->data <= 0) {
+                game->board.elements[e->move.sy][e->move.sx] = EMPTY_SPACE;
+                game->board.elements[e->move.ty][e->move.tx] = EMPTY_SPACE;
+                e->active = false;
+                e->move.moving = false;
               }
               break;
             }

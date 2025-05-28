@@ -8,7 +8,13 @@ static const char **(enemy_a_xpms)[ENEMY_ANIM_FRAMES] = {
   enemy_a_1_xpm,
   enemy_a_2_xpm,
   enemy_a_3_xpm,
-  enemy_a_4_xpm};
+  enemy_a_4_xpm
+};
+
+static const char **player_down_xpms[PLAYER_ANIM_FRAMES] = { player_down_1_xpm, player_down_2_xpm, player_down_3_xpm, player_down_4_xpm };
+static const char **player_up_xpms[PLAYER_ANIM_FRAMES] = { player_up_1_xpm, player_up_2_xpm, player_up_3_xpm, player_up_4_xpm };
+static const char **player_left_xpms[PLAYER_ANIM_FRAMES] = { player_left_1_xpm, player_left_2_xpm, player_left_3_xpm, player_left_4_xpm };
+static const char **player_right_xpms[PLAYER_ANIM_FRAMES] = { player_right_1_xpm, player_right_2_xpm, player_right_3_xpm, player_right_4_xpm };
 
 int(create_resources)(void) {
   resources.bomb_sprite = create_sprite(bomb_xpm);
@@ -85,6 +91,17 @@ int(create_resources)(void) {
   if (resources.player_up_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create player up sprite.");
     return 1;
+  }
+
+  for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {
+    resources.player_down_sprites [i] = create_sprite(player_down_xpms [i]);
+    resources.player_up_sprites   [i] = create_sprite(player_up_xpms   [i]);
+    resources.player_left_sprites [i] = create_sprite(player_left_xpms [i]);
+    resources.player_right_sprites[i] = create_sprite(player_right_xpms[i]);
+    if (!resources.player_down_sprites[i] || !resources.player_up_sprites[i] || !resources.player_left_sprites[i] || !resources.player_right_sprites[i]) {
+      fprintf(stderr, "create_resources: failed to load player anim frame %u\n", i);
+      return 1;
+    }
   }
 
   resources.powerup_sprite = create_sprite(powerup_xpm);
@@ -168,6 +185,25 @@ void(destroy_resources)(void) {
   if (resources.player_up_sprite != NULL) {
     destroy_sprite(resources.player_up_sprite);
     resources.player_up_sprite = NULL;
+  }
+
+  for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {
+    if (resources.player_down_sprites [i] != NULL) {
+      destroy_sprite(resources.player_down_sprites [i]);
+      resources.player_down_sprites [i] = NULL;
+    }
+    if (resources.player_up_sprites [i] != NULL) {
+      destroy_sprite(resources.player_up_sprites   [i]);
+      resources.player_up_sprites   [i] = NULL;
+    }
+    if (resources.player_left_sprites [i] != NULL) {
+      destroy_sprite(resources.player_left_sprites [i]);
+      resources.player_left_sprites [i] = NULL;
+    }
+    if (resources.player_right_sprites[i] != NULL) {
+      destroy_sprite(resources.player_right_sprites[i]);
+      resources.player_right_sprites[i] = NULL;
+    }
   }
 
   if (resources.powerup_sprite != NULL) {

@@ -168,6 +168,7 @@ static int(draw_dynamic_entities)(Game *game) {
   int px, py;
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     Entity *e = &game->enemies[i];
+    if (!e->active) continue;
     px = (int) round(e->move.px);
     py = (int) round(e->move.py) + cell_size;
     if (draw_sprite(e->sprite, px, py) != 0) {
