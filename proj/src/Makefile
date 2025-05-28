@@ -9,48 +9,45 @@ CFLAGS += -pedantic
 DPADD += ${LIBLCF}
 LDADD += -llcf
 
-# Define the directory containing the object files
-OBJ_DIR = dot_o
-
 # define headers dependencies
 HDRS = $(find . -name *.h)
 
 # compilation rules for each source file
 proj.o: proj.c ${HDRS}
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 utils/utils.o: utils/utils.c utils/utils.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 model/board/board.o: model/board/board.c model/board/board.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 model/entity/entity.o: model/entity/entity.c model/entity/entity.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 model/resources/resources.o: model/resources/resources.c model/resources/resources.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 model/game/game.o: model/game/game.c model/game/game.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 view/view.o: view/view.c view/view.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 controller/timer/timer.o: controller/timer/timer.c controller/timer/timer.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 controller/kbc/kbc.o: controller/kbc/kbc.c controller/kbc/kbc.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 controller/kbc/kbd.o: controller/kbc/kbd.c controller/kbc/kbd.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 controller/kbc/mouse.o: controller/kbc/mouse.c controller/kbc/mouse.h
-	${CC} ${CFLAGS} -c $< -o dot_o/$@
+	${CC} ${CFLAGS} -c $< -o $@
 
 controller/graphics/vbe.o: controller/graphics/vbe.c controller/graphics/vbe.h
 	${CC} ${CFLAGS} -c $< -o $@

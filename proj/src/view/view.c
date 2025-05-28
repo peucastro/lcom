@@ -222,6 +222,66 @@ static int(draw_background_cache)(Game *game) {
   return 0;
 }
 
+static int(draw_score_label)(uint16_t x, uint16_t y) {
+  const uint32_t color = 0xFFFFFF;
+  const uint16_t width = 4;
+  const uint16_t height = 20;
+  const uint16_t spacing = 10;
+
+  // Simplified letter drawing using rectangles
+
+  // Draw 'S'
+  graphics_draw_rectangle(x, y, height, width, color);                     // top
+  graphics_draw_rectangle(x, y, width, height, color);                     // left top
+  graphics_draw_rectangle(x, y + height, height, width, color);           // middle
+  graphics_draw_rectangle(x + height - width, y + height, width, height, color); // right bottom
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  x += height + spacing;
+
+  // Draw 'C'
+  graphics_draw_rectangle(x, y, height, width, color);                     // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  x += height + spacing;
+
+  // Draw 'O'
+  graphics_draw_rectangle(x, y, height, width, color);                     // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
+  graphics_draw_rectangle(x + height - width, y, width, 2 * height + width, color); // right
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  x += height + spacing;
+
+  // Draw 'R'
+  graphics_draw_rectangle(x, y, height, width, color);                     // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
+  graphics_draw_rectangle(x, y + height + 4, height, width, color);           // middle
+  graphics_draw_rectangle(x + height - width, y, width, height + 4, color);   // right
+
+  // Diagonal leg - squares from middle-right down to bottom-right
+  int start_x = x;  // Start at right edge of middle bar
+  int start_y = y + height + width;  // Start below middle bar
+
+  // Draw diagonal squares
+  for (int i = 0; i < height; i += width) {
+      graphics_draw_rectangle(start_x + i, start_y + i, width, width, color);
+  }
+
+  x += height + spacing;
+
+  // Draw 'E'
+  graphics_draw_rectangle(x, y, height, width, color);                     // top
+  graphics_draw_rectangle(x, y + height, height, width, color);           // middle
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
+  x += height + spacing;
+
+  // Draw ':'
+  graphics_draw_rectangle(x + width, y + height / 2, width, width, color);        // top dot
+  graphics_draw_rectangle(x + width, y + height + width, width, width, color);    // bottom dot
+
+  return 0;
+}
+
 static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
     const uint16_t segment_width = 20;
     const uint16_t segment_height = 4;
@@ -268,6 +328,7 @@ static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
 }
 
 static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
+
     if (game == NULL) {
         return 1;
     }
@@ -277,11 +338,12 @@ static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
     char score_str[32];
     snprintf(score_str, sizeof(score_str), "SCORE: %d", score);
 
-    // Draw "SCORE:" text using rectangles
-    const uint16_t text_width = 120;
-    const uint16_t text_height = 20;
-    graphics_draw_rectangle(x, y + 10, text_width, text_height, 0xFFFFFF);
-
+    if (draw_score_label(x, y) != 0) {
+      fprintf(stderr, "draw_score: failed to draw score label.\n");
+      return 1;
+    }
+    x += 180; // Adjust spacing after label
+  
     // Convert score to digits and draw each one
     int temp = (score < 0) ? -score : score;
     int num_digits = 1;
@@ -292,13 +354,7 @@ static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
         div *= 10;
     }
 
-    x += text_width + 20; // Space after "SCORE:"
-
-    // Draw negative sign if needed
-    if (score < 0) {
-        graphics_draw_rectangle(x, y + 20, 20, 4, 0xFFFFFF);
-        x += 30;
-    }
+    x += 8; // Space after "SCORE:"
 
     // Draw each digit
     div = 1;
