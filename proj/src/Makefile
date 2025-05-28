@@ -8,6 +8,7 @@ CFLAGS += -pedantic
 # list of library dependencies (LCF)
 DPADD += ${LIBLCF}
 LDADD += -llcf
+LDLIBS += -lm
 
 # define headers dependencies
 HDRS = $(find . -name *.h)
@@ -20,6 +21,9 @@ utils/utils.o: utils/utils.c utils/utils.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 model/sprite/sprite.o: model/sprite/sprite.c model/sprite/sprite.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/sprite/anim_sprite.o: model/sprite/anim_sprite.c model/sprite/anim_sprite.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 model/board/board.o: model/board/board.c model/board/board.h

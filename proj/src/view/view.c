@@ -153,17 +153,18 @@ static int(draw_dynamic_entities)(Game *game) {
   }
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
-    Entity *enemy = &game->enemies[i];
-    if (enemy->active) {
-      if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
-        fprintf(stderr, "draw_dynamic_entities: failed to draw enemy sprite at index %d.", i);
-        return 1;
-      }
+    Entity *e = &game->enemies[i];
+    int px = (int)round(e->move.px);
+    int py = (int)round(e->move.py) + cell_size;
+    if (draw_sprite(e->sprite, px, py) != 0) {
+        fprintf(stderr, "draw_next_frame: failed to draw enemy %d\n", i);
     }
   }
 
   if (game->player.active) {
-    if (draw_sprite(game->player.sprite, game->player.x * cell_size, cell_size + game->player.y * cell_size) != 0) {
+    int ppx = (int)round(game->player.move.px);
+    int ppy = (int)round(game->player.move.py) + cell_size;
+    if (draw_sprite(game->player.sprite, ppx, ppy) != 0) {
       fprintf(stderr, "draw_dynamic_entities: failed to draw player sprite.");
       return 1;
     }

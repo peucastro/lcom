@@ -3,6 +3,11 @@
 
 #include "model/board/board.h"
 #include "model/sprite/sprite.h"
+#include "model/sprite/anim_sprite.h"
+
+
+// forward‐declare the Game type so we can use pointers without pulling in game.h
+struct Game;
 
 /** @defgroup entity entity
  * @{
@@ -23,6 +28,15 @@ typedef enum {
   LEFT   /**< @brief Entity is facing left */
 } Direction;
 
+typedef struct {
+  float px, py;
+  int16_t tx, ty;
+  int16_t sx, sy;
+  bool moving;
+  uint16_t tick;
+  uint16_t total_ticks;
+} MoveComp;
+
 /**
  * @brief Base game entity structure
  *
@@ -34,6 +48,11 @@ typedef struct Entity {
   Sprite *sprite; /**< Visual representation */
   bool active;    /**< Whether entity is currently in play */
   int16_t data;   /**< Entity-specific data (lives, damage, etc.) */
+
+  MoveComp move;       
+  AnimSprite *anim;
+
+  void (*update)(struct Entity *self, struct Game *game, uint32_t timer_counter);
 } Entity;
 
 /**
@@ -56,6 +75,9 @@ int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data);
  * @return 0 on success, non-zero otherwise
  */
 int(reset_entity)(Entity *e);
+
+
+void default_update(Entity *self, struct Game *game, uint32_t counter);
 
 /**@}*/
 

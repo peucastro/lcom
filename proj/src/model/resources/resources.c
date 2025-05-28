@@ -4,6 +4,13 @@
 
 static Resources resources;
 
+static const char **enemy_a_xpms[ENEMY_ANIM_FRAMES] = {
+  enemy_a_1_xpm,
+  enemy_a_2_xpm,
+  enemy_a_3_xpm,
+  enemy_a_4_xpm
+};
+
 int(create_resources)(void) {
   resources.bomb_sprite = create_sprite(bomb_xpm);
   if (resources.bomb_sprite == NULL) {
@@ -11,16 +18,22 @@ int(create_resources)(void) {
     return 1;
   }
 
-  resources.brick_sprite = create_sprite(brick_xpm);
-  if (resources.brick_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create brick sprite.");
-    return 1;
+  resources.brick_sprites[0] = create_sprite(brick_0_xpm);
+  resources.brick_sprites[1] = create_sprite(brick_1_xpm);
+  resources.brick_sprites[2] = create_sprite(brick_2_xpm);
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.brick_sprites[i] == NULL) {
+      fprintf(stderr, "create_resources: failed to load brick sprite.");
+      return 1;
+    }
   }
 
-  resources.enemy_sprite = create_sprite(enemy_xpm);
-  if (resources.enemy_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create enemy sprite.");
-    return 1;
+  for (int i = 0; i < ENEMY_ANIM_FRAMES; i++) {
+    resources.enemy_a_sprites[i] =create_sprite(enemy_a_xpms[i]);
+    if (!resources.enemy_a_sprites[i]) {
+      fprintf(stderr, "create_resources: failed to load enemy_%d\n", i);
+      return 1;
+    }
   }
 
   resources.handopen_sprite = create_sprite(handopen_xpm);
@@ -84,14 +97,18 @@ void(destroy_resources)(void) {
     resources.bomb_sprite = NULL;
   }
 
-  if (resources.brick_sprite != NULL) {
-    destroy_sprite(resources.brick_sprite);
-    resources.brick_sprite = NULL;
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.brick_sprites[i]) {
+      destroy_sprite(resources.brick_sprites[i]);
+      resources.brick_sprites[i] = NULL;
+    }
   }
 
-  if (resources.enemy_sprite != NULL) {
-    destroy_sprite(resources.enemy_sprite);
-    resources.enemy_sprite = NULL;
+  for (int i = 0; i < ENEMY_ANIM_FRAMES; i++) {
+    if(resources.enemy_a_sprites[i]){
+      destroy_sprite(resources.enemy_a_sprites[i]);
+      resources.enemy_a_sprites[i] = NULL;
+    }
   }
 
   if (resources.handopen_sprite != NULL) {

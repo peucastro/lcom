@@ -4,6 +4,7 @@
 #include "controller/ih/ih.h"
 #include "controller/kbc/mouse.h"
 #include "model/game/game.h"
+#include <math.h>
 
 /** @defgroup view view
  * @{
