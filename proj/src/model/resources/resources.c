@@ -69,30 +69,6 @@ int(create_resources)(void) {
     }
   }
 
-  resources.player_down_sprite = create_sprite(player_down_xpm);
-  if (resources.player_down_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create player down sprite.");
-    return 1;
-  }
-
-  resources.player_left_sprite = create_sprite(player_left_xpm);
-  if (resources.player_left_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create player left sprite.");
-    return 1;
-  }
-
-  resources.player_right_sprite = create_sprite(player_right_xpm);
-  if (resources.player_right_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create player right sprite.");
-    return 1;
-  }
-
-  resources.player_up_sprite = create_sprite(player_up_xpm);
-  if (resources.player_up_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create player up sprite.");
-    return 1;
-  }
-
   for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {
     resources.player_down_sprites [i] = create_sprite(player_down_xpms [i]);
     resources.player_up_sprites [i] = create_sprite(player_up_xpms [i]);
@@ -165,26 +141,6 @@ void(destroy_resources)(void) {
       destroy_sprite(resources.menu_sprite[i]);
       resources.menu_sprite[i] = NULL;
     }
-  }
-
-  if (resources.player_down_sprite != NULL) {
-    destroy_sprite(resources.player_down_sprite);
-    resources.player_down_sprite = NULL;
-  }
-
-  if (resources.player_left_sprite != NULL) {
-    destroy_sprite(resources.player_left_sprite);
-    resources.player_left_sprite = NULL;
-  }
-
-  if (resources.player_right_sprite != NULL) {
-    destroy_sprite(resources.player_right_sprite);
-    resources.player_right_sprite = NULL;
-  }
-
-  if (resources.player_up_sprite != NULL) {
-    destroy_sprite(resources.player_up_sprite);
-    resources.player_up_sprite = NULL;
   }
 
   for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {

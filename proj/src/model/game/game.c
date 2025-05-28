@@ -37,7 +37,7 @@ int(load_next_level)(Game *game) {
       board_element_t el = game->board.elements[r][c];
       switch (el) {
         case PLAYER:
-          if (init_entity(&game->player, c, r, resources->player_down_sprite, lives) != 0) {
+          if (init_entity(&game->player, c, r, resources->player_down_sprites[0], lives) != 0) {
             fprintf(stderr, "load_next_level: failed to initialize player entity.");
             return 1;
           }
@@ -183,7 +183,7 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
     fprintf(stderr, "move_player: invalid player or game pointer.");
     return;
   }
-  
+
   if (p->move.moving) {
     return;
   }

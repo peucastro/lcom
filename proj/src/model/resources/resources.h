@@ -5,10 +5,6 @@
 #include "assets/xpm/brick_0.xpm"
 #include "assets/xpm/brick_1.xpm"
 #include "assets/xpm/brick_2.xpm"
-#include "assets/xpm/enemy_a_1.xpm"
-#include "assets/xpm/enemy_a_2.xpm"
-#include "assets/xpm/enemy_a_3.xpm"
-#include "assets/xpm/enemy_a_4.xpm"
 #include "assets/xpm/enemy_left.xpm"
 #include "assets/xpm/enemy_right.xpm"
 #include "assets/xpm/handopen.xpm"
@@ -17,14 +13,16 @@
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_exit.xpm"
 #include "assets/xpm/menu_start.xpm"
-#include "assets/xpm/player_down.xpm"
-#include "assets/xpm/player_left.xpm"
-#include "assets/xpm/player_right.xpm"
-#include "assets/xpm/player_up.xpm"
 #include "assets/xpm/powerup.xpm"
 #include "assets/xpm/wall.xpm"
 #include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
+
+/* enemy cycle */
+#include "assets/xpm/enemy_a_1.xpm"
+#include "assets/xpm/enemy_a_2.xpm"
+#include "assets/xpm/enemy_a_3.xpm"
+#include "assets/xpm/enemy_a_4.xpm"
 
 /* down-facing run cycle */
 #include "assets/xpm/player_down_1.xpm"
@@ -82,10 +80,6 @@ typedef struct {
   Sprite *player_down_sprites [PLAYER_ANIM_FRAMES];
   Sprite *player_right_sprites[PLAYER_ANIM_FRAMES];
 
-  Sprite *player_down_sprite;                 /**< @brief Pointer to the player down sprite */
-  Sprite *player_left_sprite;                 /**< @brief Pointer to the player left sprite */
-  Sprite *player_right_sprite;                /**< @brief Pointer to the player right sprite */
-  Sprite *player_up_sprite;                   /**< @brief Pointer to the player up sprite */
   Sprite *powerup_sprite;                     /**< @brief Pointer to the powerup sprite */
   Sprite *win_sprite;                         /**< @brief Pointer to the win sprite */
   Sprite *wall_sprite;                        /**< @brief Pointer to the wall sprite */
