@@ -9,6 +9,7 @@
 #include "assets/xpm/enemy_right.xpm"
 #include "assets/xpm/handopen.xpm"
 #include "assets/xpm/handpointing.xpm"
+#include "assets/xpm/lose.xpm"
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_exit.xpm"
 #include "assets/xpm/menu_start.xpm"
@@ -18,6 +19,7 @@
 #include "assets/xpm/player_up.xpm"
 #include "assets/xpm/powerup.xpm"
 #include "assets/xpm/wall.xpm"
+#include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
 
 /** @defgroup resources resources
@@ -39,12 +41,14 @@ typedef struct {
   Sprite *enemy_right_sprite;  /**< @brief Pointer to the enemy right sprite */
   Sprite *handopen_sprite;     /**< @brief Pointer to the handopen sprite */
   Sprite *handpointing_sprite; /**< @brief Pointer to the handpointing sprite */
+  Sprite *lose_sprite;         /**< @brief Pointer to the lose sprite */
   Sprite *menu_sprite[3];      /**< @brief Array of pointers to the menu sprites */
   Sprite *player_down_sprite;  /**< @brief Pointer to the player down sprite */
   Sprite *player_left_sprite;  /**< @brief Pointer to the player left sprite */
   Sprite *player_right_sprite; /**< @brief Pointer to the player right sprite */
   Sprite *player_up_sprite;    /**< @brief Pointer to the player up sprite */
   Sprite *powerup_sprite;      /**< @brief Pointer to the powerup sprite */
+  Sprite *win_sprite;          /**< @brief Pointer to the win sprite */
   Sprite *wall_sprite;         /**< @brief Pointer to the wall sprite */
 } Resources;
 

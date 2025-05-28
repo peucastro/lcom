@@ -45,6 +45,12 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.lose_sprite = create_sprite(lose_xpm);
+  if (resources.lose_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create lose sprite.");
+    return 1;
+  }
+
   resources.menu_sprite[0] = create_sprite(menu_default_xpm);
   resources.menu_sprite[1] = create_sprite(menu_start_xpm);
   resources.menu_sprite[2] = create_sprite(menu_exit_xpm);
@@ -91,6 +97,12 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.win_sprite = create_sprite(win_xpm);
+  if (resources.win_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create win sprite.");
+    return 1;
+  }
+
   return 0;
 }
 
@@ -125,6 +137,11 @@ void(destroy_resources)(void) {
   if (resources.handpointing_sprite != NULL) {
     destroy_sprite(resources.handpointing_sprite);
     resources.handpointing_sprite = NULL;
+  }
+
+  if (resources.lose_sprite != NULL) {
+    destroy_sprite(resources.lose_sprite);
+    resources.lose_sprite = NULL;
   }
 
   for (uint8_t i = 0; i < 3; i++) {
@@ -162,6 +179,11 @@ void(destroy_resources)(void) {
   if (resources.wall_sprite != NULL) {
     destroy_sprite(resources.wall_sprite);
     resources.wall_sprite = NULL;
+  }
+
+  if (resources.lose_sprite != NULL) {
+    destroy_sprite(resources.lose_sprite);
+    resources.lose_sprite = NULL;
   }
 }
 

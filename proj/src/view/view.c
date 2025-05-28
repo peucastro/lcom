@@ -107,9 +107,22 @@ int(draw_start_menu)(Game *game) {
 }
 
 int(draw_pause_menu)(void) {
-  if (graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF) != 0) {
-    fprintf(stderr, "draw_pause_menu: failed to draw pause menu background.");
-    return 1;
+  if (!cache_initialized) {
+    if (graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF) != 0) {
+      fprintf(stderr, "draw_pause_menu: failed to draw pause menu background.");
+      return 1;
+    }
+
+    if (cache_current_frame() != 0) {
+      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      return 1;
+    }
+  }
+  else {
+    if (restore_cached_frame() != 0) {
+      fprintf(stderr, "draw_pause_menu: failed to restore cached menu.");
+      return 1;
+    }
   }
 
   return 0;
@@ -246,18 +259,44 @@ int(draw_game)(Game *game) {
 }
 
 int(draw_win_screen)(void) {
-  if (graphics_draw_rectangle(0, 0, 1024, 768, 0x008000) != 0) {
-    fprintf(stderr, "draw_win_menu: failed to draw win screen background.");
-    return 1;
+  if (!cache_initialized) {
+    if (draw_sprite(get_resources()->win_sprite, 0, 0) != 0) {
+      fprintf(stderr, "draw_win_menu: failed to draw win screen.");
+      return 1;
+    }
+
+    if (cache_current_frame() != 0) {
+      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      return 1;
+    }
+  }
+  else {
+    if (restore_cached_frame() != 0) {
+      fprintf(stderr, "draw_win_screen: failed to restore cached menu.");
+      return 1;
+    }
   }
 
   return 0;
 }
 
 int(draw_lose_screen)(void) {
-  if (graphics_draw_rectangle(0, 0, 1024, 768, 0xFF0000) != 0) {
-    fprintf(stderr, "draw_lose_menu: failed to draw lose screen background.");
-    return 1;
+  if (!cache_initialized) {
+    if (draw_sprite(get_resources()->lose_sprite, 0, 0) != 0) {
+      fprintf(stderr, "draw_lose_menu: failed to draw lose screen.");
+      return 1;
+    }
+
+    if (cache_current_frame() != 0) {
+      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      return 1;
+    }
+  }
+  else {
+    if (restore_cached_frame() != 0) {
+      fprintf(stderr, "draw_lose_screen: failed to restore cached menu.");
+      return 1;
+    }
   }
 
   return 0;
