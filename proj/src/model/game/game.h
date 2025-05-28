@@ -47,11 +47,13 @@ typedef struct Game {
   Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
   Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
   Entity powerup;              /**< @brief The powerup entity */
+  Entity door;                 /**< @brief The level exit door entity */
   uint8_t num_enemies;         /**< @brief Number of enemies in the game */
   uint8_t num_bricks;          /**< @brief Number of bricks in the game */
   uint8_t num_walls;           /**< @brief Number of walls in the game */
   uint8_t num_bombs;           /**< @brief Number of bombs in the game */
   uint8_t level;               /**< @brief Current game level */
+  uint8_t door_timer;          /**< @brief Timer for door interaction */
 } Game;
 
 /**
