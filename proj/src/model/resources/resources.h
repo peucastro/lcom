@@ -5,6 +5,10 @@
 #include "assets/xpm/brick_0.xpm"
 #include "assets/xpm/brick_1.xpm"
 #include "assets/xpm/brick_2.xpm"
+#include "assets/xpm/enemy_a_1.xpm"
+#include "assets/xpm/enemy_a_2.xpm"
+#include "assets/xpm/enemy_a_3.xpm"
+#include "assets/xpm/enemy_a_4.xpm"
 #include "assets/xpm/enemy_left.xpm"
 #include "assets/xpm/enemy_right.xpm"
 #include "assets/xpm/handopen.xpm"
@@ -22,6 +26,9 @@
 #include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
 
+#define ENEMY_ANIM_FRAMES 4
+#define ENEMY_ANIM_SPEED 2
+
 /** @defgroup resources resources
  * @{
  *
@@ -35,21 +42,20 @@
  * including the wall, brick, player, and enemy sprites.
  */
 typedef struct {
-  Sprite *bomb_sprite;         /**< @brief Pointer to the bomb sprite */
-  Sprite *brick_sprites[3];    /**< @brief Array of pointer to the brick sprites */
-  Sprite *enemy_left_sprite;   /**< @brief Pointer to the enemy left sprite */
-  Sprite *enemy_right_sprite;  /**< @brief Pointer to the enemy right sprite */
-  Sprite *handopen_sprite;     /**< @brief Pointer to the handopen sprite */
-  Sprite *handpointing_sprite; /**< @brief Pointer to the handpointing sprite */
-  Sprite *lose_sprite;         /**< @brief Pointer to the lose sprite */
-  Sprite *menu_sprite[3];      /**< @brief Array of pointers to the menu sprites */
-  Sprite *player_down_sprite;  /**< @brief Pointer to the player down sprite */
-  Sprite *player_left_sprite;  /**< @brief Pointer to the player left sprite */
-  Sprite *player_right_sprite; /**< @brief Pointer to the player right sprite */
-  Sprite *player_up_sprite;    /**< @brief Pointer to the player up sprite */
-  Sprite *powerup_sprite;      /**< @brief Pointer to the powerup sprite */
-  Sprite *win_sprite;          /**< @brief Pointer to the win sprite */
-  Sprite *wall_sprite;         /**< @brief Pointer to the wall sprite */
+  Sprite *bomb_sprite;                        /**< @brief Pointer to the bomb sprite */
+  Sprite *brick_sprites[3];                   /**< @brief Array of pointer to the brick sprites */
+  Sprite *enemy_a_sprites[ENEMY_ANIM_FRAMES]; /**< @brief Array of pointer to the enemy sprites */
+  Sprite *handopen_sprite;                    /**< @brief Pointer to the handopen sprite */
+  Sprite *handpointing_sprite;                /**< @brief Pointer to the handpointing sprite */
+  Sprite *lose_sprite;                        /**< @brief Pointer to the lose sprite */
+  Sprite *menu_sprite[3];                     /**< @brief Array of pointers to the menu sprites */
+  Sprite *player_down_sprite;                 /**< @brief Pointer to the player down sprite */
+  Sprite *player_left_sprite;                 /**< @brief Pointer to the player left sprite */
+  Sprite *player_right_sprite;                /**< @brief Pointer to the player right sprite */
+  Sprite *player_up_sprite;                   /**< @brief Pointer to the player up sprite */
+  Sprite *powerup_sprite;                     /**< @brief Pointer to the powerup sprite */
+  Sprite *win_sprite;                         /**< @brief Pointer to the win sprite */
+  Sprite *wall_sprite;                        /**< @brief Pointer to the wall sprite */
 } Resources;
 
 /**

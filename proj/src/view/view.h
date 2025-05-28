@@ -1,6 +1,8 @@
 #ifndef __PROJ_VIEW_H
 #define __PROJ_VIEW_H
 
+#include <math.h>
+
 #include "controller/ih/ih.h"
 #include "controller/kbc/mouse.h"
 #include "model/game/game.h"
