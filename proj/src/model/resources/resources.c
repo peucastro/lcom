@@ -27,6 +27,12 @@ int(create_resources)(void) {
     }
   }
 
+  resources.door_sprite = create_sprite(door_xpm);
+  if (resources.door_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create door sprite.");
+    return 1;
+  }
+
   for (uint8_t i = 0; i < ENEMY_ANIM_FRAMES; i++) {
     resources.enemy_a_sprites[i] = create_sprite(enemy_a_xpms[i]);
     if (!resources.enemy_a_sprites[i]) {
@@ -119,6 +125,11 @@ void(destroy_resources)(void) {
       destroy_sprite(resources.brick_sprites[i]);
       resources.brick_sprites[i] = NULL;
     }
+  }
+
+  if (resources.door_sprite != NULL) {
+    destroy_sprite(resources.door_sprite);
+    resources.door_sprite = NULL;
   }
 
   for (uint8_t i = 0; i < ENEMY_ANIM_FRAMES; i++) {
