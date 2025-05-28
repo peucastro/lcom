@@ -1,8 +1,7 @@
-# All files without extension (except for Makefiles)
+# All files without extension
 *
 !*.*
 !/**/
-!Makefile
 
 # LCF output
 output.txt
@@ -68,5 +67,16 @@ dkms.conf
 # macOS
 *.DS_Store
 
-#idea
+# CLion
 .idea/
+
+# Documentation
+proj/doc/doxygen/
+*.aux
+*.log
+*.toc
+*.out
+*.idx
+*.ilg
+*.ind
+
