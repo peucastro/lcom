@@ -161,6 +161,16 @@ void(explode_bomb)(Game *game, uint8_t bomb_index);
  */
 void(update_bombs)(Game *game);
 
+/**
+ * @brief Updates door interaction timer and handles level progression
+ *
+ * Checks if player is standing on door after all bricks are destroyed.
+ * Increments timer when conditions are met, loads next level after 3 seconds.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_door_timer)(Game *game);
+
 /**@}*/
 
 #endif /* __PROJ_GAME_H */

@@ -430,7 +430,12 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
               game->bricks[i].data--;
               if (game->bricks[i].data <= 0) {
                 game->bricks[i].active = false;
-                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+
+                if (game->door.x == cell_x && game->door.y == cell_y) {
+                  game->board.elements[cell_y][cell_x] = DOOR;
+                } else {
+                  game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                }
                 break;
               }
               game->bricks[i].sprite = get_resources()->brick_sprites[3 - game->bricks[i].data];
@@ -483,12 +488,6 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
   }
 
   game->num_bricks = active_bricks;
-
-  if (active_bricks == 0) {
-    if (load_next_level(game) != 0) {
-      game->state = WIN;
-    }
-  }
 }
 
 void(update_bombs)(Game *game) {
@@ -516,4 +515,31 @@ void(update_bombs)(Game *game) {
   }
 
   game->num_bombs = active_bombs;
+}
+
+void(update_door_timer)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "update_door_timer: game pointer cannot be null.");
+    return;
+  }
+
+  if (game->num_bricks == 0 && game->door.active) {
+    if (game->player.active &&
+        game->player.x == game->door.x &&
+        game->player.y == game->door.y) {
+
+      game->door_timer++;
+
+      if (game->door_timer >= 3) {
+        game->door_timer = 0;
+        if (load_next_level(game) != 0) {
+          game->state = WIN;
+        }
+      }
+    } else {
+      game->door_timer = 0;
+    }
+  } else {
+    game->door_timer = 0;
+  }
 }
