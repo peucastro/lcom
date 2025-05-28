@@ -223,7 +223,7 @@ static int(draw_background_cache)(Game *game) {
 }
 
 static int(draw_score_label)(uint16_t x, uint16_t y) {
-  const uint32_t color = 0xFFFFFF;
+  const uint32_t color = 0x000000;
   const uint16_t width = 4;
   const uint16_t height = 20;
   const uint16_t spacing = 10;
@@ -285,8 +285,7 @@ static int(draw_score_label)(uint16_t x, uint16_t y) {
 static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
     const uint16_t segment_width = 20;
     const uint16_t segment_height = 4;
-    //const uint16_t digit_spacing = 30;
-    const uint32_t color = 0xFFFFFF; // White color
+    const uint32_t color = 0x000000;
 
     // Segments layout for digits 0-9
     const uint8_t segments[10][7] = {
@@ -379,8 +378,8 @@ static int(draw_score_bar)(Game *game) {
         return 1;
     }
 
-    // Draw black background for score bar
-    if (graphics_draw_rectangle(0, 0, vbe_get_h_res(), 64, 0x000000) != 0) {
+    // Draw gray background for score bar
+    if (graphics_draw_rectangle(0, 0, vbe_get_h_res()-4, 64, 0xB0B0B0) != 0) {
         fprintf(stderr, "draw_score_bar: failed to draw score background.");
         return 1;
     }
