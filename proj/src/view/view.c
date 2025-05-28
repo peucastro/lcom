@@ -170,8 +170,21 @@ static int(draw_dynamic_entities)(Game *game) {
     }
   }
 
+  int px, py;
+  for (uint8_t i = 0; i < game->num_enemies; i++) {
+    Entity *e = &game->enemies[i];
+    px = (int) round(e->move.px);
+    py = (int) round(e->move.py) + cell_size;
+    if (draw_sprite(e->sprite, px, py) != 0) {
+      fprintf(stderr, "draw_next_frame: failed to draw enemy %d\n", i);
+      return 1;
+    }
+  }
+
   if (game->player.active) {
-    if (draw_sprite(game->player.sprite, game->player.x * cell_size, cell_size + game->player.y * cell_size) != 0) {
+    int ppx = (int) round(game->player.move.px);
+    int ppy = (int) round(game->player.move.py) + cell_size;
+    if (draw_sprite(game->player.sprite, ppx, ppy) != 0) {
       fprintf(stderr, "draw_dynamic_entities: failed to draw player sprite.");
       return 1;
     }
