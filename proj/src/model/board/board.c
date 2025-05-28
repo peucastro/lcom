@@ -16,8 +16,11 @@ static board_element_t(char_to_element)(char c) {
     case '#': return WALL;
     case 'O': return BOMB;
     case 'U': return POWERUP;
+    case 'D': return DOOR;
     case ' ': return EMPTY_SPACE;
-    default: return EMPTY_SPACE;
+    default:
+      fprintf(stderr, "char_to_element: invalid char.");
+      return EMPTY_SPACE;
   }
 }
 
