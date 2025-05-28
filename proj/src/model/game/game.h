@@ -4,6 +4,7 @@
 #include "model/board/board.h"
 #include "model/entity/entity.h"
 #include "model/resources/resources.h"
+#include "model/sprite/anim_sprite.h"
 #include "model/sprite/sprite.h"
 
 /** @defgroup game game
@@ -24,6 +25,8 @@ typedef enum {
   START, /**< @brief Game is in start menu */
   PAUSE, /**< @brief Game is in pause menu */
   GAME,  /**< @brief Game is being played */
+  WIN,   /**< @brief The player won the game */
+  LOSE,  /**< @brief The player lost the game */
   EXIT   /**< @brief Game is exiting */
 } game_state_t;
 
@@ -34,7 +37,7 @@ typedef enum {
  * and all game entities (player, enemies, bricks, walls, bombs).
  * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
-typedef struct {
+typedef struct Game {
   game_state_t state;          /**< @brief Current state of the game */
   uint8_t menu_option;         /**< @brief Current selected menu option */
   GameBoard board;             /**< @brief Current game board */
@@ -43,6 +46,7 @@ typedef struct {
   Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
   Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
+  Entity powerup;              /**< @brief The powerup entity */
   uint8_t num_enemies;         /**< @brief Number of enemies in the game */
   uint8_t num_bricks;          /**< @brief Number of bricks in the game */
   uint8_t num_walls;           /**< @brief Number of walls in the game */
@@ -101,25 +105,16 @@ int(reset_game)(Game *game);
 void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
 
 /**
- * @brief Updates an enemy entity with random movement
+ * @brief Schedules movement for all active enemies
  *
- * Generates random movement in one of four directions (up, right, down, left).
- * Only moves to empty spaces, powerups or the player.
- *
- * @param e Pointer to the enemy entity
- * @param game Pointer to the current game state
- */
-void(move_enemy)(Entity *e, Game *game);
-
-/**
- * @brief Updates all active enemies in the game
- *
- * Iterates through all enemies in the game and moves each active one.
- * This function should be called periodically during gameplay.
+ * Iterates through all enemies and initiates movement for those that are not currently moving.
+ * Each enemy randomly selects a valid direction (up, down, left, right) based on available
+ * empty spaces, powerups, or player position. Sets up smooth movement animation and updates
+ * the board state. Enemies cannot move through walls, bricks, or bombs.
  *
  * @param game Pointer to the current game state
  */
-void(update_enemies)(Game *game);
+void(schedule_enemy_moves)(Game *game);
 
 /**
  * @brief Drops a bomb at the player's current position
@@ -129,10 +124,12 @@ void(update_enemies)(Game *game);
  * empty spaces. The player remains standing on the newly placed bomb.
  *
  * @param game Pointer to the current game state
+ * @param x Horizontal position to drop the bomb
+ * @param y Vertial position to drop the bomb
  *
  * @return 0 upon success, non-zero otherwise
  */
-void(drop_bomb)(Game *game);
+void(drop_bomb)(Game *game, int16_t x, int16_t y);
 
 /**
  * @brief Causes a bomb to explode, damaging entities in its blast radius

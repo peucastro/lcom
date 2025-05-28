@@ -1,6 +1,8 @@
 #ifndef __PROJ_VIEW_H
 #define __PROJ_VIEW_H
 
+#include <math.h>
+
 #include "controller/ih/ih.h"
 #include "controller/kbc/mouse.h"
 #include "model/game/game.h"
@@ -48,6 +50,20 @@ int(draw_pause_menu)(void);
  * @return 0 upon success, non-zero otherwise
  */
 int(draw_game)(Game *game);
+
+/**
+ * @brief Draws the win screen
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_win_screen)(void);
+
+/**
+ * @brief Draws the lose screen
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_lose_screen)(void);
 
 /**
  * @brief Draws the mouse cursor

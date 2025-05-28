@@ -7,8 +7,8 @@ static uint8_t cache_initialized = 0;
 static uint8_t last_menu_option = 255;
 static game_state_t last_game_state = EXIT;
 static uint8_t last_level = 0;
+static int last_score = 0;
 static uint8_t game_background_cached = 0;
-static int last_score = 0; // Add this line to track the last score value
 
 void(cleanup_cache)(void) {
   if (frame_cache != NULL) {
@@ -18,8 +18,8 @@ void(cleanup_cache)(void) {
     last_menu_option = 255;
     last_game_state = EXIT;
     last_level = 0;
+    last_score = 0;
     game_background_cached = 0;
-    last_score = 0; // Reset the last score when cleaning up cache
   }
 }
 
@@ -109,9 +109,22 @@ int(draw_start_menu)(Game *game) {
 }
 
 int(draw_pause_menu)(void) {
-  if (graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF) != 0) {
-    fprintf(stderr, "draw_pause_menu: failed to draw pause menu background.");
-    return 1;
+  if (!cache_initialized) {
+    if (graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF) != 0) {
+      fprintf(stderr, "draw_pause_menu: failed to draw pause menu background.");
+      return 1;
+    }
+
+    if (cache_current_frame() != 0) {
+      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      return 1;
+    }
+  }
+  else {
+    if (restore_cached_frame() != 0) {
+      fprintf(stderr, "draw_pause_menu: failed to restore cached menu.");
+      return 1;
+    }
   }
 
   return 0;
@@ -154,18 +167,29 @@ static int(draw_dynamic_entities)(Game *game) {
     }
   }
 
+  int px, py;
   for (uint8_t i = 0; i < game->num_enemies; i++) {
-    Entity *enemy = &game->enemies[i];
-    if (enemy->active) {
-      if (draw_sprite(enemy->sprite, enemy->x * cell_size, cell_size + enemy->y * cell_size) != 0) {
-        fprintf(stderr, "draw_dynamic_entities: failed to draw enemy sprite at index %d.", i);
-        return 1;
-      }
+    Entity *e = &game->enemies[i];
+    px = (int) round(e->move.px);
+    py = (int) round(e->move.py) + cell_size;
+    if (draw_sprite(e->sprite, px, py) != 0) {
+      fprintf(stderr, "draw_next_frame: failed to draw enemy %d\n", i);
+      return 1;
+    }
+  }
+
+  Entity *powerup = &game->powerup;
+  if (powerup->active) {
+    if (draw_sprite(powerup->sprite, powerup->x * cell_size, cell_size + powerup->y * cell_size) != 0) {
+      fprintf(stderr, "draw_dynamic_entities: failed to draw powerup sprite.");
+      return 1;
     }
   }
 
   if (game->player.active) {
-    if (draw_sprite(game->player.sprite, game->player.x * cell_size, cell_size + game->player.y * cell_size) != 0) {
+    int ppx = (int) round(game->player.move.px);
+    int ppy = (int) round(game->player.move.py) + cell_size;
+    if (draw_sprite(game->player.sprite, ppx, ppy) != 0) {
       fprintf(stderr, "draw_dynamic_entities: failed to draw player sprite.");
       return 1;
     }
@@ -228,195 +252,222 @@ static int(draw_score_label)(uint16_t x, uint16_t y) {
   const uint16_t height = 20;
   const uint16_t spacing = 10;
 
-  // Simplified letter drawing using rectangles
-
-  // Draw 'S'
-  graphics_draw_rectangle(x, y, height, width, color);                     // top
-  graphics_draw_rectangle(x, y, width, height, color);                     // left top
-  graphics_draw_rectangle(x, y + height, height, width, color);           // middle
+  graphics_draw_rectangle(x, y, height, width, color);                           // top
+  graphics_draw_rectangle(x, y, width, height, color);                           // left top
+  graphics_draw_rectangle(x, y + height, height, width, color);                  // middle
   graphics_draw_rectangle(x + height - width, y + height, width, height, color); // right bottom
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);              // bottom
   x += height + spacing;
 
-  // Draw 'C'
-  graphics_draw_rectangle(x, y, height, width, color);                     // top
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  graphics_draw_rectangle(x, y, height, width, color);              // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);  // left
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color); // bottom
   x += height + spacing;
 
-  // Draw 'O'
-  graphics_draw_rectangle(x, y, height, width, color);                     // top
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
+  graphics_draw_rectangle(x, y, height, width, color);                              // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);                  // left
   graphics_draw_rectangle(x + height - width, y, width, 2 * height + width, color); // right
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);                 // bottom
   x += height + spacing;
 
-  // Draw 'R'
-  graphics_draw_rectangle(x, y, height, width, color);                     // top
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
-  graphics_draw_rectangle(x, y + height + 4, height, width, color);           // middle
-  graphics_draw_rectangle(x + height - width, y, width, height + 4, color);   // right
+  graphics_draw_rectangle(x, y, height, width, color);                      // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);          // left
+  graphics_draw_rectangle(x, y + height + 4, height, width, color);         // middle
+  graphics_draw_rectangle(x + height - width, y, width, height + 4, color); // right
 
-  // Diagonal leg - squares from middle-right down to bottom-right
-  int start_x = x;  // Start at right edge of middle bar
-  int start_y = y + height + width;  // Start below middle bar
+  int start_x = x;                  // start at right edge of middle bar
+  int start_y = y + height + width; // start below middle bar
 
-  // Draw diagonal squares
   for (int i = 0; i < height; i += width) {
-      graphics_draw_rectangle(start_x + i, start_y + i, width, width, color);
+    graphics_draw_rectangle(start_x + i, start_y + i, width, width, color);
   }
 
   x += height + spacing;
 
-  // Draw 'E'
-  graphics_draw_rectangle(x, y, height, width, color);                     // top
-  graphics_draw_rectangle(x, y + height, height, width, color);           // middle
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color);       // bottom
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);        // left
+  graphics_draw_rectangle(x, y, height, width, color);              // top
+  graphics_draw_rectangle(x, y + height, height, width, color);     // middle
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color); // bottom
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);  // left
   x += height + spacing;
 
-  // Draw ':'
-  graphics_draw_rectangle(x + width, y + height / 2, width, width, color);        // top dot
-  graphics_draw_rectangle(x + width, y + height + width, width, width, color);    // bottom dot
+  graphics_draw_rectangle(x + width, y + height / 2, width, width, color);     // top dot
+  graphics_draw_rectangle(x + width, y + height + width, width, width, color); // bottom dot
 
   return 0;
 }
 
 static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
-    const uint16_t segment_width = 20;
-    const uint16_t segment_height = 4;
-    const uint32_t color = 0x000000;
+  const uint16_t segment_width = 20;
+  const uint16_t segment_height = 4;
+  const uint32_t color = 0x000000;
 
-    // Segments layout for digits 0-9
-    const uint8_t segments[10][7] = {
-        {1, 1, 1, 0, 1, 1, 1}, // 0
-        {0, 0, 1, 0, 0, 1, 0}, // 1
-        {1, 0, 1, 1, 1, 0, 1}, // 2
-        {1, 0, 1, 1, 0, 1, 1}, // 3
-        {0, 1, 1, 1, 0, 1, 0}, // 4
-        {1, 1, 0, 1, 0, 1, 1}, // 5
-        {1, 1, 0, 1, 1, 1, 1}, // 6
-        {1, 0, 1, 0, 0, 1, 0}, // 7
-        {1, 1, 1, 1, 1, 1, 1}, // 8
-        {1, 1, 1, 1, 0, 1, 1}  // 9
-    };
+  const uint8_t segments[10][7] = {
+    {1, 1, 1, 0, 1, 1, 1}, // 0
+    {0, 0, 1, 0, 0, 1, 0}, // 1
+    {1, 0, 1, 1, 1, 0, 1}, // 2
+    {1, 0, 1, 1, 0, 1, 1}, // 3
+    {0, 1, 1, 1, 0, 1, 0}, // 4
+    {1, 1, 0, 1, 0, 1, 1}, // 5
+    {1, 1, 0, 1, 1, 1, 1}, // 6
+    {1, 0, 1, 0, 0, 1, 0}, // 7
+    {1, 1, 1, 1, 1, 1, 1}, // 8
+    {1, 1, 1, 1, 0, 1, 1}  // 9
+  };
 
-    if (digit < 0 || digit > 9) {
-        return 1;
-    }
+  if (digit < 0 || digit > 9) {
+    return 1;
+  }
 
-    // Draw horizontal segments
-    if (segments[digit][0]) // Top
-        graphics_draw_rectangle(x, y, segment_width, segment_height, color);
-    if (segments[digit][3]) // Middle
-        graphics_draw_rectangle(x, y + segment_width, segment_width, segment_height, color);
-    if (segments[digit][6]) // Bottom
-        graphics_draw_rectangle(x, y + segment_width * 2, segment_width, segment_height, color);
+  if (segments[digit][0]) // top
+    graphics_draw_rectangle(x, y, segment_width, segment_height, color);
+  if (segments[digit][3]) // middle
+    graphics_draw_rectangle(x, y + segment_width, segment_width, segment_height, color);
+  if (segments[digit][6]) // bottom
+    graphics_draw_rectangle(x, y + segment_width * 2, segment_width, segment_height, color);
 
-    // Draw vertical segments
-    if (segments[digit][1]) // Top left
-        graphics_draw_rectangle(x, y, segment_height, segment_width, color);
-    if (segments[digit][2]) // Top right
-        graphics_draw_rectangle(x + segment_width - segment_height, y, segment_height, segment_width, color);
-    if (segments[digit][4]) // Bottom left
-        graphics_draw_rectangle(x, y + segment_width + segment_height, segment_height, segment_width, color);
-    if (segments[digit][5]) // Bottom right
-        graphics_draw_rectangle(x + segment_width - segment_height, y + segment_width + segment_height, segment_height, segment_width, color);
+  if (segments[digit][1]) // top left
+    graphics_draw_rectangle(x, y, segment_height, segment_width, color);
+  if (segments[digit][2]) // top right
+    graphics_draw_rectangle(x + segment_width - segment_height, y, segment_height, segment_width, color);
+  if (segments[digit][4]) // bottom left
+    graphics_draw_rectangle(x, y + segment_width + segment_height, segment_height, segment_width, color);
+  if (segments[digit][5]) // bottom right
+    graphics_draw_rectangle(x + segment_width - segment_height, y + segment_width + segment_height, segment_height, segment_width, color);
 
-    return 0;
+  return 0;
 }
 
 static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
 
-    if (game == NULL) {
-        return 1;
-    }
+  if (game == NULL) {
+    return 1;
+  }
 
-    int score = game->score;
-    const uint16_t digit_spacing = 30;
-    char score_str[32];
-    snprintf(score_str, sizeof(score_str), "SCORE: %d", score);
+  int score = game->score;
+  const uint16_t digit_spacing = 30;
+  char score_str[32];
+  snprintf(score_str, sizeof(score_str), "SCORE: %d", score);
 
-    if (draw_score_label(x, y) != 0) {
-      fprintf(stderr, "draw_score: failed to draw score label.\n");
-      return 1;
-    }
-    x += 180; // Adjust spacing after label
-  
-    // Convert score to digits and draw each one
-    int temp = (score < 0) ? -score : score;
-    int num_digits = 1;
-    int div = 10;
+  if (draw_score_label(x, y) != 0) {
+    fprintf(stderr, "draw_score: failed to draw score label.\n");
+    return 1;
+  }
+  x += 180;
 
-    while (temp / div > 0) {
-        num_digits++;
-        div *= 10;
-    }
+  int temp = (score < 0) ? -score : score;
+  int num_digits = 1;
+  int div = 10;
 
-    x += 8; // Space after "SCORE:"
+  while (temp / div > 0) {
+    num_digits++;
+    div *= 10;
+  }
 
-    // Draw each digit
-    div = 1;
-    for (int i = 0; i < num_digits; i++) {
-        div *= 10;
-    }
+  x += 8;
 
-    while (div > 1) {
-        div /= 10;
-        int digit = (score / div) % 10;
-        if (digit < 0) digit = -digit;
-        draw_digit(x, y, digit);
-        x += digit_spacing;
-    }
+  div = 1;
+  for (int i = 0; i < num_digits; i++) {
+    div *= 10;
+  }
 
-    return 0;
+  while (div > 1) {
+    div /= 10;
+    int digit = (score / div) % 10;
+    if (digit < 0)
+      digit = -digit;
+    draw_digit(x, y, digit);
+    x += digit_spacing;
+  }
+
+  return 0;
 }
 
 static int(draw_score_bar)(Game *game) {
-    if (game == NULL) {
-        fprintf(stderr, "draw_score_bar: game pointer cannot be null.");
-        return 1;
-    }
+  if (game == NULL) {
+    fprintf(stderr, "draw_score_bar: game pointer cannot be null.");
+    return 1;
+  }
 
-    // Draw gray background for score bar
-    if (graphics_draw_rectangle(0, 0, vbe_get_h_res()-4, 64, 0xB0B0B0) != 0) {
-        fprintf(stderr, "draw_score_bar: failed to draw score background.");
-        return 1;
-    }
+  if (graphics_draw_rectangle(0, 0, vbe_get_h_res(), 64, 0xB0B0B0) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw score background.");
+    return 1;
+  }
 
-    // Draw the score at position (20, 10)
-    if (draw_score(game, 20, 10) != 0) {
-        fprintf(stderr, "draw_score_bar: failed to draw score.");
-        return 1;
-    }
+  if (draw_score(game, 20, 10) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw score.");
+    return 1;
+  }
 
-    return 0;
+  last_score = game->score;
+  return 0;
 }
 
 int(draw_game)(Game *game) {
-    if (game == NULL) {
-        fprintf(stderr, "draw_game: game pointer cannot be null.");
-        return 1;
+  if (game == NULL) {
+    fprintf(stderr, "draw_game: game pointer cannot be null.");
+    return 1;
+  }
+
+  if (draw_background_cache(game) != 0) {
+    fprintf(stderr, "draw_game: failed to draw background cache.");
+    return 1;
+  }
+
+  if (draw_dynamic_entities(game) != 0) {
+    fprintf(stderr, "draw_game: failed to draw dynamic entities.");
+    return 1;
+  }
+
+  if (draw_score_bar(game) != 0) {
+    fprintf(stderr, "draw_game: failed to draw score bar.");
+    return 1;
+  }
+
+  return 0;
+}
+
+int(draw_win_screen)(void) {
+  if (!cache_initialized) {
+    if (draw_sprite(get_resources()->win_sprite, 0, 0) != 0) {
+      fprintf(stderr, "draw_win_menu: failed to draw win screen.");
+      return 1;
     }
 
-    if (draw_background_cache(game) != 0) {
-        fprintf(stderr, "draw_game: failed to draw background cache.");
-        return 1;
+    if (cache_current_frame() != 0) {
+      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      return 1;
+    }
+  }
+  else {
+    if (restore_cached_frame() != 0) {
+      fprintf(stderr, "draw_win_screen: failed to restore cached menu.");
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+int(draw_lose_screen)(void) {
+  if (!cache_initialized) {
+    if (draw_sprite(get_resources()->lose_sprite, 0, 0) != 0) {
+      fprintf(stderr, "draw_lose_menu: failed to draw lose screen.");
+      return 1;
     }
 
-    if (draw_dynamic_entities(game) != 0) {
-        fprintf(stderr, "draw_game: failed to draw dynamic entities.");
-        return 1;
+    if (cache_current_frame() != 0) {
+      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      return 1;
     }
-
-    // Always draw the score bar last so it is not overwritten
-    if (draw_score_bar(game) != 0) {
-        fprintf(stderr, "draw_game: failed to draw score bar.");
-        return 1;
+  }
+  else {
+    if (restore_cached_frame() != 0) {
+      fprintf(stderr, "draw_lose_screen: failed to restore cached menu.");
+      return 1;
     }
-    last_score = game->score;
+  }
 
-    return 0;
+  return 0;
 }
 
 int(draw_mouse)(mouse_info_t mouse_info) {
@@ -469,6 +520,23 @@ void(draw_next_frame)(Game *game) {
         fprintf(stderr, "draw_next_frame: failed to draw game.");
         return;
       }
+      break;
+
+    case WIN:
+      if (draw_win_screen() != 0) {
+        fprintf(stderr, "draw_next_frame: failed to win screen.");
+        return;
+      }
+      break;
+
+    case LOSE:
+      if (draw_lose_screen() != 0) {
+        fprintf(stderr, "draw_next_frame: failed to lose screen.");
+        return;
+      }
+      break;
+
+    case EXIT:
       break;
 
     default:
