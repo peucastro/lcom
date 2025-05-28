@@ -219,26 +219,30 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   }
 }
 
-
-void schedule_enemy_moves(Game *game) {
+void(schedule_enemy_moves)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "schedule_enemy_moves: game pointer cannot be null.");
+    return;
+  }
   static const int8_t dx[4] = {0, 1, 0, -1};
   static const int8_t dy[4] = {-1, 0, 1, 0};
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     Entity *e = &game->enemies[i];
-    if (!e->active || e->move.moving) 
+    if (!e->active || e->move.moving)
       continue;
 
     int valid[4], vc = 0;
     for (int d = 0; d < 4; d++) {
       int nx = e->x + dx[d], ny = e->y + dy[d];
-      if (nx<0||nx>=game->board.width||ny<0||ny>=game->board.height)
+      if (nx < 0 || nx >= game->board.width || ny < 0 || ny >= game->board.height)
         continue;
       board_element_t dest = game->board.elements[ny][nx];
       if (dest == EMPTY_SPACE || dest == POWERUP || dest == PLAYER)
         valid[vc++] = d;
     }
-    if (!vc) continue;
+    if (!vc)
+      continue;
 
     int choice = valid[rand() % vc];
 
@@ -250,7 +254,7 @@ void schedule_enemy_moves(Game *game) {
     game->board.elements[e->move.ty][e->move.tx] = ENEMY;
 
     e->move.moving = true;
-    e->move.tick   = 0;
+    e->move.tick = 0;
     e->move.total_ticks = 16;
 
     e->anim->aspeed = e->move.total_ticks / e->anim->num_fig;
@@ -259,7 +263,6 @@ void schedule_enemy_moves(Game *game) {
     e->sprite = e->anim->sp;
   }
 }
-
 
 void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   if (game == NULL) {

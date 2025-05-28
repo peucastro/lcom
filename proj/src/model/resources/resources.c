@@ -4,12 +4,11 @@
 
 static Resources resources;
 
-static const char **enemy_a_xpms[ENEMY_ANIM_FRAMES] = {
+static const char **(enemy_a_xpms)[ENEMY_ANIM_FRAMES] = {
   enemy_a_1_xpm,
   enemy_a_2_xpm,
   enemy_a_3_xpm,
-  enemy_a_4_xpm
-};
+  enemy_a_4_xpm};
 
 int(create_resources)(void) {
   resources.bomb_sprite = create_sprite(bomb_xpm);
@@ -28,8 +27,8 @@ int(create_resources)(void) {
     }
   }
 
-  for (int i = 0; i < ENEMY_ANIM_FRAMES; i++) {
-    resources.enemy_a_sprites[i] =create_sprite(enemy_a_xpms[i]);
+  for (uint8_t i = 0; i < ENEMY_ANIM_FRAMES; i++) {
+    resources.enemy_a_sprites[i] = create_sprite(enemy_a_xpms[i]);
     if (!resources.enemy_a_sprites[i]) {
       fprintf(stderr, "create_resources: failed to load enemy_%d\n", i);
       return 1;
@@ -104,8 +103,8 @@ void(destroy_resources)(void) {
     }
   }
 
-  for (int i = 0; i < ENEMY_ANIM_FRAMES; i++) {
-    if(resources.enemy_a_sprites[i]){
+  for (uint8_t i = 0; i < ENEMY_ANIM_FRAMES; i++) {
+    if (resources.enemy_a_sprites[i]) {
       destroy_sprite(resources.enemy_a_sprites[i]);
       resources.enemy_a_sprites[i] = NULL;
     }

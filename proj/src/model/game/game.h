@@ -4,8 +4,8 @@
 #include "model/board/board.h"
 #include "model/entity/entity.h"
 #include "model/resources/resources.h"
-#include "model/sprite/sprite.h"
 #include "model/sprite/anim_sprite.h"
+#include "model/sprite/sprite.h"
 
 /** @defgroup game game
  * @{
@@ -35,7 +35,7 @@ typedef enum {
  * and all game entities (player, enemies, bricks, walls, bombs).
  * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
-typedef struct Game{
+typedef struct Game {
   game_state_t state;          /**< @brief Current state of the game */
   uint8_t menu_option;         /**< @brief Current selected menu option */
   GameBoard board;             /**< @brief Current game board */
@@ -105,9 +105,10 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
  *
  * Loops through all enemies and, if they’re not already moving,
  * calls move_enemy() to set their MoveComp target.
+ *
+ * @param game Pointer to the current game state
  */
-void schedule_enemy_moves(Game *game);
-
+void(schedule_enemy_moves)(Game *game);
 
 /**
  * @brief Drops a bomb at the player's current position

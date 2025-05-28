@@ -35,7 +35,7 @@ int(init_entity)(Entity *e, int16_t x, int16_t y, Sprite *sp, int16_t data) {
 
   e->move.moving = false;
   e->move.tick = 0;
-  e->move.total_ticks = 60; 
+  e->move.total_ticks = 60;
 
   e->update = default_update;
 
@@ -54,18 +54,22 @@ int(reset_entity)(Entity *e) {
   e->data = 0;
   e->active = false;
 
-  if (e->anim) { destroy_animSprite(e->anim); e->anim = NULL; }
+  if (e->anim) {
+    destroy_animSprite(e->anim);
+    e->anim = NULL;
+  }
 
   return 0;
 }
 
-void default_update(Entity *e, Game *game, uint32_t counter) {
-
-  if (!e->active) return;
+void(default_update)(Entity *e, Game *game, uint32_t counter) {
+  if (!e->active) {
+    return;
+  }
 
   if (e->move.moving) {
-    float step_x = (e->move.tx - e->x) * ((float)CELL_SIZE / e->move.total_ticks);
-    float step_y = (e->move.ty - e->y) * ((float)CELL_SIZE / e->move.total_ticks);
+    float step_x = (e->move.tx - e->x) * ((float) CELL_SIZE / e->move.total_ticks);
+    float step_y = (e->move.ty - e->y) * ((float) CELL_SIZE / e->move.total_ticks);
 
     e->move.px += step_x;
     e->move.py += step_y;
@@ -77,7 +81,7 @@ void default_update(Entity *e, Game *game, uint32_t counter) {
       e->move.px = e->x * CELL_SIZE;
       e->move.py = e->y * CELL_SIZE;
       e->move.moving = false;
-      e->move.tick   = 0;
+      e->move.tick = 0;
     }
   }
 
