@@ -54,7 +54,7 @@
 #define ENEMY_ANIM_SPEED 2
 
 #define PLAYER_ANIM_FRAMES 4
-#define PLAYER_ANIM_SPEED  8
+#define PLAYER_ANIM_SPEED  3
 
 /** @defgroup resources resources
  * @{

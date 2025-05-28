@@ -10,6 +10,8 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
 
   switch (game->state) {
     case GAME:
+      game->player.update(&game->player, game, counter);
+      
       for (uint8_t i = 0; i < game->num_enemies; i++) {
         game->enemies[i].update(&game->enemies[i], game, counter);
       }

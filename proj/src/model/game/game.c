@@ -1,6 +1,8 @@
 #include <lcom/lcf.h>
 
 #include "model/game/game.h"
+static AnimSprite *player_anims[4];
+
 
 int(load_next_level)(Game *game) {
   if (game == NULL) {
@@ -39,6 +41,12 @@ int(load_next_level)(Game *game) {
             fprintf(stderr, "load_next_level: failed to initialize player entity.");
             return 1;
           }
+          player_anims[UP] = create_animSprite(resources->player_up_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
+          player_anims[LEFT] = create_animSprite(resources->player_left_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
+          player_anims[DOWN] = create_animSprite(resources->player_down_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
+          player_anims[RIGHT] = create_animSprite(resources->player_right_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
+          game->player.anim = player_anims[DOWN];
+          game->player.sprite = game->player.anim->sp;
           game->player.active = true;
           break;
         case ENEMY:
@@ -169,9 +177,14 @@ int(reset_game)(Game *game) {
   return 0;
 }
 
+static AnimSprite *player_anims[4];
 void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   if (p == NULL || game == NULL) {
     fprintf(stderr, "move_player: invalid player or game pointer.");
+    return;
+  }
+  
+  if (p->move.moving) {
     return;
   }
 
@@ -196,20 +209,32 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   }
 
   if (xmov > 0) {
-    p->sprite = resources->player_right_sprite;
     p->dir = RIGHT;
+    p->anim = player_anims[RIGHT];
+    p->anim->cur_fig = 0;
+    p->anim->cur_aspeed = 0;
+    p->sprite = p->anim->sp;
   }
   else if (xmov < 0) {
-    p->sprite = resources->player_left_sprite;
     p->dir = LEFT;
+    p->anim = player_anims[LEFT];
+    p->anim->cur_fig = 0;
+    p->anim->cur_aspeed = 0;
+    p->sprite = p->anim->sp;
   }
   else if (ymov > 0) {
-    p->sprite = resources->player_down_sprite;
     p->dir = DOWN;
+    p->anim = player_anims[DOWN];
+    p->anim->cur_fig = 0;
+    p->anim->cur_aspeed = 0;
+    p->sprite = p->anim->sp;
   }
   else if (ymov < 0) {
-    p->sprite = resources->player_up_sprite;
     p->dir = UP;
+    p->anim = player_anims[UP];
+    p->anim->cur_fig = 0;
+    p->anim->cur_aspeed = 0;
+    p->sprite = p->anim->sp;
   }
 
   board_element_t destination = game->board.elements[new_y][new_x];
@@ -218,10 +243,13 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
     case EMPTY_SPACE:
       game->board.elements[p->y][p->x] = EMPTY_SPACE;
       game->board.elements[new_y][new_x] = PLAYER;
-      p->x = new_x;
-      p->y = new_y;
-      p->move.px = new_x * 64;
-      p->move.py = new_y * 64;
+      p->move.sx = p->x;
+      p->move.sy = p->y;
+      p->move.tx = new_x;
+      p->move.ty = new_y;
+      p->move.tick = 0;
+      p->move.total_ticks = PLAYER_ANIM_SPEED * PLAYER_ANIM_FRAMES;
+      p->move.moving    = true;
       break;
 
     case POWERUP:

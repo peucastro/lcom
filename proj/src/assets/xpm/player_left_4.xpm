@@ -4,7 +4,7 @@ static const char *player_left_4_xpm[] = {
 "64 64 5 1 ",
 "  c #388700",
 ". c #FF8170",
-"X c #FFFFFF",
+"X c #64B0FF",
 "o c #FFFFFF",
 "O c None",
 /* pixels */

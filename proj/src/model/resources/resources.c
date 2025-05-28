@@ -95,7 +95,7 @@ int(create_resources)(void) {
 
   for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {
     resources.player_down_sprites [i] = create_sprite(player_down_xpms [i]);
-    resources.player_up_sprites   [i] = create_sprite(player_up_xpms   [i]);
+    resources.player_up_sprites [i] = create_sprite(player_up_xpms [i]);
     resources.player_left_sprites [i] = create_sprite(player_left_xpms [i]);
     resources.player_right_sprites[i] = create_sprite(player_right_xpms[i]);
     if (!resources.player_down_sprites[i] || !resources.player_up_sprites[i] || !resources.player_left_sprites[i] || !resources.player_right_sprites[i]) {
