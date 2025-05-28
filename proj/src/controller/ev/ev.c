@@ -15,6 +15,9 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
       for (uint8_t i = 0; i < game->num_enemies; i++) {
         game->enemies[i].update(&game->enemies[i], game, counter);
       }
+
+      update_bombs(game);
+      
       if (counter % 60 == 0) {
         schedule_enemy_moves(game);
         update_bombs(game);

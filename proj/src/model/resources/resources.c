@@ -16,11 +16,15 @@ static const char **player_up_xpms[PLAYER_ANIM_FRAMES] = { player_up_1_xpm, play
 static const char **player_left_xpms[PLAYER_ANIM_FRAMES] = { player_left_1_xpm, player_left_2_xpm, player_left_3_xpm, player_left_4_xpm };
 static const char **player_right_xpms[PLAYER_ANIM_FRAMES] = { player_right_1_xpm, player_right_2_xpm, player_right_3_xpm, player_right_4_xpm };
 
+static const char **bomb_xpms[BOMB_ANIM_FRAMES] = { bomb_1_xpm, bomb_2_xpm, bomb_3_xpm, bomb_4_xpm };
+
 int(create_resources)(void) {
-  resources.bomb_sprite = create_sprite(bomb_xpm);
-  if (resources.bomb_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create bomb sprite.");
-    return 1;
+   for (uint8_t i = 0; i < BOMB_ANIM_FRAMES; i++) {
+    resources.bomb_sprites[i] = create_sprite(bomb_xpms[i]);
+    if (!resources.bomb_sprites[i]) {
+      fprintf(stderr, "create_resources: failed to load bomb anim frame %u\n", i);
+      return 1;
+    }
   }
 
   resources.brick_sprites[0] = create_sprite(brick_0_xpm);
@@ -102,9 +106,11 @@ int(create_resources)(void) {
 }
 
 void(destroy_resources)(void) {
-  if (resources.bomb_sprite != NULL) {
-    destroy_sprite(resources.bomb_sprite);
-    resources.bomb_sprite = NULL;
+  for (uint8_t i = 0; i < BOMB_ANIM_FRAMES; i++) {
+    if (resources.bomb_sprites[i]) {
+      destroy_sprite(resources.bomb_sprites[i]);
+      resources.bomb_sprites[i] = NULL;
+    }
   }
 
   for (uint8_t i = 0; i < 3; i++) {

@@ -1,7 +1,6 @@
 #ifndef __PROJ_RESOURCES_H
 #define __PROJ_RESOURCES_H
 
-#include "assets/xpm/bomb.xpm"
 #include "assets/xpm/brick_0.xpm"
 #include "assets/xpm/brick_1.xpm"
 #include "assets/xpm/brick_2.xpm"
@@ -17,6 +16,12 @@
 #include "assets/xpm/wall.xpm"
 #include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
+
+/* bomb cycle */
+#include "assets/xpm/bomb_1.xpm"
+#include "assets/xpm/bomb_2.xpm"
+#include "assets/xpm/bomb_3.xpm"
+#include "assets/xpm/bomb_4.xpm"
 
 /* enemy cycle */
 #include "assets/xpm/enemy_a_1.xpm"
@@ -54,6 +59,9 @@
 #define PLAYER_ANIM_FRAMES 4
 #define PLAYER_ANIM_SPEED  3
 
+#define BOMB_ANIM_FRAMES 4
+#define BOMB_ANIM_SPEED  6
+
 /** @defgroup resources resources
  * @{
  *
@@ -67,7 +75,6 @@
  * including the wall, brick, player, and enemy sprites.
  */
 typedef struct {
-  Sprite *bomb_sprite;                        /**< @brief Pointer to the bomb sprite */
   Sprite *brick_sprites[3];                   /**< @brief Array of pointer to the brick sprites */
   Sprite *enemy_a_sprites[ENEMY_ANIM_FRAMES]; /**< @brief Array of pointer to the enemy sprites */
   Sprite *handopen_sprite;                    /**< @brief Pointer to the handopen sprite */
@@ -79,6 +86,8 @@ typedef struct {
   Sprite *player_left_sprites [PLAYER_ANIM_FRAMES];
   Sprite *player_down_sprites [PLAYER_ANIM_FRAMES];
   Sprite *player_right_sprites[PLAYER_ANIM_FRAMES];
+
+  Sprite *bomb_sprites[BOMB_ANIM_FRAMES];
 
   Sprite *powerup_sprite;                     /**< @brief Pointer to the powerup sprite */
   Sprite *win_sprite;                         /**< @brief Pointer to the win sprite */

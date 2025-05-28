@@ -80,7 +80,7 @@ int(load_next_level)(Game *game) {
           break;
         case BOMB:
           if (boi < MAX_BOMBS) {
-            if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprite, 0) != 0) {
+            if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprites[0], 0) != 0) {
               fprintf(stderr, "init_game: failed to initialize bomb entity at index %d.", boi);
               return 1;
             }
@@ -177,7 +177,6 @@ int(reset_game)(Game *game) {
   return 0;
 }
 
-static AnimSprite *player_anims[4];
 void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   if (p == NULL || game == NULL) {
     fprintf(stderr, "move_player: invalid player or game pointer.");
@@ -347,12 +346,15 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
 
   uint8_t bomb_index = game->num_bombs;
 
-  if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprite, 5) != 0) {
+  if (init_entity(&game->bombs[bomb_index], x, y, resources->bomb_sprites[0], 180) != 0) {
     fprintf(stderr, "drop_bomb: failed to initialize bomb entity.");
     return;
   }
 
   game->board.elements[y][x] = BOMB;
+  
+  game->bombs[bomb_index].anim = create_animSprite(resources->bomb_sprites, BOMB_ANIM_FRAMES, BOMB_ANIM_SPEED, true);
+  game->bombs[bomb_index].sprite = game->bombs[bomb_index].anim->sp;
   game->bombs[bomb_index].active = true;
   game->num_bombs++;
 }
@@ -462,6 +464,11 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
     }
   }
 
+  if (bomb->anim) {
+    destroy_animSprite(bomb->anim);
+    bomb->anim = NULL;
+  }
+
   bomb->active = false;
   game->board.elements[bomb_y][bomb_x] = EMPTY_SPACE;
 
@@ -500,6 +507,10 @@ void(update_bombs)(Game *game) {
         explode_bomb(game, i);
       }
       else {
+        if (game->bombs[i].anim) {
+          update_animSprite(game->bombs[i].anim);
+          game->bombs[i].sprite = game->bombs[i].anim->sp;
+        }
         if (i != active_bombs) {
           game->bombs[active_bombs] = game->bombs[i];
         }
