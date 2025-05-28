@@ -9,14 +9,6 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
   }
 
   switch (game->state) {
-    case START:
-      /* code */
-      break;
-
-    case PAUSE:
-      /* code */
-      break;
-
     case GAME:
       if (counter % 60 == 0) {
         update_enemies(game);
@@ -24,14 +16,10 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
       }
       break;
 
+    case START:
+    case PAUSE:
     case WIN:
-      /* code */
-      break;
-
     case LOSE:
-      /* code */
-      break;
-
     case EXIT:
       /* code */
       break;
@@ -53,8 +41,6 @@ int(handle_kbd_event)(Game *game, Key key) {
   switch (game->state) {
     case START:
     case PAUSE:
-    case WIN:
-    case LOSE:
       switch (key) {
         case KEY_LEFT:
           game->menu_option = 1;
@@ -124,6 +110,16 @@ int(handle_kbd_event)(Game *game, Key key) {
       }
       break;
 
+    case WIN:
+    case LOSE:
+      if (key == KEY_ENTER || key == KEY_ESCAPE) {
+        if (init_game(game) != 0) {
+          fprintf(stderr, "kandle_kbd_event: failed to reset game.");
+          return 1;
+        }
+      }
+      break;
+
     case EXIT:
       /* code */
       break;
@@ -145,8 +141,6 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
   switch (game->state) {
     case START:
     case PAUSE:
-    case WIN:
-    case LOSE:
       // handle menu button highlighting
       if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W &&
           mouse_info.y >= START_BY && mouse_info.y < START_BY + BUTTON_H) {
@@ -180,6 +174,8 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
       }
     } break;
 
+    case WIN:
+    case LOSE:
     case EXIT:
       /* code */
       break;
