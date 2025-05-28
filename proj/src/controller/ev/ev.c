@@ -21,7 +21,6 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
       if (counter % 60 == 0) {
         update_enemies(game);
         update_bombs(game);
-        printf("lives: %u\n", game->player.data);
       }
       break;
 

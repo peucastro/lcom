@@ -1,9 +1,7 @@
 #ifndef __PROJ_RESOURCES_H
 #define __PROJ_RESOURCES_H
 
-#include "assets/xpm/bomb_0.xpm"
-#include "assets/xpm/bomb_1.xpm"
-#include "assets/xpm/bomb_2.xpm"
+#include "assets/xpm/bomb.xpm"
 #include "assets/xpm/brick_0.xpm"
 #include "assets/xpm/brick_1.xpm"
 #include "assets/xpm/brick_2.xpm"
@@ -35,7 +33,7 @@
  * including the wall, brick, player, and enemy sprites.
  */
 typedef struct {
-  Sprite *bomb_sprites[3];     /**< @brief Array of pointers to the bomb sprites */
+  Sprite *bomb_sprite;         /**< @brief Pointer to the bomb sprite */
   Sprite *brick_sprites[3];    /**< @brief Array of pointer to the brick sprites */
   Sprite *enemy_left_sprite;   /**< @brief Pointer to the enemy left sprite */
   Sprite *enemy_right_sprite;  /**< @brief Pointer to the enemy right sprite */
