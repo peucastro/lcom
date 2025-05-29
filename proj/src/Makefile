@@ -44,6 +44,9 @@ view/view.o: view/view.c view/view.h
 controller/timer/timer.o: controller/timer/timer.c controller/timer/timer.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+controller/rtc/rtc.o: controller/rtc/rtc.c controller/rtc/rtc.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 controller/kbc/kbc.o: controller/kbc/kbc.c controller/kbc/kbc.h
 	${CC} ${CFLAGS} -c $< -o $@
 
