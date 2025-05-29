@@ -2,7 +2,7 @@
 
 #include "controller/ih/ih.h"
 
-static uint32_t irq_set_timer = 0, irq_set_kbd = 0, irq_set_mouse = 0;
+static uint32_t irq_set_timer = 0, irq_set_kbd = 0, irq_set_mouse = 0, irq_set_rtc = 0;
 static uint8_t i = 0, bytes[2] = {0, 0};
 static struct packet pp;
 
@@ -31,10 +31,33 @@ int(subscribe_interrupts)(void) {
   }
   irq_set_mouse = BIT(bit_no);
 
+  if (rtc_enable_interrupt(RTC_ALARM_INT) != 0) {
+    fprintf(stderr, "subscribe_interrupts: failed to enable rtc interrupts.");
+    return 1;
+  }
+  if (rtc_set_alarm_every_second() != 0) {
+    fprintf(stderr, "subscribe_interrupts: failed to set rtc alarm.");
+    return 1;
+  }
+  if (rtc_subscribe_int(&bit_no) != 0) {
+    fprintf(stderr, "subscribe_interrupts: failed to subscribe rtc interrupts.");
+    return 1;
+  }
+  irq_set_rtc = BIT(bit_no);
+
   return 0;
 }
 
 int(unsubscribe_interrupts)(void) {
+  if (rtc_unsubscribe_int() != 0) {
+    fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe rtc interrupts.");
+    return 1;
+  }
+  if (rtc_disable_interrupt(RTC_ALARM_INT) != 0) {
+    fprintf(stderr, "unsubscribe_interrupts: failed to disable rtc alarm interrupt.");
+    return 1;
+  }
+
   if (mouse_unsubscribe_int() != 0) {
     fprintf(stderr, "unsubscribe_interrupts: failed to unsubscribe mouse interrupts.");
     return 1;
@@ -112,6 +135,15 @@ void(mouse_handler)(Game *game) {
   }
 }
 
+void(rtc_handler)(Game *game) {
+  rtc_ih();
+
+  if (handle_rtc_event(game) != 0) {
+    fprintf(stderr, "rtc_handler: failed to call handle_rtc_event.");
+    return;
+  }
+}
+
 void(process_interrupts)(uint32_t irq_mask, Game *game) {
   if (game == NULL) {
     fprintf(stderr, "process_interrupts: game pointer cannot be null.");
@@ -126,5 +158,8 @@ void(process_interrupts)(uint32_t irq_mask, Game *game) {
   }
   if (irq_mask & irq_set_mouse) {
     mouse_handler(game);
+  }
+  if (irq_mask & irq_set_rtc) {
+    rtc_handler(game);
   }
 }

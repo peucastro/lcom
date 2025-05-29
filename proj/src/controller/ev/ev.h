@@ -46,6 +46,15 @@ int(handle_kbd_event)(Game *game, Key key);
  */
 int(handle_mouse_event)(Game *game, mouse_info_t mouse_info);
 
+/**
+ * @brief Handles RTC events
+ *
+ * @param game Pointer to the game instance
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(handle_rtc_event)(Game *game);
+
 /**@}*/
 
 #endif /* __PROJ_EV_H */
