@@ -2,9 +2,6 @@
 
 #include "view/view.h"
 
-#include "../assets/xpm/heart.xpm"
-Sprite *heart_icon = NULL;
-
 static uint8_t *frame_cache = NULL;
 static uint8_t cache_initialized = 0;
 static uint8_t last_menu_option = 255;
@@ -391,16 +388,16 @@ static int(draw_lives)(Game *game, uint16_t x, uint16_t y) {
     return 1;
   }
 
-  int lives = game->player.data; // assuming 'data' holds the lives count
-  const uint16_t start_x = 448; // position next to score
+  int lives = game->player.data;
+  const uint16_t start_x = 448;
 
   uint16_t x_pos = start_x;
+  Sprite *heart = get_resources()->heart_sprite;
 
-  heart_icon = create_sprite(heart_xpm);
-  for (int i = 0; i < lives; i++) {
-    if (heart_icon != NULL) {
-      draw_sprite(heart_icon, x_pos, 0);
-      x_pos += heart_icon->width;
+  if (heart != NULL) {
+    for (uint8_t i = 0; i < lives; i++) {
+      draw_sprite(heart, x_pos, 0);
+      x_pos += heart->width;
     }
   }
 
