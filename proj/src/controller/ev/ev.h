@@ -4,6 +4,8 @@
 #include "controller/input/input.h"
 #include "controller/kbc/mouse.h"
 #include "model/game/game.h"
+#include "model/game/movement.h"
+#include "model/game/combat.h"
 
 /** @defgroup ev ev
  * @{

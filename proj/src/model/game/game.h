@@ -43,20 +43,21 @@ typedef struct Game {
   uint8_t menu_option;         /**< @brief Current selected menu option */
   GameBoard board;             /**< @brief Current game board */
   Entity player;               /**< @brief The player entity */
+  AnimSprite *player_anims[4];
   Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
   Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
   Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
   Entity explosions[MAX_EXPLOSIONS];
 
-  Entity powerup;              /**< @brief The powerup entity */
-  uint8_t num_enemies;         /**< @brief Number of enemies in the game */
-  uint8_t num_bricks;          /**< @brief Number of bricks in the game */
-  uint8_t num_walls;           /**< @brief Number of walls in the game */
-  uint8_t num_bombs;           /**< @brief Number of bombs in the game */
+  Entity powerup;      /**< @brief The powerup entity */
+  uint8_t num_enemies; /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;  /**< @brief Number of bricks in the game */
+  uint8_t num_walls;   /**< @brief Number of walls in the game */
+  uint8_t num_bombs;   /**< @brief Number of bombs in the game */
   uint8_t num_explosions;
 
-  uint8_t level;               /**< @brief Current game level */
+  uint8_t level; /**< @brief Current game level */
 } Game;
 
 /**
@@ -97,81 +98,6 @@ int(init_game)(Game *game);
  */
 int(reset_game)(Game *game);
 
-/**
- * @brief Updates the player entity based on movement input
- *
- *
- * @param p Pointer to the player entity
- * @param game Pointer to the current game state
- * @param xmov Horizontal movement (-1: left, 0: none, 1: right)
- * @param ymov Vertical movement (-1: up, 0: none, 1: down)
- */
-void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov);
-
-/**
- * @brief Schedules movement for all active enemies
- *
- * Iterates through all enemies and initiates movement for those that are not currently moving.
- * Each enemy randomly selects a valid direction (up, down, left, right) based on available
- * empty spaces, powerups, or player position. Sets up smooth movement animation and updates
- * the board state. Enemies cannot move through walls, bricks, or bombs.
- *
- * @param game Pointer to the current game state
- */
-void(schedule_enemy_moves)(Game *game);
-
-/**
- * @brief Drops a bomb at the player's current position
- *
- * Places a bomb at the player's feet if possible. The bomb is placed on
- * the board and initialized as an entity. Bombs can only be placed on
- * empty spaces. The player remains standing on the newly placed bomb.
- *
- * @param game Pointer to the current game state
- * @param x Horizontal position to drop the bomb
- * @param y Vertial position to drop the bomb
- *
- * @return 0 upon success, non-zero otherwise
- */
-void(drop_bomb)(Game *game, int16_t x, int16_t y);
-
-/**
- * @brief Causes a bomb to explode, damaging entities in its blast radius
- *
- * Creates an explosion that extends 3 tiles in each cardinal direction
- * (up, down, left, right). The explosion damages entities it encounters:
- * - Reduces player lives
- * - Reduces enemy lives
- * - Damages bricks until they break
- * - Stops at walls
- * - Can trigger chain reactions with other bombs
- *
- * @param game Pointer to the current game state
- * @param bomb_index Index of the bomb that is exploding
- */
-void(explode_bomb)(Game *game, uint8_t bomb_index);
-
-/**
- * @brief Updates the state of all active bombs
- *
- * This function is called periodically to update all bombs in the game.
- * For each active bomb, it decrements the countdown timer (stored in the data field).
- * When a bomb's timer reaches zero, the bomb is deactivated and removed from the board.
- * The function also compacts the bombs array by moving active bombs to fill gaps
- * left by deactivated bombs, and updates the total bomb count.
- *
- * @param game Pointer to the current game state
- */
-void(update_bombs)(Game *game);
-
-/**
- * @brief Updates all explosion animations and lifetimes
- *
- * Removes expired explosions and updates their animation state.
- *
- * @param game Pointer to the current game state
- */
-void(update_explosions)(Game *game);
 
 /**@}*/
 

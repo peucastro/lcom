@@ -38,6 +38,12 @@ model/resources/resources.o: model/resources/resources.c model/resources/resourc
 model/game/game.o: model/game/game.c model/game/game.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+model/game/movement.o: model/game/movement.c model/game/movement.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+model/game/combat.o: model/game/combat.c model/game/combat.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 view/view.o: view/view.c view/view.h
 	${CC} ${CFLAGS} -c $< -o $@
 
