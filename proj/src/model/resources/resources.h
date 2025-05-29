@@ -18,40 +18,77 @@
 #include "model/sprite/sprite.h"
 
 /* bomb cycle */
-#include "assets/xpm/bomb_1.xpm"
-#include "assets/xpm/bomb_2.xpm"
-#include "assets/xpm/bomb_3.xpm"
-#include "assets/xpm/bomb_4.xpm"
+#include "assets/xpm/bomb/bomb_1.xpm"
+#include "assets/xpm/bomb/bomb_2.xpm"
+#include "assets/xpm/bomb/bomb_3.xpm"
+#include "assets/xpm/bomb/bomb_4.xpm"
 
 /* enemy cycle */
-#include "assets/xpm/enemy_a_1.xpm"
-#include "assets/xpm/enemy_a_2.xpm"
-#include "assets/xpm/enemy_a_3.xpm"
-#include "assets/xpm/enemy_a_4.xpm"
+#include "assets/xpm/enemy/enemy_a_1.xpm"
+#include "assets/xpm/enemy/enemy_a_2.xpm"
+#include "assets/xpm/enemy/enemy_a_3.xpm"
+#include "assets/xpm/enemy/enemy_a_4.xpm"
 
+/* player cycle */
 /* down-facing run cycle */
-#include "assets/xpm/player_down_1.xpm"
-#include "assets/xpm/player_down_2.xpm"
-#include "assets/xpm/player_down_3.xpm"
-#include "assets/xpm/player_down_4.xpm"
+#include "assets/xpm/player/player_down_1.xpm"
+#include "assets/xpm/player/player_down_2.xpm"
+#include "assets/xpm/player/player_down_3.xpm"
+#include "assets/xpm/player/player_down_4.xpm"
 
 /* up-facing run cycle */
-#include "assets/xpm/player_up_1.xpm"
-#include "assets/xpm/player_up_2.xpm"
-#include "assets/xpm/player_up_3.xpm"
-#include "assets/xpm/player_up_4.xpm"
+#include "assets/xpm/player/player_up_1.xpm"
+#include "assets/xpm/player/player_up_2.xpm"
+#include "assets/xpm/player/player_up_3.xpm"
+#include "assets/xpm/player/player_up_4.xpm"
 
 /* left-facing run cycle */
-#include "assets/xpm/player_left_1.xpm"
-#include "assets/xpm/player_left_2.xpm"
-#include "assets/xpm/player_left_3.xpm"
-#include "assets/xpm/player_left_4.xpm"
+#include "assets/xpm/player/player_left_1.xpm"
+#include "assets/xpm/player/player_left_2.xpm"
+#include "assets/xpm/player/player_left_3.xpm"
+#include "assets/xpm/player/player_left_4.xpm"
 
 /* right-facing run cycle */
-#include "assets/xpm/player_right_1.xpm"
-#include "assets/xpm/player_right_2.xpm"
-#include "assets/xpm/player_right_3.xpm"
-#include "assets/xpm/player_right_4.xpm"
+#include "assets/xpm/player/player_right_1.xpm"
+#include "assets/xpm/player/player_right_2.xpm"
+#include "assets/xpm/player/player_right_3.xpm"
+#include "assets/xpm/player/player_right_4.xpm"
+
+/* explosion cycle */
+#include "assets/xpm/explosion/explosion_center_1.xpm"
+#include "assets/xpm/explosion/explosion_center_2.xpm"
+#include "assets/xpm/explosion/explosion_center_3.xpm"
+#include "assets/xpm/explosion/explosion_center_4.xpm"
+
+#include "assets/xpm/explosion/explosion_arm_h_1.xpm"
+#include "assets/xpm/explosion/explosion_arm_h_2.xpm"
+#include "assets/xpm/explosion/explosion_arm_h_3.xpm"
+#include "assets/xpm/explosion/explosion_arm_h_4.xpm"
+
+#include "assets/xpm/explosion/explosion_arm_v_1.xpm"
+#include "assets/xpm/explosion/explosion_arm_v_2.xpm"
+#include "assets/xpm/explosion/explosion_arm_v_3.xpm"
+#include "assets/xpm/explosion/explosion_arm_v_4.xpm"
+
+#include "assets/xpm/explosion/explosion_hand_right_1.xpm"
+#include "assets/xpm/explosion/explosion_hand_right_2.xpm"
+#include "assets/xpm/explosion/explosion_hand_right_3.xpm"
+#include "assets/xpm/explosion/explosion_hand_right_4.xpm"
+
+#include "assets/xpm/explosion/explosion_hand_left_1.xpm"
+#include "assets/xpm/explosion/explosion_hand_left_2.xpm"
+#include "assets/xpm/explosion/explosion_hand_left_3.xpm"
+#include "assets/xpm/explosion/explosion_hand_left_4.xpm"
+
+#include "assets/xpm/explosion/explosion_hand_up_1.xpm"
+#include "assets/xpm/explosion/explosion_hand_up_2.xpm"
+#include "assets/xpm/explosion/explosion_hand_up_3.xpm"
+#include "assets/xpm/explosion/explosion_hand_up_4.xpm"
+
+#include "assets/xpm/explosion/explosion_hand_down_1.xpm"
+#include "assets/xpm/explosion/explosion_hand_down_2.xpm"
+#include "assets/xpm/explosion/explosion_hand_down_3.xpm"
+#include "assets/xpm/explosion/explosion_hand_down_4.xpm"
 
 #define ENEMY_ANIM_FRAMES 4
 #define ENEMY_ANIM_SPEED 2
@@ -61,6 +98,9 @@
 
 #define BOMB_ANIM_FRAMES 4
 #define BOMB_ANIM_SPEED  6
+
+#define EXPLOSION_ANIM_FRAMES 4
+#define EXPLOSION_ANIM_SPEED 3
 
 /** @defgroup resources resources
  * @{
@@ -88,6 +128,14 @@ typedef struct {
   Sprite *player_right_sprites[PLAYER_ANIM_FRAMES];
 
   Sprite *bomb_sprites[BOMB_ANIM_FRAMES];
+
+  Sprite *explosion_center_sprites[EXPLOSION_ANIM_FRAMES];
+  Sprite *explosion_horiz_sprites[EXPLOSION_ANIM_FRAMES];
+  Sprite *explosion_vert_sprites[EXPLOSION_ANIM_FRAMES];
+  Sprite *explosion_hand_up_sprites[EXPLOSION_ANIM_FRAMES];
+  Sprite *explosion_hand_down_sprites[EXPLOSION_ANIM_FRAMES];
+  Sprite *explosion_hand_left_sprites[EXPLOSION_ANIM_FRAMES];
+  Sprite *explosion_hand_right_sprites[EXPLOSION_ANIM_FRAMES];
 
   Sprite *powerup_sprite;                     /**< @brief Pointer to the powerup sprite */
   Sprite *win_sprite;                         /**< @brief Pointer to the win sprite */

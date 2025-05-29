@@ -4,25 +4,52 @@
 
 static Resources resources;
 
-static const char **(enemy_a_xpms)[ENEMY_ANIM_FRAMES] = {
-  enemy_a_1_xpm,
-  enemy_a_2_xpm,
-  enemy_a_3_xpm,
-  enemy_a_4_xpm
-};
+/* enemy */
+static const char **(enemy_a_xpms)[ENEMY_ANIM_FRAMES] = { enemy_a_1_xpm, enemy_a_2_xpm, enemy_a_3_xpm, enemy_a_4_xpm};
 
+/* player */
 static const char **player_down_xpms[PLAYER_ANIM_FRAMES] = { player_down_1_xpm, player_down_2_xpm, player_down_3_xpm, player_down_4_xpm };
 static const char **player_up_xpms[PLAYER_ANIM_FRAMES] = { player_up_1_xpm, player_up_2_xpm, player_up_3_xpm, player_up_4_xpm };
 static const char **player_left_xpms[PLAYER_ANIM_FRAMES] = { player_left_1_xpm, player_left_2_xpm, player_left_3_xpm, player_left_4_xpm };
 static const char **player_right_xpms[PLAYER_ANIM_FRAMES] = { player_right_1_xpm, player_right_2_xpm, player_right_3_xpm, player_right_4_xpm };
 
+/* bomb */
 static const char **bomb_xpms[BOMB_ANIM_FRAMES] = { bomb_1_xpm, bomb_2_xpm, bomb_3_xpm, bomb_4_xpm };
 
+/* explosion */
+static const char **explosion_center_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_center_1_xpm, explosion_center_2_xpm, explosion_center_3_xpm, explosion_center_4_xpm };
+
+static const char **explosion_horiz_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_arm_h_1_xpm, explosion_arm_h_2_xpm, explosion_arm_h_3_xpm, explosion_arm_h_4_xpm };
+static const char **explosion_vert_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_arm_v_1_xpm, explosion_arm_v_2_xpm, explosion_arm_v_3_xpm, explosion_arm_v_4_xpm };
+
+static const char **explosion_hand_up_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_hand_up_1_xpm, explosion_hand_up_2_xpm, explosion_hand_up_3_xpm, explosion_hand_up_4_xpm };
+static const char **explosion_hand_down_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_hand_down_1_xpm, explosion_hand_down_2_xpm, explosion_hand_down_3_xpm, explosion_hand_down_4_xpm };
+static const char **explosion_hand_left_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_hand_left_1_xpm, explosion_hand_left_2_xpm, explosion_hand_left_3_xpm, explosion_hand_left_4_xpm };
+static const char **explosion_hand_right_xpms[EXPLOSION_ANIM_FRAMES] = { explosion_hand_right_1_xpm, explosion_hand_right_2_xpm, explosion_hand_right_3_xpm, explosion_hand_right_4_xpm };
+
 int(create_resources)(void) {
-   for (uint8_t i = 0; i < BOMB_ANIM_FRAMES; i++) {
+  for (uint8_t i = 0; i < BOMB_ANIM_FRAMES; i++) {
     resources.bomb_sprites[i] = create_sprite(bomb_xpms[i]);
     if (!resources.bomb_sprites[i]) {
       fprintf(stderr, "create_resources: failed to load bomb anim frame %u\n", i);
+      return 1;
+    }
+  }
+
+  for (uint8_t i = 0; i < EXPLOSION_ANIM_FRAMES; i++) {
+    resources.explosion_center_sprites[i] = create_sprite(explosion_center_xpms[i]);
+    resources.explosion_horiz_sprites[i] = create_sprite(explosion_horiz_xpms[i]);
+    resources.explosion_vert_sprites[i] = create_sprite(explosion_vert_xpms[i]);
+    resources.explosion_hand_up_sprites[i] = create_sprite(explosion_hand_up_xpms[i]);
+    resources.explosion_hand_down_sprites[i] = create_sprite(explosion_hand_down_xpms[i]);
+    resources.explosion_hand_left_sprites[i] = create_sprite(explosion_hand_left_xpms[i]);
+    resources.explosion_hand_right_sprites[i] = create_sprite(explosion_hand_right_xpms[i]);
+
+    if (!resources.explosion_center_sprites[i] || !resources.explosion_horiz_sprites[i] ||
+        !resources.explosion_vert_sprites[i] || !resources.explosion_hand_up_sprites[i] ||
+        !resources.explosion_hand_down_sprites[i] || !resources.explosion_hand_left_sprites[i] ||
+        !resources.explosion_hand_right_sprites[i]) {
+      fprintf(stderr, "create_resources: failed to load explosion sprite frame %u\n", i);
       return 1;
     }
   }
@@ -112,6 +139,25 @@ void(destroy_resources)(void) {
       resources.bomb_sprites[i] = NULL;
     }
   }
+
+  for (uint8_t i = 0; i < EXPLOSION_ANIM_FRAMES; i++) {
+    destroy_sprite(resources.explosion_center_sprites[i]);
+    destroy_sprite(resources.explosion_horiz_sprites[i]);
+    destroy_sprite(resources.explosion_vert_sprites[i]);
+    destroy_sprite(resources.explosion_hand_up_sprites[i]);
+    destroy_sprite(resources.explosion_hand_down_sprites[i]);
+    destroy_sprite(resources.explosion_hand_left_sprites[i]);
+    destroy_sprite(resources.explosion_hand_right_sprites[i]);
+
+    resources.explosion_center_sprites[i] = NULL;
+    resources.explosion_horiz_sprites[i] = NULL;
+    resources.explosion_vert_sprites[i] = NULL;
+    resources.explosion_hand_up_sprites[i] = NULL;
+    resources.explosion_hand_down_sprites[i] = NULL;
+    resources.explosion_hand_left_sprites[i] = NULL;
+    resources.explosion_hand_right_sprites[i] = NULL;
+  }
+
 
   for (uint8_t i = 0; i < 3; i++) {
     if (resources.brick_sprites[i]) {
