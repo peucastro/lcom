@@ -79,4 +79,5 @@ proj/doc/doxygen/
 *.idx
 *.ilg
 *.ind
+*.pdf
 
