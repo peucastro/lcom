@@ -194,6 +194,16 @@ static int(draw_dynamic_entities)(Game *game) {
     }
   }
 
+  for (uint8_t i = 0; i < game->num_explosions; i++) {
+    Entity *expl = &game->explosions[i];
+    if (expl->active) {
+      if (draw_sprite(expl->sprite, expl->x * cell_size, cell_size + expl->y * cell_size) != 0) {
+        fprintf(stderr, "draw_dynamic_entities: failed to draw explosion sprite at index %d.", i);
+        return 1;
+      }
+    }
+  }
+
   return 0;
 }
 

@@ -100,7 +100,7 @@
 #define BOMB_ANIM_SPEED  6
 
 #define EXPLOSION_ANIM_FRAMES 4
-#define EXPLOSION_ANIM_SPEED 3
+#define EXPLOSION_ANIM_SPEED 4
 
 /** @defgroup resources resources
  * @{

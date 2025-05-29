@@ -17,6 +17,7 @@
 #define MAX_BRICKS 50  /**< @brief Maximum number of bricks allowed in the game */
 #define MAX_WALLS 150  /**< @brief Maximum number of walls allowed in the game */
 #define MAX_BOMBS 5    /**< @brief Maximum number of bombs that can exist simultaneously */
+#define MAX_EXPLOSIONS 64
 
 /**
  * @brief Enum representing the game state
@@ -46,11 +47,15 @@ typedef struct Game {
   Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
   Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
+  Entity explosions[MAX_EXPLOSIONS];
+
   Entity powerup;              /**< @brief The powerup entity */
   uint8_t num_enemies;         /**< @brief Number of enemies in the game */
   uint8_t num_bricks;          /**< @brief Number of bricks in the game */
   uint8_t num_walls;           /**< @brief Number of walls in the game */
   uint8_t num_bombs;           /**< @brief Number of bombs in the game */
+  uint8_t num_explosions;
+
   uint8_t level;               /**< @brief Current game level */
 } Game;
 
@@ -158,6 +163,15 @@ void(explode_bomb)(Game *game, uint8_t bomb_index);
  * @param game Pointer to the current game state
  */
 void(update_bombs)(Game *game);
+
+/**
+ * @brief Updates all explosion animations and lifetimes
+ *
+ * Removes expired explosions and updates their animation state.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_explosions)(Game *game);
 
 /**@}*/
 

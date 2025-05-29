@@ -30,6 +30,7 @@ int(load_next_level)(Game *game) {
   game->num_bricks = 0;
   game->num_walls = 0;
   game->num_bombs = 0;
+  game->num_explosions = 0;
 
   uint8_t ei = 0, bri = 0, wi = 0, boi = 0, pi = 0;
   for (uint8_t r = 0; r < game->board.height; r++) {
@@ -130,6 +131,7 @@ int(init_game)(Game *game) {
   game->num_bricks = 0;
   game->num_walls = 0;
   game->num_bombs = 0;
+  game->num_explosions = 0;
 
   game->player.data = 3;
 
@@ -359,6 +361,30 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   game->num_bombs++;
 }
 
+
+#define EXPLOSION_LIFETIME_TICKS (EXPLOSION_ANIM_FRAMES * EXPLOSION_ANIM_SPEED)
+
+static void add_explosion(Game *game, int16_t x, int16_t y, Sprite **frames) {
+  if (game->num_explosions >= MAX_EXPLOSIONS) return;
+  if (!frames || !frames[0]) {
+    fprintf(stderr, "add_explosion: NULL frames\n");
+    return;
+  }
+
+  Entity *e = &game->explosions[game->num_explosions];
+  if (init_entity(e, x, y, frames[0], EXPLOSION_LIFETIME_TICKS) != 0) return;
+
+  e->anim = create_animSprite(frames, EXPLOSION_ANIM_FRAMES, EXPLOSION_ANIM_SPEED, false);
+  if (!e->anim) {
+    e->active = false;
+    return;
+  }
+
+  e->sprite = e->anim->sp;
+  e->active = true;
+  game->num_explosions++;
+}
+
 void(explode_bomb)(Game *game, uint8_t bomb_index) {
   if (game == NULL || bomb_index >= game->num_bombs) {
     fprintf(stderr, "explode_bomb: invalid arguments.");
@@ -470,6 +496,45 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
   }
 
   bomb->active = false;
+  add_explosion(game, bomb_x, bomb_y, (Sprite **)get_resources()->explosion_center_sprites);
+
+  Sprite **arm_frames[4] = {
+    (Sprite **)get_resources()->explosion_vert_sprites,
+    (Sprite **)get_resources()->explosion_horiz_sprites,
+    (Sprite **)get_resources()->explosion_vert_sprites,
+    (Sprite **)get_resources()->explosion_horiz_sprites
+  };
+  Sprite **hand_frames[4] = {
+    (Sprite **)get_resources()->explosion_hand_up_sprites,
+    (Sprite **)get_resources()->explosion_hand_right_sprites,
+    (Sprite **)get_resources()->explosion_hand_down_sprites,
+    (Sprite **)get_resources()->explosion_hand_left_sprites
+  };
+
+  for (int dir = 0; dir < 4; dir++) {
+    for (int range = 1; range <= 2; range++) {
+      int16_t cell_x = bomb_x + dx[dir] * range;
+      int16_t cell_y = bomb_y + dy[dir] * range;
+
+      if (cell_x < 0 || cell_x >= game->board.width || cell_y < 0 || cell_y >= game->board.height)
+        break;
+
+      board_element_t cell = game->board.elements[cell_y][cell_x];
+
+      if(cell == WALL){
+        break;
+      }
+
+      if (range == 2)
+        add_explosion(game, cell_x, cell_y, hand_frames[dir]);
+      else
+        add_explosion(game, cell_x, cell_y, arm_frames[dir]);
+
+      if(cell == BRICK || cell == BOMB) 
+        break;
+    }
+  }
+  
   game->board.elements[bomb_y][bomb_x] = EMPTY_SPACE;
 
   uint8_t active_bricks = 0;
@@ -521,3 +586,56 @@ void(update_bombs)(Game *game) {
 
   game->num_bombs = active_bombs;
 }
+
+void(update_explosions)(Game *game) {
+  if (!game) return;
+
+  uint8_t active = 0;
+  for (uint8_t i = 0; i < game->num_explosions; i++) {
+    Entity *e = &game->explosions[i];
+    if (!e->active) continue;
+
+    e->data--;
+    if (e->anim) {
+      update_animSprite(e->anim);
+      e->sprite = e->anim->sp;
+    }
+
+    for (uint8_t j = 0; j < game->num_enemies; j++) {
+      Entity *enemy = &game->enemies[j];
+      if (enemy->active && enemy->x == e->x && enemy->y == e->y) {
+        enemy->data--;
+        if (enemy->data <= 0) {
+          game->board.elements[enemy->move.sy][enemy->move.sx] = EMPTY_SPACE;
+          game->board.elements[enemy->move.ty][enemy->move.tx] = EMPTY_SPACE;
+          enemy->active = false;
+          enemy->move.moving = false;
+        }
+      }
+    }
+
+    if (game->player.active && game->player.x == e->x && game->player.y == e->y) {
+      game->player.data--;
+      if (game->player.data <= 0) {
+        game->player.active = false;
+        game->board.elements[game->player.y][game->player.x] = EMPTY_SPACE;
+        game->state = LOSE;
+      }
+    }
+
+    if (e->data == 0) {
+      e->active = false;
+      if (e->anim) {
+        destroy_animSprite(e->anim);
+        e->anim = NULL;
+      }
+      continue;
+    }
+
+    if (i != active) game->explosions[active] = *e;
+    active++;
+  }
+
+  game->num_explosions = active;
+}
+
