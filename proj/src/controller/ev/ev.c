@@ -18,7 +18,6 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
 
       update_bombs(game);
       update_explosions(game);
-      update_door_timer(game);
       break;
 
     case START:
@@ -202,6 +201,7 @@ int(handle_rtc_event)(Game *game) {
   switch (game->state) {
     case GAME:
       schedule_enemy_moves(game);
+      update_door_timer(game);
       break;
 
     case START:

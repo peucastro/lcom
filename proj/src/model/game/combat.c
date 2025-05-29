@@ -253,12 +253,6 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
   }
 
   game->num_bricks = active_bricks;
-
-  if (active_bricks == 0) {
-    if (load_next_level(game) != 0) {
-      game->state = WIN;
-    }
-  }
 }
 
 void(update_bombs)(Game *game) {
