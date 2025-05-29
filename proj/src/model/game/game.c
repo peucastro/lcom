@@ -48,6 +48,7 @@ int(load_next_level)(Game *game) {
           game->player.sprite = game->player.anim->sp;
           game->player.active = true;
           break;
+
         case ENEMY:
           if (ei < MAX_ENEMIES) {
             Entity *en = &game->enemies[ei];
@@ -59,6 +60,7 @@ int(load_next_level)(Game *game) {
             ei++;
           }
           break;
+
         case BRICK:
           if (bri < MAX_BRICKS) {
             if (init_entity(&game->bricks[bri], c, r, resources->brick_sprites[0], 3) != 0) {
@@ -68,6 +70,7 @@ int(load_next_level)(Game *game) {
             bri++;
           }
           break;
+
         case WALL:
           if (wi < MAX_WALLS) {
             if (init_entity(&game->walls[wi], c, r, resources->wall_sprite, 0) != 0) {
@@ -77,6 +80,7 @@ int(load_next_level)(Game *game) {
             wi++;
           }
           break;
+
         case BOMB:
           if (boi < MAX_BOMBS) {
             if (init_entity(&game->bombs[boi], c, r, resources->bomb_sprites[0], 0) != 0) {
@@ -95,6 +99,23 @@ int(load_next_level)(Game *game) {
             }
           }
           pi++;
+          break;
+
+        case DOOR:
+          if (init_entity(&game->door, c, r, resources->door_sprite, 0) != 0) {
+            fprintf(stderr, "load_next_level: failed to initialize door entity.");
+            return 1;
+          }
+          game->door.active = true;
+
+          if (bri < MAX_BRICKS) {
+            if (init_entity(&game->bricks[bri], c, r, resources->brick_sprites[0], 3) != 0) {
+              fprintf(stderr, "load_next_level: failed to initialize brick entity over door.");
+              return 1;
+            }
+            bri++;
+            game->board.elements[r][c] = BRICK;
+          }
           break;
 
         case EMPTY_SPACE:
@@ -124,6 +145,7 @@ int(init_game)(Game *game) {
   game->state = START;
   game->menu_option = 0;
   game->level = 0;
+  game->score = 0;
 
   game->num_enemies = 0;
   game->num_bricks = 0;
@@ -132,6 +154,7 @@ int(init_game)(Game *game) {
   game->num_explosions = 0;
 
   game->player.data = 3;
+  game->door_timer = 0;
 
   if (load_next_level(game) != 0) {
     fprintf(stderr, "init_game: failed to load next level.");
@@ -146,6 +169,8 @@ int(reset_game)(Game *game) {
     fprintf(stderr, "reset_game: game pointer cannot be null.");
     return 1;
   }
+
+  game->score = 0;
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     reset_entity(&game->enemies[i]);
@@ -168,11 +193,42 @@ int(reset_game)(Game *game) {
   game->num_bombs = 0;
 
   reset_entity(&game->powerup);
+  reset_entity(&game->door);
   game->num_bombs = 0;
+  game->door_timer = 0;
 
   if (reset_board(&game->board) != 0) {
     fprintf(stderr, "reset_game: failed to reset game board.");
   }
 
   return 0;
+}
+
+void(update_door_timer)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "update_door_timer: game pointer cannot be null.");
+    return;
+  }
+
+  if (game->num_bricks == 0 && game->door.active) {
+    if (game->player.active &&
+        game->player.x == game->door.x &&
+        game->player.y == game->door.y) {
+
+      game->door_timer++;
+
+      if (game->door_timer >= 180) {
+        game->door_timer = 0;
+        if (load_next_level(game) != 0) {
+          game->state = WIN;
+        }
+      }
+    }
+    else {
+      game->door_timer = 0;
+    }
+  }
+  else {
+    game->door_timer = 0;
+  }
 }

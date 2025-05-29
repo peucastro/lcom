@@ -64,6 +64,12 @@ int(create_resources)(void) {
     }
   }
 
+  resources.door_sprite = create_sprite(door_xpm);
+  if (resources.door_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create door sprite.");
+    return 1;
+  }
+
   for (uint8_t i = 0; i < ENEMY_ANIM_FRAMES; i++) {
     resources.enemy_a_sprites[i] = create_sprite(enemy_a_xpms[i]);
     if (!resources.enemy_a_sprites[i]) {
@@ -81,6 +87,12 @@ int(create_resources)(void) {
   resources.handpointing_sprite = create_sprite(handpointing_xpm);
   if (resources.handpointing_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create handpointing sprite.");
+    return 1;
+  }
+
+  resources.heart_sprite = create_sprite(heart_xpm);
+  if (resources.heart_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create heart sprite.");
     return 1;
   }
 
@@ -165,6 +177,11 @@ void(destroy_resources)(void) {
     }
   }
 
+  if (resources.door_sprite != NULL) {
+    destroy_sprite(resources.door_sprite);
+    resources.door_sprite = NULL;
+  }
+
   for (uint8_t i = 0; i < ENEMY_ANIM_FRAMES; i++) {
     if (resources.enemy_a_sprites[i]) {
       destroy_sprite(resources.enemy_a_sprites[i]);
@@ -180,6 +197,11 @@ void(destroy_resources)(void) {
   if (resources.handpointing_sprite != NULL) {
     destroy_sprite(resources.handpointing_sprite);
     resources.handpointing_sprite = NULL;
+  }
+
+  if (resources.heart_sprite != NULL) {
+    destroy_sprite(resources.heart_sprite);
+    resources.heart_sprite = NULL;
   }
 
   if (resources.lose_sprite != NULL) {

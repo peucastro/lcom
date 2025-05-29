@@ -3,9 +3,9 @@
 
 #include "controller/input/input.h"
 #include "controller/kbc/mouse.h"
+#include "model/game/combat.h"
 #include "model/game/game.h"
 #include "model/game/movement.h"
-#include "model/game/combat.h"
 
 /** @defgroup ev ev
  * @{
@@ -47,6 +47,15 @@ int(handle_kbd_event)(Game *game, Key key);
  * @return 0 upon success, non-zero otherwise
  */
 int(handle_mouse_event)(Game *game, mouse_info_t mouse_info);
+
+/**
+ * @brief Handles RTC events
+ *
+ * @param game Pointer to the game instance
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+int(handle_rtc_event)(Game *game);
 
 /**@}*/
 

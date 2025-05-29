@@ -13,11 +13,11 @@
  * Functions for managing the game state
  */
 
-#define MAX_ENEMIES 10 /**< @brief Maximum number of enemies allowed in the game */
-#define MAX_BRICKS 50  /**< @brief Maximum number of bricks allowed in the game */
-#define MAX_WALLS 150  /**< @brief Maximum number of walls allowed in the game */
-#define MAX_BOMBS 5    /**< @brief Maximum number of bombs that can exist simultaneously */
-#define MAX_EXPLOSIONS 64
+#define MAX_ENEMIES 10   /**< @brief Maximum number of enemies allowed in the game */
+#define MAX_BRICKS 50    /**< @brief Maximum number of bricks allowed in the game */
+#define MAX_WALLS 150    /**< @brief Maximum number of walls allowed in the game */
+#define MAX_BOMBS 5      /**< @brief Maximum number of bombs that can exist simultaneously */
+#define MAX_EXPLOSIONS 3 /**< @brief Maximum number of explosions that can exist simultaneously */
 
 /**
  * @brief Enum representing the game state
@@ -39,25 +39,26 @@ typedef enum {
  * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
 typedef struct Game {
-  game_state_t state;          /**< @brief Current state of the game */
-  uint8_t menu_option;         /**< @brief Current selected menu option */
-  GameBoard board;             /**< @brief Current game board */
-  Entity player;               /**< @brief The player entity */
+  game_state_t state;  /**< @brief Current state of the game */
+  uint8_t menu_option; /**< @brief Current selected menu option */
+  GameBoard board;     /**< @brief Current game board */
+  Entity player;       /**< @brief The player entity */
   AnimSprite *player_anims[4];
-  Entity enemies[MAX_ENEMIES]; /**< @brief Array of enemy entities */
-  Entity bricks[MAX_BRICKS];   /**< @brief Array of brick entities */
-  Entity walls[MAX_WALLS];     /**< @brief Array of wall entities */
-  Entity bombs[MAX_BOMBS];     /**< @brief Array of bomb entities */
-  Entity explosions[MAX_EXPLOSIONS];
-
-  Entity powerup;      /**< @brief The powerup entity */
-  uint8_t num_enemies; /**< @brief Number of enemies in the game */
-  uint8_t num_bricks;  /**< @brief Number of bricks in the game */
-  uint8_t num_walls;   /**< @brief Number of walls in the game */
-  uint8_t num_bombs;   /**< @brief Number of bombs in the game */
-  uint8_t num_explosions;
-
-  uint8_t level; /**< @brief Current game level */
+  Entity enemies[MAX_ENEMIES];       /**< @brief Array of enemy entities */
+  Entity bricks[MAX_BRICKS];         /**< @brief Array of brick entities */
+  Entity walls[MAX_WALLS];           /**< @brief Array of wall entities */
+  Entity bombs[MAX_BOMBS];           /**< @brief Array of bomb entities */
+  Entity explosions[MAX_EXPLOSIONS]; /**< @brief Array of explosion entities */
+  Entity powerup;                    /**< @brief The powerup entity */
+  Entity door;                       /**< @brief The level exit door entity */
+  uint8_t num_enemies;               /**< @brief Number of enemies in the game */
+  uint8_t num_bricks;                /**< @brief Number of bricks in the game */
+  uint8_t num_walls;                 /**< @brief Number of walls in the game */
+  uint8_t num_bombs;                 /**< @brief Number of bombs in the game */
+  uint8_t num_explosions;            /**< @brief Number of explosions in the game */
+  uint8_t level;                     /**< @brief Current game level */
+  uint8_t door_timer;                /**< @brief Timer for door interaction */
+  uint8_t score;                     /**< @brief Player's current score */
 } Game;
 
 /**
@@ -98,6 +99,15 @@ int(init_game)(Game *game);
  */
 int(reset_game)(Game *game);
 
+/**
+ * @brief Updates door interaction timer and handles level progression
+ *
+ * Checks if player is standing on door after all bricks are destroyed.
+ * Increments timer when conditions are met, loads next level after 3 seconds.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_door_timer)(Game *game);
 
 /**@}*/
 

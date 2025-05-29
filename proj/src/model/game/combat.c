@@ -151,7 +151,15 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
               game->bricks[i].data--;
               if (game->bricks[i].data <= 0) {
                 game->bricks[i].active = false;
-                game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                game->score += 10; // Increment score for destroying brick
+
+                // Check if there's a door underneath this brick
+                if (game->door.x == cell_x && game->door.y == cell_y) {
+                  game->door.active = true;
+                  game->board.elements[cell_y][cell_x] = DOOR;
+                } else {
+                  game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                }
                 break;
               }
               game->bricks[i].sprite = get_resources()->brick_sprites[3 - game->bricks[i].data];

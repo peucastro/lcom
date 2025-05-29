@@ -25,6 +25,7 @@ typedef enum {
   WALL,       /**< @brief Indestructible wall */
   BOMB,       /**< @brief Bomb */
   POWERUP,    /**< @brief Power-up item */
+  DOOR,       /**< @brief Door to pass to the next level */
   EMPTY_SPACE /**< @brief Empty space where players can move */
 } board_element_t;
 

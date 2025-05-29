@@ -4,10 +4,10 @@
 #include "assets/xpm/brick_0.xpm"
 #include "assets/xpm/brick_1.xpm"
 #include "assets/xpm/brick_2.xpm"
-#include "assets/xpm/enemy_left.xpm"
-#include "assets/xpm/enemy_right.xpm"
+#include "assets/xpm/door.xpm"
 #include "assets/xpm/handopen.xpm"
 #include "assets/xpm/handpointing.xpm"
+#include "assets/xpm/heart.xpm"
 #include "assets/xpm/lose.xpm"
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_exit.xpm"
@@ -116,9 +116,11 @@
  */
 typedef struct {
   Sprite *brick_sprites[3];                   /**< @brief Array of pointer to the brick sprites */
+  Sprite *door_sprite;                        /**< @brief Pointer to the door sprite */
   Sprite *enemy_a_sprites[ENEMY_ANIM_FRAMES]; /**< @brief Array of pointer to the enemy sprites */
   Sprite *handopen_sprite;                    /**< @brief Pointer to the handopen sprite */
   Sprite *handpointing_sprite;                /**< @brief Pointer to the handpointing sprite */
+  Sprite *heart_sprite;                       /**< @brief Pointer to the heart sprite */
   Sprite *lose_sprite;                        /**< @brief Pointer to the lose sprite */
   Sprite *menu_sprite[3];                     /**< @brief Array of pointers to the menu sprites */
 

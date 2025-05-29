@@ -7,6 +7,7 @@ static uint8_t cache_initialized = 0;
 static uint8_t last_menu_option = 255;
 static game_state_t last_game_state = EXIT;
 static uint8_t last_level = 0;
+static int last_score = 0;
 static uint8_t game_background_cached = 0;
 
 void(cleanup_cache)(void) {
@@ -17,6 +18,7 @@ void(cleanup_cache)(void) {
     last_menu_option = 255;
     last_game_state = EXIT;
     last_level = 0;
+    last_score = 0;
     game_background_cached = 0;
   }
 }
@@ -168,7 +170,8 @@ static int(draw_dynamic_entities)(Game *game) {
   int px, py;
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     Entity *e = &game->enemies[i];
-    if (!e->active) continue;
+    if (!e->active)
+      continue;
     px = (int) round(e->move.px);
     py = (int) round(e->move.py) + cell_size;
     if (draw_sprite(e->sprite, px, py) != 0) {
@@ -221,6 +224,7 @@ static int(draw_background_cache)(Game *game) {
     fprintf(stderr, "draw_background_cache: game pointer cannot be null.");
     return 1;
   }
+
   const uint8_t cell_size = 64;
 
   if (!game_background_cached) {
@@ -236,6 +240,13 @@ static int(draw_background_cache)(Game *game) {
           fprintf(stderr, "draw_background_cache: failed to draw wall sprite at index %d.", i);
           return 1;
         }
+      }
+    }
+
+    if (game->door.active) {
+      if (draw_sprite(game->door.sprite, game->door.x * cell_size, cell_size + game->door.y * cell_size) != 0) {
+        fprintf(stderr, "draw_background_cache: failed to draw door sprite.");
+        return 1;
       }
     }
 
@@ -255,17 +266,257 @@ static int(draw_background_cache)(Game *game) {
   return 0;
 }
 
+/**
+ * @brief Draws the "SCORE:" label using rectangles
+ *
+ * @param x X-coordinate for the label position
+ * @param y Y-coordinate for the label position
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+static int(draw_score_label)(uint16_t x, uint16_t y) {
+  const uint32_t color = 0x000000;
+  const uint16_t width = 4;
+  const uint16_t height = 20;
+  const uint16_t spacing = 10;
+
+  graphics_draw_rectangle(x, y, height, width, color);                           // top
+  graphics_draw_rectangle(x, y, width, height, color);                           // left top
+  graphics_draw_rectangle(x, y + height, height, width, color);                  // middle
+  graphics_draw_rectangle(x + height - width, y + height, width, height, color); // right bottom
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);              // bottom
+  x += height + spacing;
+
+  graphics_draw_rectangle(x, y, height, width, color);              // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);  // left
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color); // bottom
+  x += height + spacing;
+
+  graphics_draw_rectangle(x, y, height, width, color);                              // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);                  // left
+  graphics_draw_rectangle(x + height - width, y, width, 2 * height + width, color); // right
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color);                 // bottom
+  x += height + spacing;
+
+  graphics_draw_rectangle(x, y, height, width, color);                      // top
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);          // left
+  graphics_draw_rectangle(x, y + height + 4, height, width, color);         // middle
+  graphics_draw_rectangle(x + height - width, y, width, height + 4, color); // right
+
+  int start_x = x;                  // start at right edge of middle bar
+  int start_y = y + height + width; // start below middle bar
+
+  for (int i = 0; i < height; i += width) {
+    graphics_draw_rectangle(start_x + i, start_y + i, width, width, color);
+  }
+
+  x += height + spacing;
+
+  graphics_draw_rectangle(x, y, height, width, color);              // top
+  graphics_draw_rectangle(x, y + height, height, width, color);     // middle
+  graphics_draw_rectangle(x, y + 2 * height, height, width, color); // bottom
+  graphics_draw_rectangle(x, y, width, 2 * height + width, color);  // left
+  x += height + spacing;
+
+  graphics_draw_rectangle(x + width, y + height / 2, width, width, color);     // top dot
+  graphics_draw_rectangle(x + width, y + height + width, width, width, color); // bottom dot
+
+  return 0;
+}
+
+/**
+ * @brief Draws a single digit using seven-segment display style
+ *
+ * Renders a digit (0-9) using seven segments made of rectangles.
+ *
+ * @param x X-coordinate for the digit position
+ * @param y Y-coordinate for the digit position
+ * @param digit The digit to draw (0-9)
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
+  const uint16_t segment_width = 20;
+  const uint16_t segment_height = 4;
+  const uint32_t color = 0x000000;
+
+  const uint8_t segments[10][7] = {
+    {1, 1, 1, 0, 1, 1, 1}, // 0
+    {0, 0, 1, 0, 0, 1, 0}, // 1
+    {1, 0, 1, 1, 1, 0, 1}, // 2
+    {1, 0, 1, 1, 0, 1, 1}, // 3
+    {0, 1, 1, 1, 0, 1, 0}, // 4
+    {1, 1, 0, 1, 0, 1, 1}, // 5
+    {1, 1, 0, 1, 1, 1, 1}, // 6
+    {1, 0, 1, 0, 0, 1, 0}, // 7
+    {1, 1, 1, 1, 1, 1, 1}, // 8
+    {1, 1, 1, 1, 0, 1, 1}  // 9
+  };
+
+  if (digit < 0 || digit > 9) {
+    return 1;
+  }
+
+  if (segments[digit][0]) // top
+    graphics_draw_rectangle(x, y, segment_width, segment_height, color);
+  if (segments[digit][3]) // middle
+    graphics_draw_rectangle(x, y + segment_width, segment_width, segment_height, color);
+  if (segments[digit][6]) // bottom
+    graphics_draw_rectangle(x, y + segment_width * 2, segment_width, segment_height, color);
+
+  if (segments[digit][1]) // top left
+    graphics_draw_rectangle(x, y, segment_height, segment_width, color);
+  if (segments[digit][2]) // top right
+    graphics_draw_rectangle(x + segment_width - segment_height, y, segment_height, segment_width, color);
+  if (segments[digit][4]) // bottom left
+    graphics_draw_rectangle(x, y + segment_width + segment_height, segment_height, segment_width, color);
+  if (segments[digit][5]) // bottom right
+    graphics_draw_rectangle(x + segment_width - segment_height, y + segment_width + segment_height, segment_height, segment_width, color);
+
+  return 0;
+}
+
+/**
+ * @brief Draws the player's current score
+ *
+ * Renders the score label and numeric value to the screen.
+ *
+ * @param game Pointer to the game instance
+ * @param x X-coordinate for the score display
+ * @param y Y-coordinate for the score display
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
+  if (game == NULL) {
+    return 1;
+  }
+
+  int score = game->score;
+  const uint16_t digit_spacing = 30;
+  char score_str[32];
+  snprintf(score_str, sizeof(score_str), "SCORE: %d", score);
+
+  if (draw_score_label(x, y) != 0) {
+    fprintf(stderr, "draw_score: failed to draw score label.\n");
+    return 1;
+  }
+  x += 180;
+
+  int temp = (score < 0) ? -score : score;
+  int num_digits = 1;
+  int div = 10;
+
+  while (temp / div > 0) {
+    num_digits++;
+    div *= 10;
+  }
+
+  x += 8;
+
+  div = 1;
+  for (int i = 0; i < num_digits; i++) {
+    div *= 10;
+  }
+
+  while (div > 1) {
+    div /= 10;
+    int digit = (score / div) % 10;
+    if (digit < 0)
+      digit = -digit;
+    draw_digit(x, y, digit);
+    x += digit_spacing;
+  }
+
+  return 0;
+}
+
+/**
+ * @brief Draws the player's remaining lives as heart sprites
+ *
+ * Renders heart sprites representing the player's current life count.
+ *
+ * @param game Pointer to the game instance
+ * @param x X-coordinate for the lives display
+ * @param y Y-coordinate for the lives display
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+static int(draw_lives)(Game *game, uint16_t x, uint16_t y) {
+  if (game == NULL) {
+    fprintf(stderr, "draw_lives: game pointer is NULL.\n");
+    return 1;
+  }
+
+  int lives = game->player.data;
+  const uint16_t start_x = 448;
+
+  uint16_t x_pos = start_x;
+  Sprite *heart = get_resources()->heart_sprite;
+
+  if (heart != NULL) {
+    for (uint8_t i = 0; i < lives; i++) {
+      draw_sprite(heart, x_pos, 0);
+      x_pos += heart->width;
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * @brief Draws the top score bar containing score and lives
+ *
+ * Renders the gray background bar and calls functions to draw
+ * the score and lives information.
+ *
+ * @param game Pointer to the game instance
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+static int(draw_score_bar)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "draw_score_bar: game pointer cannot be null.");
+    return 1;
+  }
+
+  if (graphics_draw_rectangle(0, 0, vbe_get_h_res(), 64, 0xB0B0B0) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw score background.");
+    return 1;
+  }
+
+  if (draw_score(game, 20, 10) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw score.");
+    return 1;
+  }
+
+  if (draw_lives(game, 10, 10) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw lives.\n");
+    return 1;
+  }
+
+  last_score = game->score;
+  return 0;
+}
+
 int(draw_game)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "draw_game: game pointer cannot be null.");
     return 1;
   }
+
   if (draw_background_cache(game) != 0) {
     fprintf(stderr, "draw_game: failed to draw background cache.");
     return 1;
   }
+
   if (draw_dynamic_entities(game) != 0) {
     fprintf(stderr, "draw_game: failed to draw dynamic entities.");
+    return 1;
+  }
+
+  if (draw_score_bar(game) != 0) {
+    fprintf(stderr, "draw_game: failed to draw score bar.");
     return 1;
   }
 
