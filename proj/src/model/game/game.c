@@ -14,7 +14,7 @@ int(load_next_level)(Game *game) {
   snprintf(board_path, sizeof(board_path), "/home/lcom/labs/proj/src/assets/boards/level%u.txt", game->level);
 
   if (load_board(&game->board, board_path) != 0) {
-    fprintf(stderr, "load_next_level: failed to load board %s\n.", board_path);
+    fprintf(stderr, "load_next_level: failed to load board %s.", board_path);
     return 1;
   }
 

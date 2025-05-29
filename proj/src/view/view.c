@@ -172,7 +172,7 @@ static int(draw_dynamic_entities)(Game *game) {
     px = (int) round(e->move.px);
     py = (int) round(e->move.py) + cell_size;
     if (draw_sprite(e->sprite, px, py) != 0) {
-      fprintf(stderr, "draw_next_frame: failed to draw enemy %d\n", i);
+      fprintf(stderr, "draw_next_frame: failed to draw enemy %d", i);
       return 1;
     }
   }

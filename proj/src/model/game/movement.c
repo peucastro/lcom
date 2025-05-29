@@ -1,3 +1,5 @@
+#include <lcom/lcf.h>
+
 #include "movement.h"
 
 void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
@@ -99,6 +101,11 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 }
 
 void(schedule_enemy_moves)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "schedule_enemy_moves: game pointer cannot be null.");
+    return;
+  }
+
   static const int8_t dx[4] = {0, 1, 0, -1};
   static const int8_t dy[4] = {-1, 0, 1, 0};
 
@@ -138,4 +145,3 @@ void(schedule_enemy_moves)(Game *game) {
     e->sprite = e->anim->sp;
   }
 }
-

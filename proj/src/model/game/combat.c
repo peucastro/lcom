@@ -1,3 +1,5 @@
+#include <lcom/lcf.h>
+
 #include "combat.h"
 
 void(drop_bomb)(Game *game, int16_t x, int16_t y) {
@@ -43,11 +45,27 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   game->num_bombs++;
 }
 
-static void add_explosion(Game *game, int16_t x, int16_t y, Sprite **frames) {
+/**
+ * @brief Adds an explosion entity at the specified coordinates
+ *
+ * Creates a new explosion entity with animation at the given position.
+ * Used internally by explode_bomb to create explosion effects.
+ *
+ * @param game Pointer to the current game state
+ * @param x X-coordinate for the explosion
+ * @param y Y-coordinate for the explosion
+ * @param frames Array of sprite frames for the explosion animation
+ */
+static void(add_explosion)(Game *game, int16_t x, int16_t y, Sprite **frames) {
+  if (game == NULL) {
+    fprintf(stderr, "add_explosion: game pointer cannot be null.");
+    return;
+  }
+
   if (game->num_explosions >= MAX_EXPLOSIONS)
     return;
   if (!frames || !frames[0]) {
-    fprintf(stderr, "add_explosion: NULL frames\n");
+    fprintf(stderr, "add_explosion: NULL frames");
     return;
   }
 
@@ -161,7 +179,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
           continue;
 
         default:
-          fprintf(stderr, "explode_bomb: unknown board element type %d\n", cell);
+          fprintf(stderr, "explode_bomb: unknown board element type %d", cell);
           break;
       }
 
