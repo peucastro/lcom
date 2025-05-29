@@ -5,6 +5,7 @@
 #include "controller/input/input.h"
 #include "controller/kbc/kbd.h"
 #include "controller/kbc/mouse.h"
+#include "controller/rtc/rtc.h"
 #include "controller/timer/timer.h"
 #include "model/game/game.h"
 #include "view/view.h"
@@ -55,6 +56,15 @@ void(kbd_handler)(Game *game);
  * @param game Pointer to the game instance to be updated
  */
 void(mouse_handler)(Game *game);
+
+/**
+ * @brief Handles RTC interrupts.
+ *
+ * Calls the respective event handler
+ *
+ * @param game Pointer to the game instance to be updated
+ */
+void(rtc_handler)(Game *game);
 
 /**
  * @brief Processes device interrupts based on the interrupt bitmask.
