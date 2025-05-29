@@ -54,6 +54,7 @@ typedef struct Game {
   uint8_t num_bombs;           /**< @brief Number of bombs in the game */
   uint8_t level;               /**< @brief Current game level */
   uint8_t door_timer;          /**< @brief Timer for door interaction */
+  uint8_t score;               /**< @brief Player's current score */
 } Game;
 
 /**

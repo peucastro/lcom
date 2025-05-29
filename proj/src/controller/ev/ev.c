@@ -1,6 +1,7 @@
 #include <lcom/lcf.h>
 
 #include "controller/ev/ev.h"
+#include "view/view.h"
 
 int(handle_timer_event)(Game *game, uint32_t counter) {
   if (game == NULL) {

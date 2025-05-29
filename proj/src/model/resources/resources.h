@@ -12,6 +12,7 @@
 #include "assets/xpm/enemy_a_4.xpm"
 #include "assets/xpm/handopen.xpm"
 #include "assets/xpm/handpointing.xpm"
+#include "assets/xpm/heart.xpm"
 #include "assets/xpm/lose.xpm"
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_exit.xpm"
@@ -47,6 +48,7 @@ typedef struct {
   Sprite *enemy_a_sprites[ENEMY_ANIM_FRAMES]; /**< @brief Array of pointer to the enemy sprites */
   Sprite *handopen_sprite;                    /**< @brief Pointer to the handopen sprite */
   Sprite *handpointing_sprite;                /**< @brief Pointer to the handpointing sprite */
+  Sprite *heart_sprite;                       /**< @brief Pointer to the heart sprite */
   Sprite *lose_sprite;                        /**< @brief Pointer to the lose sprite */
   Sprite *menu_sprite[3];                     /**< @brief Array of pointers to the menu sprites */
   Sprite *player_down_sprite;                 /**< @brief Pointer to the player down sprite */

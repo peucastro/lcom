@@ -138,6 +138,7 @@ int(init_game)(Game *game) {
   game->state = START;
   game->menu_option = 0;
   game->level = 0;
+  game->score = 0;
 
   game->num_enemies = 0;
   game->num_bricks = 0;
@@ -160,6 +161,8 @@ int(reset_game)(Game *game) {
     fprintf(stderr, "reset_game: game pointer cannot be null.");
     return 1;
   }
+
+  game->score = 0;
 
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     reset_entity(&game->enemies[i]);
@@ -416,6 +419,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
               if (game->enemies[i].data <= 0) {
                 game->enemies[i].active = false;
                 game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                game->score += 100;
               }
               break;
             }
@@ -433,8 +437,10 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
 
                 if (game->door.x == cell_x && game->door.y == cell_y) {
                   game->board.elements[cell_y][cell_x] = DOOR;
-                } else {
+                }
+                else {
                   game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
+                  game->score += 5;
                 }
                 break;
               }
@@ -536,10 +542,12 @@ void(update_door_timer)(Game *game) {
           game->state = WIN;
         }
       }
-    } else {
+    }
+    else {
       game->door_timer = 0;
     }
-  } else {
+  }
+  else {
     game->door_timer = 0;
   }
 }

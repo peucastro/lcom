@@ -53,6 +53,12 @@ int(create_resources)(void) {
     return 1;
   }
 
+  resources.heart_sprite = create_sprite(heart_xpm);
+  if (resources.heart_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create heart sprite.");
+    return 1;
+  }
+
   resources.lose_sprite = create_sprite(lose_xpm);
   if (resources.lose_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create lose sprite.");
@@ -147,6 +153,11 @@ void(destroy_resources)(void) {
   if (resources.handpointing_sprite != NULL) {
     destroy_sprite(resources.handpointing_sprite);
     resources.handpointing_sprite = NULL;
+  }
+
+  if (resources.heart_sprite != NULL) {
+    destroy_sprite(resources.heart_sprite);
+    resources.heart_sprite = NULL;
   }
 
   if (resources.lose_sprite != NULL) {
