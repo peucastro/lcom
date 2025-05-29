@@ -16,6 +16,7 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
       if (counter % 60 == 0) {
         schedule_enemy_moves(game);
         update_bombs(game);
+        update_door_timer(game);
       }
       break;
 

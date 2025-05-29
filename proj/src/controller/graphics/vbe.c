@@ -25,22 +25,6 @@ uint8_t *(vbe_get_video_mem) (void) {
   return video_mem[buff_index];
 }
 
-void(vbe_set_video_mem)(uint8_t *new_video_mem) {
-  static uint8_t *original_video_mem = NULL;
-
-  if (new_video_mem == NULL) {
-    if (original_video_mem != NULL) {
-      video_mem[buff_index] = original_video_mem;
-      original_video_mem = NULL;
-    }
-  } else {
-    if (original_video_mem == NULL) {
-      original_video_mem = video_mem[buff_index];
-    }
-    video_mem[buff_index] = new_video_mem;
-  }
-}
-
 uint16_t(vbe_get_h_res)(void) {
   return h_res;
 }

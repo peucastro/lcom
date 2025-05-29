@@ -73,17 +73,6 @@ vbe_mode_info_t(vbe_get_mode)(void);
 uint8_t *(vbe_get_video_mem) (void);
 
 /**
- * @brief Sets the video memory pointer for drawing operations.
- *
- * This function allows temporary redirection of drawing operations to a different
- * memory buffer, useful for background caching. Pass NULL to restore the original
- * video memory pointer.
- *
- * @param new_video_mem Pointer to the new video memory buffer, or NULL to restore original
- */
-void(vbe_set_video_mem)(uint8_t *new_video_mem);
-
-/**
  * @brief Gets the horizontal resolution of the current video mode.
  *
  * @return The width in pixels of the current video mode

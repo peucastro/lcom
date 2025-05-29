@@ -228,6 +228,13 @@ static int(draw_background_cache)(Game *game) {
       }
     }
 
+    if (game->door.active) {
+      if (draw_sprite(game->door.sprite, game->door.x * cell_size, cell_size + game->door.y * cell_size) != 0) {
+        fprintf(stderr, "draw_background_cache: failed to draw door sprite.");
+        return 1;
+      }
+    }
+
     if (cache_current_frame() != 0) {
       fprintf(stderr, "draw_background_cache: failed to cache background.");
       return 1;
