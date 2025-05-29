@@ -1,7 +1,6 @@
 #include <lcom/lcf.h>
 
 #include "controller/ev/ev.h"
-#include "view/view.h"
 
 int(handle_timer_event)(Game *game, uint32_t counter) {
   if (game == NULL) {
@@ -11,9 +10,15 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
 
   switch (game->state) {
     case GAME:
+      game->player.update(&game->player, game, counter);
+
       for (uint8_t i = 0; i < game->num_enemies; i++) {
         game->enemies[i].update(&game->enemies[i], game, counter);
       }
+
+      update_bombs(game);
+      update_explosions(game);
+      update_door_timer(game);
       break;
 
     case START:
@@ -197,8 +202,6 @@ int(handle_rtc_event)(Game *game) {
   switch (game->state) {
     case GAME:
       schedule_enemy_moves(game);
-      update_bombs(game);
-      update_door_timer(game);
       break;
 
     case START:

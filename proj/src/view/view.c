@@ -170,10 +170,12 @@ static int(draw_dynamic_entities)(Game *game) {
   int px, py;
   for (uint8_t i = 0; i < game->num_enemies; i++) {
     Entity *e = &game->enemies[i];
+    if (!e->active)
+      continue;
     px = (int) round(e->move.px);
     py = (int) round(e->move.py) + cell_size;
     if (draw_sprite(e->sprite, px, py) != 0) {
-      fprintf(stderr, "draw_next_frame: failed to draw enemy %d\n", i);
+      fprintf(stderr, "draw_next_frame: failed to draw enemy %d", i);
       return 1;
     }
   }
@@ -192,6 +194,16 @@ static int(draw_dynamic_entities)(Game *game) {
     if (draw_sprite(game->player.sprite, ppx, ppy) != 0) {
       fprintf(stderr, "draw_dynamic_entities: failed to draw player sprite.");
       return 1;
+    }
+  }
+
+  for (uint8_t i = 0; i < game->num_explosions; i++) {
+    Entity *expl = &game->explosions[i];
+    if (expl->active) {
+      if (draw_sprite(expl->sprite, expl->x * cell_size, cell_size + expl->y * cell_size) != 0) {
+        fprintf(stderr, "draw_dynamic_entities: failed to draw explosion sprite at index %d.", i);
+        return 1;
+      }
     }
   }
 
