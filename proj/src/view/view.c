@@ -212,6 +212,7 @@ static int(draw_background_cache)(Game *game) {
     fprintf(stderr, "draw_background_cache: game pointer cannot be null.");
     return 1;
   }
+
   const uint8_t cell_size = 64;
 
   if (!game_background_cached) {
@@ -246,6 +247,14 @@ static int(draw_background_cache)(Game *game) {
   return 0;
 }
 
+/**
+ * @brief Draws the "SCORE:" label using rectangles
+ *
+ * @param x X-coordinate for the label position
+ * @param y Y-coordinate for the label position
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
 static int(draw_score_label)(uint16_t x, uint16_t y) {
   const uint32_t color = 0x000000;
   const uint16_t width = 4;
@@ -296,6 +305,17 @@ static int(draw_score_label)(uint16_t x, uint16_t y) {
   return 0;
 }
 
+/**
+ * @brief Draws a single digit using seven-segment display style
+ *
+ * Renders a digit (0-9) using seven segments made of rectangles.
+ *
+ * @param x X-coordinate for the digit position
+ * @param y Y-coordinate for the digit position
+ * @param digit The digit to draw (0-9)
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
 static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
   const uint16_t segment_width = 20;
   const uint16_t segment_height = 4;
@@ -337,8 +357,18 @@ static int(draw_digit)(uint16_t x, uint16_t y, int digit) {
   return 0;
 }
 
+/**
+ * @brief Draws the player's current score
+ *
+ * Renders the score label and numeric value to the screen.
+ *
+ * @param game Pointer to the game instance
+ * @param x X-coordinate for the score display
+ * @param y Y-coordinate for the score display
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
 static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
-
   if (game == NULL) {
     return 1;
   }
@@ -382,6 +412,17 @@ static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
   return 0;
 }
 
+/**
+ * @brief Draws the player's remaining lives as heart sprites
+ *
+ * Renders heart sprites representing the player's current life count.
+ *
+ * @param game Pointer to the game instance
+ * @param x X-coordinate for the lives display
+ * @param y Y-coordinate for the lives display
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
 static int(draw_lives)(Game *game, uint16_t x, uint16_t y) {
   if (game == NULL) {
     fprintf(stderr, "draw_lives: game pointer is NULL.\n");
@@ -404,6 +445,16 @@ static int(draw_lives)(Game *game, uint16_t x, uint16_t y) {
   return 0;
 }
 
+/**
+ * @brief Draws the top score bar containing score and lives
+ *
+ * Renders the gray background bar and calls functions to draw
+ * the score and lives information.
+ *
+ * @param game Pointer to the game instance
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
 static int(draw_score_bar)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "draw_score_bar: game pointer cannot be null.");
