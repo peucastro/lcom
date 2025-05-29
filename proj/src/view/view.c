@@ -382,6 +382,47 @@ static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
   return 0;
 }
 
+static int(draw_lives)(Game *game, uint16_t x, uint16_t y) {
+  if (game == NULL) {
+    fprintf(stderr, "draw_lives: game pointer is NULL.\n");
+    return 1;
+  }
+
+  int lives = game->player.data; // assuming 'data' holds the lives count
+  const uint16_t digit_spacing = 30;
+  const uint16_t start_x = 450; // position next to score
+
+  uint16_t x_pos = start_x;
+
+  // Draw each digit of lives
+  int temp = lives;
+  int num_digits = 1;
+  int div = 10;
+
+  while (temp / div > 0) {
+    num_digits++;
+    div *= 10;
+  }
+
+  x_pos += 8;
+
+  div = 1;
+  for (int i = 0; i < num_digits; i++) {
+    div *= 10;
+  }
+
+  while (div > 1) {
+    div /= 10;
+    int digit = (lives / div) % 10;
+    if (digit < 0)
+      digit = -digit;
+    draw_digit(x_pos, y, digit);
+    x_pos += digit_spacing;
+  }
+
+  return 0;
+}
+
 static int(draw_score_bar)(Game *game) {
   if (game == NULL) {
     fprintf(stderr, "draw_score_bar: game pointer cannot be null.");
@@ -395,6 +436,11 @@ static int(draw_score_bar)(Game *game) {
 
   if (draw_score(game, 20, 10) != 0) {
     fprintf(stderr, "draw_score_bar: failed to draw score.");
+    return 1;
+  }
+
+  if (draw_lives(game, 10, 10) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw lives.\n");
     return 1;
   }
 
