@@ -4,7 +4,7 @@
 
 int(handle_timer_event)(Game *game, uint32_t counter) {
   if (game == NULL) {
-    fprintf(stderr, "handle_kbd_event: game pointer cannot be null.");
+    fprintf(stderr, "handle_timer_event: game pointer cannot be null.");
     return 1;
   }
 
@@ -12,10 +12,6 @@ int(handle_timer_event)(Game *game, uint32_t counter) {
     case GAME:
       for (uint8_t i = 0; i < game->num_enemies; i++) {
         game->enemies[i].update(&game->enemies[i], game, counter);
-      }
-      if (counter % 60 == 0) {
-        schedule_enemy_moves(game);
-        update_bombs(game);
       }
       break;
 
@@ -185,6 +181,34 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
 
     default:
       fprintf(stderr, "handle_mouse_event: invalid game state.");
+      return 1;
+  }
+
+  return 0;
+}
+
+int(handle_rtc_event)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "handle_rtc_event: game pointer cannot be null.");
+    return 1;
+  }
+
+  switch (game->state) {
+    case GAME:
+      schedule_enemy_moves(game);
+      update_bombs(game);
+      break;
+
+    case START:
+    case PAUSE:
+    case WIN:
+    case LOSE:
+    case EXIT:
+      /* code */
+      break;
+
+    default:
+      fprintf(stderr, "handle_rtc_event: invalid game state.");
       return 1;
   }
 
