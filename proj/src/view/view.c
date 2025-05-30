@@ -111,8 +111,8 @@ int(draw_start_menu)(Game *game) {
 int(draw_pause_menu)(Game *game) {
   const Resources *res = get_resources();
   if (res == NULL) {
-      fprintf(stderr, "draw_pause_menu: resources not loaded");
-      return 1;
+    fprintf(stderr, "draw_pause_menu: resources not loaded");
+    return 1;
   }
 
   if (!cache_initialized || game->menu_option != last_menu_option) {
@@ -142,6 +142,7 @@ int(draw_pause_menu)(Game *game) {
       fprintf(stderr, "draw_pause_menu: failed to cache menu.");
       return 1;
     }
+    last_menu_option = game->menu_option;
   }
   else {
     if (restore_cached_frame() != 0) {
