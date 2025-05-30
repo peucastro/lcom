@@ -446,6 +446,54 @@ static int(draw_lives)(Game *game, uint16_t x, uint16_t y) {
 }
 
 /**
+ * @brief Draws the level timer display
+ *
+ * Renders the remaining time in seconds for the current level.
+ *
+ * @param game Pointer to the game instance
+ * @param x X-coordinate for the timer display
+ * @param y Y-coordinate for the timer display
+ *
+ * @return 0 upon success, non-zero otherwise
+ */
+static int(draw_timer)(Game *game, uint16_t x, uint16_t y) {
+  if (game == NULL) {
+    return 1;
+  }
+
+  uint8_t timer = game->level_timer;
+  const uint16_t digit_spacing = 30;
+
+  x += 8;
+
+  int temp = timer;
+  int num_digits = 1;
+  int div = 10;
+
+  while (temp / div > 0) {
+    num_digits++;
+    div *= 10;
+  }
+
+  div = 1;
+  for (int i = 0; i < num_digits; i++) {
+    div *= 10;
+  }
+
+  while (div > 1) {
+    div /= 10;
+    int digit = (timer / div) % 10;
+    if (draw_digit(x, y, digit) != 0) {
+      fprintf(stderr, "draw_timer: failed to draw digit at position (%u, %u).", x, y);
+      return 1;
+    }
+    x += digit_spacing;
+  }
+
+  return 0;
+}
+
+/**
  * @brief Draws the top score bar containing score and lives
  *
  * Renders the gray background bar and calls functions to draw
@@ -473,6 +521,11 @@ static int(draw_score_bar)(Game *game) {
 
   if (draw_lives(game, 10, 10) != 0) {
     fprintf(stderr, "draw_score_bar: failed to draw lives.\n");
+    return 1;
+  }
+
+  if (draw_timer(game, vbe_get_h_res() - 120, 10) != 0) {
+    fprintf(stderr, "draw_score_bar: failed to draw timer.\n");
     return 1;
   }
 
