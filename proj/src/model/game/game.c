@@ -40,11 +40,7 @@ int(load_next_level)(Game *game) {
             fprintf(stderr, "load_next_level: failed to initialize player entity.");
             return 1;
           }
-          game->player_anims[UP] = create_animSprite(resources->player_up_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
-          game->player_anims[LEFT] = create_animSprite(resources->player_left_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
-          game->player_anims[DOWN] = create_animSprite(resources->player_down_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
-          game->player_anims[RIGHT] = create_animSprite(resources->player_right_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, true);
-          game->player.anim = game->player_anims[DOWN];
+          game->player.anim = get_player_anim(DOWN);
           game->player.sprite = game->player.anim->sp;
           game->player.active = true;
           break;

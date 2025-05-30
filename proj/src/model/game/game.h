@@ -43,7 +43,6 @@ typedef struct Game {
   uint8_t menu_option; /**< @brief Current selected menu option */
   GameBoard board;     /**< @brief Current game board */
   Entity player;       /**< @brief The player entity */
-  AnimSprite *player_anims[4];
   Entity enemies[MAX_ENEMIES];       /**< @brief Array of enemy entities */
   Entity bricks[MAX_BRICKS];         /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];           /**< @brief Array of wall entities */
