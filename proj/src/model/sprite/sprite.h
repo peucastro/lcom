@@ -15,8 +15,9 @@
  * Contains the dimensions and pixel data for a sprite.
  */
 typedef struct {
-  uint16_t width, height; /**< @brief Width and height of the sprite in pixels */
-  char *map;              /**< @brief Pointer to the sprite's pixel data */
+  uint16_t width; /**< @brief Width  of the sprite in pixels */
+  uint8_t height; /**< @brief Height of the sprite in pixels */
+  char *map;      /**< @brief Pointer to the sprite's pixel data */
 } Sprite;
 
 /**
@@ -60,7 +61,7 @@ int(draw_sprite)(Sprite *sp, int16_t x, int16_t y);
  * @param src_y The y-coordinate of the region within the sprite
  * @param width The width of the region to draw
  * @param height The height of the region to draw
- * 
+ *
  * @return 0 upon success, non-zero otherwise
  */
 int(draw_sprite_region)(Sprite *sp, int16_t dest_x, int16_t dest_y, uint16_t src_x, uint16_t src_y, uint16_t width, uint16_t height);

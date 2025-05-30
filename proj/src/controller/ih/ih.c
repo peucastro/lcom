@@ -91,7 +91,7 @@ void(timer_handler)(Game *game) {
   vbe_flip_page();
 
   if (handle_timer_event(game, timer_get_counter()) != 0) {
-    fprintf(stderr, "timer_handler: failed to call hanble_timer_event.");
+    fprintf(stderr, "timer_handler: failed to call handle_timer_event.");
     return;
   }
 }
