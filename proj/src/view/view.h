@@ -37,7 +37,7 @@ int(draw_start_menu)(Game *game);
  *
  * @return 0 upon success, non-zero otherwise
  */
-int(draw_pause_menu)(void);
+int(draw_pause_menu)(Game *game);
 
 /**
  * @brief Draws the game

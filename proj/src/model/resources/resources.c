@@ -112,6 +112,16 @@ int(create_resources)(void) {
     }
   }
 
+  resources.menu_pause[0] = create_sprite(menu_pause_default_xpm);
+  resources.menu_pause[1] = create_sprite(menu_pause_continue_xpm);
+  resources.menu_pause[2] = create_sprite(menu_pause_exit_xpm);
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.menu_pause[i] == NULL) {
+      fprintf(stderr, "create_resources: failed to load pause menu sprite.");
+      return 1;
+    }
+  }
+
   for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {
     resources.player_down_sprites[i] = create_sprite(player_down_xpms[i]);
     resources.player_up_sprites[i] = create_sprite(player_up_xpms[i]);
