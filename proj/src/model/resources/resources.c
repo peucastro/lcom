@@ -232,6 +232,13 @@ void(destroy_resources)(void) {
     }
   }
 
+  for (uint8_t i = 0; i < 3; i++) {
+    if (resources.menu_pause[i]) {
+      destroy_sprite(resources.menu_pause[i]);
+      resources.menu_pause[i] = NULL;
+    }
+  }
+
   for (uint8_t i = 0; i < PLAYER_ANIM_FRAMES; i++) {
     if (resources.player_down_sprites[i] != NULL) {
       destroy_sprite(resources.player_down_sprites[i]);
