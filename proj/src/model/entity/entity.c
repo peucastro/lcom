@@ -62,13 +62,7 @@ int(reset_entity)(Entity *e) {
   return 0;
 }
 
-/**
- * @brief Checks if the entity is overlapping with any explosion and applies damage.
- *
- * @param e Pointer to the entity to check.
- * @param game Pointer to the current game state.
- */
-static void(check_explosion_damage)(Entity *e, Game *game) {
+static void check_explosion_damage(Entity *e, Game *game) {
   for (uint8_t i = 0; i < game->num_explosions; i++) {
     Entity *exp = &game->explosions[i];
     if (!exp->active)
@@ -91,22 +85,15 @@ static void(check_explosion_damage)(Entity *e, Game *game) {
   }
 }
 
-/**
- * @brief Checks for collisions between enemies and the player and applies damage.
- *
- * @param e Pointer to the entity (player or enemy).
- * @param game Pointer to the current game state.
- */
-static void(check_enemy_player_collision)(Entity *e, Game *game) {
-  if (!e->active || !game->player.active)
-    return;
+
+static void check_enemy_player_collision(Entity *e, Game *game) {
+  if (!e->active || !game->player.active) return;
 
   // If this entity is the player, check if any enemy is on them
   if (e == &game->player) {
     for (uint8_t i = 0; i < game->num_enemies; i++) {
       Entity *enemy = &game->enemies[i];
-      if (!enemy->active)
-        continue;
+      if (!enemy->active) continue;
       if (enemy->x == e->x && enemy->y == e->y) {
         e->data--;
         if (e->data <= 0) {
@@ -129,6 +116,7 @@ static void(check_enemy_player_collision)(Entity *e, Game *game) {
     }
   }
 }
+
 
 void(default_update)(Entity *e, Game *game, uint32_t counter) {
   if (!e->active) {

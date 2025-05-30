@@ -147,6 +147,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
                   }
                 }
                 game->num_enemies = alive;
+              
               }
               break;
             }

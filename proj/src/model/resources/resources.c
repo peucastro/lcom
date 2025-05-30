@@ -294,7 +294,7 @@ void(destroy_resources)(void) {
     resources.lose_sprite = NULL;
   }
 
-  for (uint8_t i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
     if (player_anims[i]) {
       destroy_animSprite(player_anims[i]);
       player_anims[i] = NULL;
