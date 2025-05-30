@@ -53,6 +53,10 @@ int(handle_kbd_event)(Game *game, Key key) {
           break;
         case KEY_ENTER:
           if (game->menu_option == 1) {
+            if (init_game(game) != 0) {
+              fprintf(stderr, "handle_kbd_event: failed to initialize game.");
+              return 1;
+            }
             game->state = GAME;
           }
           else if (game->menu_option == 2) {
@@ -80,12 +84,18 @@ int(handle_kbd_event)(Game *game, Key key) {
             game->state = GAME;
           }
           else if (game->menu_option == 2) {
-            init_game(game);
+            if (reset_game(game) != 0) {
+              fprintf(stderr, "handle_kbd_event: failed to reset game.");
+              return 1;
+            }
             game->state = START;
           }
           break;
         case KEY_ESCAPE:
-          init_game(game);
+          if (reset_game(game) != 0) {
+            fprintf(stderr, "handle_kbd_event: failed to reset game.");
+            return 1;
+          }
           game->state = START;
           break;
         default:
@@ -142,10 +152,11 @@ int(handle_kbd_event)(Game *game, Key key) {
     case WIN:
     case LOSE:
       if (key == KEY_ENTER || key == KEY_ESCAPE) {
-        if (init_game(game) != 0) {
-          fprintf(stderr, "kandle_kbd_event: failed to reset game.");
+        if (reset_game(game) != 0) {
+          fprintf(stderr, "handle_kbd_event: failed to reset game.");
           return 1;
         }
+        game->state = START;
       }
       break;
 
@@ -170,7 +181,7 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
   switch (game->state) {
     case START:
       // handle menu button highlighting
-      if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W + 50 &&
+      if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W &&
           mouse_info.y >= START_BY && mouse_info.y < START_BY + BUTTON_H) {
         game->menu_option = 1;
       }
@@ -185,11 +196,14 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
       // handle clicks
       if (mouse_info.lb) {
         if (game->menu_option == 1) {
+          if (init_game(game) != 0) {
+            fprintf(stderr, "handle_mouse_event: failed to initialize game.");
+            return 1;
+          }
           game->state = GAME;
         }
         else if (game->menu_option == 2) {
-          init_game(game);
-          game->state = START;
+          game->state = EXIT;
         }
       }
       break;
@@ -214,7 +228,11 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
           game->state = GAME;
         }
         else if (game->menu_option == 2) {
-          game->state = EXIT;
+          if (reset_game(game) != 0) {
+            fprintf(stderr, "handle_mouse_event: failed to reset game.");
+            return 1;
+          }
+          game->state = START;
         }
       }
       break;
