@@ -3,7 +3,7 @@
 #include "model/resources/resources.h"
 
 static Resources resources;
-static AnimSprite* player_anims[4];
+static AnimSprite *player_anims[4];
 
 /* enemy */
 static const char **(enemy_a_xpms)[ENEMY_ANIM_FRAMES] = {enemy_a_1_xpm, enemy_a_2_xpm, enemy_a_3_xpm, enemy_a_4_xpm};
@@ -138,17 +138,21 @@ int(create_resources)(void) {
   player_anims[DOWN] = create_animSprite(resources.player_down_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, false);
   player_anims[LEFT] = create_animSprite(resources.player_left_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, false);
 
-
-
   resources.powerup_sprite = create_sprite(powerup_xpm);
   if (resources.powerup_sprite == NULL) {
     fprintf(stderr, "create_resources: failed to create powerup sprite.");
     return 1;
   }
 
-  resources.score_sprite = create_sprite(score_xpm);
-  if (resources.score_sprite == NULL) {
-    fprintf(stderr, "create_resources: failed to create score sprite.");
+  resources.numbers_sprite = create_sprite(numbers_xpm);
+  if (resources.numbers_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create numbers sprite.");
+    return 1;
+  }
+
+  resources.alphabet_sprite = create_sprite(alphabet_xpm);
+  if (resources.alphabet_sprite == NULL) {
+    fprintf(stderr, "create_resources: failed to create alphabet sprite.");
     return 1;
   }
 
@@ -270,9 +274,14 @@ void(destroy_resources)(void) {
     resources.powerup_sprite = NULL;
   }
 
-  if (resources.score_sprite != NULL) {
-    destroy_sprite(resources.score_sprite);
-    resources.score_sprite = NULL;
+  if (resources.numbers_sprite != NULL) {
+    destroy_sprite(resources.numbers_sprite);
+    resources.numbers_sprite = NULL;
+  }
+
+  if (resources.alphabet_sprite != NULL) {
+    destroy_sprite(resources.alphabet_sprite);
+    resources.alphabet_sprite = NULL;
   }
 
   if (resources.wall_sprite != NULL) {
@@ -286,19 +295,17 @@ void(destroy_resources)(void) {
   }
 
   for (int i = 0; i < 4; i++) {
-  if (player_anims[i]) {
-    destroy_animSprite(player_anims[i]);
-    player_anims[i] = NULL;
+    if (player_anims[i]) {
+      destroy_animSprite(player_anims[i]);
+      player_anims[i] = NULL;
+    }
   }
-}
 }
 
 const Resources *(get_resources) (void) {
   return &resources;
 }
 
-
-AnimSprite* get_player_anim(Direction dir) {
+AnimSprite *get_player_anim(Direction dir) {
   return player_anims[dir];
 }
-

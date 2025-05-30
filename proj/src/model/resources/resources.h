@@ -1,6 +1,7 @@
 #ifndef __PROJ_RESOURCES_H
 #define __PROJ_RESOURCES_H
 
+#include "assets/xpm/alphabet.xpm"
 #include "assets/xpm/brick_0.xpm"
 #include "assets/xpm/brick_1.xpm"
 #include "assets/xpm/brick_2.xpm"
@@ -11,12 +12,12 @@
 #include "assets/xpm/lose.xpm"
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_exit.xpm"
-#include "assets/xpm/menu_start.xpm"
 #include "assets/xpm/menu_pause.xpm"
 #include "assets/xpm/menu_pause_continue.xpm"
 #include "assets/xpm/menu_pause_exit.xpm"
+#include "assets/xpm/menu_start.xpm"
+#include "assets/xpm/numbers.xpm"
 #include "assets/xpm/powerup.xpm"
-#include "assets/xpm/score.xpm"
 #include "assets/xpm/wall.xpm"
 #include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
@@ -94,8 +95,8 @@
 #include "assets/xpm/explosion/explosion_hand_down_3.xpm"
 #include "assets/xpm/explosion/explosion_hand_down_4.xpm"
 
-#include "model/sprite/anim_sprite.h"
 #include "model/entity/entity.h"
+#include "model/sprite/anim_sprite.h"
 
 #define ENEMY_ANIM_FRAMES 4
 #define ENEMY_ANIM_SPEED 2
@@ -147,10 +148,11 @@ typedef struct {
   Sprite *explosion_hand_left_sprites[EXPLOSION_ANIM_FRAMES];
   Sprite *explosion_hand_right_sprites[EXPLOSION_ANIM_FRAMES];
 
-  Sprite *powerup_sprite; /**< @brief Pointer to the powerup sprite */
-  Sprite *score_sprite;   /**< @brief Pointer to the score text sprite */
-  Sprite *win_sprite;     /**< @brief Pointer to the win sprite */
-  Sprite *wall_sprite;    /**< @brief Pointer to the wall sprite */
+  Sprite *powerup_sprite;  /**< @brief Pointer to the powerup sprite */
+  Sprite *numbers_sprite;  /**< @brief Pointer to the numbers sprite */
+  Sprite *alphabet_sprite; /**< @brief Pointer to the alphabet sprite */
+  Sprite *win_sprite;      /**< @brief Pointer to the win sprite */
+  Sprite *wall_sprite;     /**< @brief Pointer to the wall sprite */
 } Resources;
 
 /**
@@ -179,8 +181,7 @@ void(destroy_resources)(void);
  */
 const Resources *(get_resources) (void);
 
-
-AnimSprite* get_player_anim(Direction dir);
+AnimSprite *get_player_anim(Direction dir);
 
 /**@}*/
 
