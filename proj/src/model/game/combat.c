@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
 
-#include "combat.h"
+#include "model/game/combat.h"
 
 void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   if (game == NULL) {
@@ -20,7 +20,7 @@ void(drop_bomb)(Game *game, int16_t x, int16_t y) {
   int16_t dx = abs(x - game->player.x);
   int16_t dy = abs(y - game->player.y);
 
-  if (game->num_bombs >= MAX_BOMBS || game->board.elements[y][x] != EMPTY_SPACE || dx + dy > 1) {
+  if (game->num_bombs >= MAX_BOMBS || game->board.elements[y][x] != EMPTY_SPACE || dx > 1 || dy > 1) {
     return;
   }
 
@@ -157,7 +157,8 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
                 if (game->door.x == cell_x && game->door.y == cell_y) {
                   game->door.active = true;
                   game->board.elements[cell_y][cell_x] = DOOR;
-                } else {
+                }
+                else {
                   game->board.elements[cell_y][cell_x] = EMPTY_SPACE;
                 }
                 break;

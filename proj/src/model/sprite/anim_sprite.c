@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
 
-#include "anim_sprite.h"
+#include "model/sprite/anim_sprite.h"
 
 AnimSprite *create_animSprite(Sprite *const *frames, uint8_t nframes, uint16_t ticks_per_frame, bool loop) {
   AnimSprite *asp = (AnimSprite *) malloc(sizeof(AnimSprite));

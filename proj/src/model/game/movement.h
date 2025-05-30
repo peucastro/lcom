@@ -1,7 +1,7 @@
 #ifndef __PROJ_MOVEMENT_H
 #define __PROJ_MOVEMENT_H
 
-#include "game.h"
+#include "model/game/game.h"
 
 /** @defgroup movement movement
  * @{

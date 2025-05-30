@@ -1,7 +1,7 @@
 #ifndef __ANIM_SPRITE_H
 #define __ANIM_SPRITE_H
 
-#include "sprite.h"
+#include "model/sprite/sprite.h"
 
 /** @defgroup anim_sprite anim_sprite
  * @{
