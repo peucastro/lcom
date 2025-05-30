@@ -214,7 +214,7 @@ void(update_door_timer)(Game *game) {
 
       game->door_timer++;
 
-      if (game->door_timer >= 1) {
+      if (game->door_timer >= 3) {
         game->door_timer = 0;
         if (load_next_level(game) != 0) {
           game->state = WIN;

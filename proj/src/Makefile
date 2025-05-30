@@ -3,7 +3,7 @@ PROG=proj
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
-CFLAGS += -pedantic
+CFLAGS += -pedantic -D __LCOM_OPTIMIZED__
 
 # list of library dependencies (LCF)
 DPADD += ${LIBLCF}
