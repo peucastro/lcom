@@ -13,10 +13,10 @@
  * Functions for managing the game state
  */
 
-#define MAX_ENEMIES 10   /**< @brief Maximum number of enemies allowed in the game */
-#define MAX_BRICKS 50    /**< @brief Maximum number of bricks allowed in the game */
-#define MAX_WALLS 150    /**< @brief Maximum number of walls allowed in the game */
-#define MAX_BOMBS 5      /**< @brief Maximum number of bombs that can exist simultaneously */
+#define MAX_ENEMIES 10    /**< @brief Maximum number of enemies allowed in the game */
+#define MAX_BRICKS 50     /**< @brief Maximum number of bricks allowed in the game */
+#define MAX_WALLS 150     /**< @brief Maximum number of walls allowed in the game */
+#define MAX_BOMBS 5       /**< @brief Maximum number of bombs that can exist simultaneously */
 #define MAX_EXPLOSIONS 45 /**< @brief Maximum number of explosions that can exist simultaneously */
 
 /**
@@ -39,10 +39,10 @@ typedef enum {
  * All entities are stored in fixed-size arrays to avoid dynamic memory allocation.
  */
 typedef struct Game {
-  game_state_t state;  /**< @brief Current state of the game */
-  uint8_t menu_option; /**< @brief Current selected menu option */
-  GameBoard board;     /**< @brief Current game board */
-  Entity player;       /**< @brief The player entity */
+  game_state_t state;                /**< @brief Current state of the game */
+  uint8_t menu_option;               /**< @brief Current selected menu option */
+  GameBoard board;                   /**< @brief Current game board */
+  Entity player;                     /**< @brief The player entity */
   Entity enemies[MAX_ENEMIES];       /**< @brief Array of enemy entities */
   Entity bricks[MAX_BRICKS];         /**< @brief Array of brick entities */
   Entity walls[MAX_WALLS];           /**< @brief Array of wall entities */
@@ -58,6 +58,7 @@ typedef struct Game {
   uint8_t level;                     /**< @brief Current game level */
   uint8_t door_timer;                /**< @brief Timer for door interaction */
   uint8_t score;                     /**< @brief Player's current score */
+  uint8_t level_timer;               /**< @brief Seconds remaining to complete level */
 } Game;
 
 /**
@@ -107,6 +108,15 @@ int(reset_game)(Game *game);
  * @param game Pointer to the current game state
  */
 void(update_door_timer)(Game *game);
+
+/**
+ * @brief Updates level timer and checks for timeout
+ *
+ * Decrements level timer and sets game state to LOSE if timer reaches 0.
+ *
+ * @param game Pointer to the current game state
+ */
+void(update_level_timer)(Game *game);
 
 /**@}*/
 

@@ -10,6 +10,7 @@ int(load_next_level)(Game *game) {
 
   uint8_t lives = game->player.data;
   game->level++;
+  game->level_timer = 120;
   char board_path[128];
   snprintf(board_path, sizeof(board_path), "/home/lcom/labs/proj/src/assets/boards/level%u.txt", game->level);
 
@@ -226,5 +227,19 @@ void(update_door_timer)(Game *game) {
   }
   else {
     game->door_timer = 0;
+  }
+}
+
+void(update_level_timer)(Game *game) {
+  if (game == NULL) {
+    fprintf(stderr, "update_level_timer: game pointer cannot be null.");
+    return;
+  }
+
+  if (game->state == GAME && game->level_timer > 0) {
+    game->level_timer--;
+    if (game->level_timer == 0) {
+      game->state = LOSE;
+    }
   }
 }

@@ -270,6 +270,7 @@ int(handle_rtc_event)(Game *game) {
     case GAME:
       schedule_enemy_moves(game);
       update_door_timer(game);
+      update_level_timer(game);
       break;
 
     case START:

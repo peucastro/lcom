@@ -33,11 +33,11 @@ typedef enum {
 /**
  * @brief Translates a scancode to a Key enum value
  *
- * @param scancode The scancode to translate
+ * @param sc The scancode to translate
  *
  * @return The corresponding Key enum value, or KEY_NONE if not recognized
  */
-Key(translate_scancode)(uint8_t scancode);
+Key(translate_scancode)(uint8_t sc);
 
 /**@}*/
 
