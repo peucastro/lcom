@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
 
-#include "movement.h"
+#include "model/game/movement.h"
 
 void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
   if (p == NULL || game == NULL) {

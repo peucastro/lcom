@@ -17,7 +17,7 @@
 #define MAX_BRICKS 50    /**< @brief Maximum number of bricks allowed in the game */
 #define MAX_WALLS 150    /**< @brief Maximum number of walls allowed in the game */
 #define MAX_BOMBS 5      /**< @brief Maximum number of bombs that can exist simultaneously */
-#define MAX_EXPLOSIONS 3 /**< @brief Maximum number of explosions that can exist simultaneously */
+#define MAX_EXPLOSIONS 45 /**< @brief Maximum number of explosions that can exist simultaneously */
 
 /**
  * @brief Enum representing the game state

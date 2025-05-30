@@ -12,6 +12,9 @@
 #include "assets/xpm/menu_default.xpm"
 #include "assets/xpm/menu_exit.xpm"
 #include "assets/xpm/menu_start.xpm"
+#include "assets/xpm/menu_pause.xpm"
+#include "assets/xpm/menu_pause_continue.xpm"
+#include "assets/xpm/menu_pause_exit.xpm"
 #include "assets/xpm/powerup.xpm"
 #include "assets/xpm/score.xpm"
 #include "assets/xpm/wall.xpm"
@@ -124,6 +127,7 @@ typedef struct {
   Sprite *heart_sprite;                       /**< @brief Pointer to the heart sprite */
   Sprite *lose_sprite;                        /**< @brief Pointer to the lose sprite */
   Sprite *menu_sprite[3];                     /**< @brief Array of pointers to the menu sprites */
+  Sprite *menu_pause[3];
 
   Sprite *player_up_sprites[PLAYER_ANIM_FRAMES];
   Sprite *player_left_sprites[PLAYER_ANIM_FRAMES];

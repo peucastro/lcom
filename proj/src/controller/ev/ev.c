@@ -44,6 +44,33 @@ int(handle_kbd_event)(Game *game, Key key) {
 
   switch (game->state) {
     case START:
+      switch (key) {
+        case KEY_LEFT:
+          game->menu_option = 1;
+          break;
+        case KEY_RIGHT:
+          game->menu_option = 2;
+          break;
+        case KEY_ENTER:
+          if (game->menu_option == 1) {
+            if (init_game(game) != 0) {
+              fprintf(stderr, "handle_kbd_event: failed to initialize game.");
+              return 1;
+            }
+            game->state = GAME;
+          }
+          else if (game->menu_option == 2) {
+            game->state = EXIT;
+          }
+          break;
+        case KEY_ESCAPE:
+          game->state = EXIT;
+          break;
+        default:
+          break;
+      }
+      break;
+
     case PAUSE:
       switch (key) {
         case KEY_LEFT:
@@ -57,11 +84,19 @@ int(handle_kbd_event)(Game *game, Key key) {
             game->state = GAME;
           }
           else if (game->menu_option == 2) {
-            game->state = EXIT;
+            if (reset_game(game) != 0) {
+              fprintf(stderr, "handle_kbd_event: failed to reset game.");
+              return 1;
+            }
+            game->state = START;
           }
           break;
         case KEY_ESCAPE:
-          game->state = (game->state == START) ? EXIT : START;
+          if (reset_game(game) != 0) {
+            fprintf(stderr, "handle_kbd_event: failed to reset game.");
+            return 1;
+          }
+          game->state = START;
           break;
         default:
           break;
@@ -107,7 +142,7 @@ int(handle_kbd_event)(Game *game, Key key) {
           break;
         }
         case KEY_ESCAPE:
-          game->state = START;
+          game->state = PAUSE;
           break;
         default:
           break;
@@ -117,10 +152,11 @@ int(handle_kbd_event)(Game *game, Key key) {
     case WIN:
     case LOSE:
       if (key == KEY_ENTER || key == KEY_ESCAPE) {
-        if (init_game(game) != 0) {
-          fprintf(stderr, "kandle_kbd_event: failed to reset game.");
+        if (reset_game(game) != 0) {
+          fprintf(stderr, "handle_kbd_event: failed to reset game.");
           return 1;
         }
+        game->state = START;
       }
       break;
 
@@ -144,6 +180,34 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
 
   switch (game->state) {
     case START:
+      // handle menu button highlighting
+      if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W &&
+          mouse_info.y >= START_BY && mouse_info.y < START_BY + BUTTON_H) {
+        game->menu_option = 1;
+      }
+      else if (mouse_info.x >= EXIT_BX && mouse_info.x < EXIT_BX + BUTTON_W &&
+               mouse_info.y >= EXIT_BY && mouse_info.y < EXIT_BY + BUTTON_H) {
+        game->menu_option = 2;
+      }
+      else {
+        game->menu_option = 0;
+      }
+
+      // handle clicks
+      if (mouse_info.lb) {
+        if (game->menu_option == 1) {
+          if (init_game(game) != 0) {
+            fprintf(stderr, "handle_mouse_event: failed to initialize game.");
+            return 1;
+          }
+          game->state = GAME;
+        }
+        else if (game->menu_option == 2) {
+          game->state = EXIT;
+        }
+      }
+      break;
+
     case PAUSE:
       // handle menu button highlighting
       if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W &&
@@ -164,7 +228,11 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
           game->state = GAME;
         }
         else if (game->menu_option == 2) {
-          game->state = EXIT;
+          if (reset_game(game) != 0) {
+            fprintf(stderr, "handle_mouse_event: failed to reset game.");
+            return 1;
+          }
+          game->state = START;
         }
       }
       break;

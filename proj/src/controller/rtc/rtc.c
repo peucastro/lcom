@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
 
-#include "rtc.h"
+#include "controller/rtc/rtc.h"
 
 static int rtc_hook_id = 13;
 static bool rtc_binary_mode = false;

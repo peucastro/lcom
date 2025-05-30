@@ -108,17 +108,41 @@ int(draw_start_menu)(Game *game) {
   return 0;
 }
 
-int(draw_pause_menu)(void) {
-  if (!cache_initialized) {
-    if (graphics_draw_rectangle(0, 0, 1024, 768, 0x0000FF) != 0) {
-      fprintf(stderr, "draw_pause_menu: failed to draw pause menu background.");
+int(draw_pause_menu)(Game *game) {
+  const Resources *res = get_resources();
+  if (res == NULL) {
+    fprintf(stderr, "draw_pause_menu: resources not loaded");
+    return 1;
+  }
+
+  if (!cache_initialized || game->menu_option != last_menu_option) {
+    const Resources *res = get_resources();
+    if (res == NULL) {
+      fprintf(stderr, "draw_start_menu: resources not loaded");
+      return 1;
+    }
+
+    /* clamp menu_option to [0,2] just in case */
+    uint8_t idx = game->menu_option;
+    if (idx > 2)
+      idx = 0;
+
+    Sprite *menu_img = res->menu_pause[idx];
+    if (menu_img == NULL) {
+      fprintf(stderr, "draw_pause_menu: menu_pause[%u] is NULL", idx);
+      return 1;
+    }
+
+    if (draw_sprite(menu_img, 0, 0) != 0) {
+      fprintf(stderr, "draw_pause_menu: failed to blit menu sprite");
       return 1;
     }
 
     if (cache_current_frame() != 0) {
-      fprintf(stderr, "draw_start_menu: failed to cache menu.");
+      fprintf(stderr, "draw_pause_menu: failed to cache menu.");
       return 1;
     }
+    last_menu_option = game->menu_option;
   }
   else {
     if (restore_cached_frame() != 0) {
@@ -546,6 +570,7 @@ void(draw_next_frame)(Game *game) {
   if (game->state != last_game_state) {
     cache_initialized = 0;
     game_background_cached = 0;
+    last_menu_option = 3;
     last_game_state = game->state;
   }
 
@@ -563,7 +588,7 @@ void(draw_next_frame)(Game *game) {
       break;
 
     case PAUSE:
-      if (draw_pause_menu() != 0) {
+      if (draw_pause_menu(game) != 0) {
         fprintf(stderr, "draw_next_frame: failed to draw pause menu.");
         return;
       }

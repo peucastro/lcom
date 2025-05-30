@@ -1,7 +1,7 @@
 #ifndef __PROJ_COMBAT_H
 #define __PROJ_COMBAT_H
 
-#include "game.h"
+#include "model/game/game.h"
 
 /** @defgroup combat combat
  * @{
