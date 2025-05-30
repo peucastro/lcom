@@ -80,10 +80,12 @@ int(handle_kbd_event)(Game *game, Key key) {
             game->state = GAME;
           }
           else if (game->menu_option == 2) {
+            init_game(game);
             game->state = START;
           }
           break;
         case KEY_ESCAPE:
+          init_game(game);
           game->state = START;
           break;
         default:

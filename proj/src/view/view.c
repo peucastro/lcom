@@ -569,6 +569,7 @@ void(draw_next_frame)(Game *game) {
   if (game->state != last_game_state) {
     cache_initialized = 0;
     game_background_cached = 0;
+    last_menu_option = 255;
     last_game_state = game->state;
   }
 
