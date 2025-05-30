@@ -50,6 +50,21 @@ void(destroy_sprite)(Sprite *sp);
  */
 int(draw_sprite)(Sprite *sp, int16_t x, int16_t y);
 
+/**
+ * @brief Renders a region of a sprite to the screen at the specified position.
+ *
+ * @param sp Pointer to the sprite to be drawn
+ * @param dest_x The x-coordinate where the region will be drawn
+ * @param dest_y The y-coordinate where the region will be drawn
+ * @param src_x The x-coordinate of the region within the sprite
+ * @param src_y The y-coordinate of the region within the sprite
+ * @param width The width of the region to draw
+ * @param height The height of the region to draw
+ * 
+ * @return 0 upon success, non-zero otherwise
+ */
+int(draw_sprite_region)(Sprite *sp, int16_t dest_x, int16_t dest_y, uint16_t src_x, uint16_t src_y, uint16_t width, uint16_t height);
+
 /**@}*/
 
 #endif /* __PROJ_SPRITE_H */
