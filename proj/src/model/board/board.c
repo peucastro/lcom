@@ -32,7 +32,6 @@ int(load_board)(GameBoard *board, const char *filename) {
 
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    fprintf(stderr, "load_board: failed to open file %s", filename);
     return 1;
   }
 

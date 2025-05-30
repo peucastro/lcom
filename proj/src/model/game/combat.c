@@ -185,6 +185,7 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
 
         case EMPTY_SPACE:
         case POWERUP:
+        case DOOR:
           continue;
 
         default:
