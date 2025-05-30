@@ -140,7 +140,7 @@ void(schedule_enemy_moves)(Game *game) {
       if (nx < 0 || nx >= game->board.width || ny < 0 || ny >= game->board.height)
         continue;
       board_element_t dest = game->board.elements[ny][nx];
-      if (dest == EMPTY_SPACE || dest == POWERUP || dest == PLAYER)
+      if (dest == EMPTY_SPACE || dest == PLAYER)
         valid[vc++] = d;
     }
     if (!vc)
