@@ -10,7 +10,7 @@ LCOM Project for group GRUPO\_2LEIC04\_5.
 ## The game
 Our LCOM project is a replica of the popular video game Bomberman.
 
-The goal is to defeat all the enemies on the board by dropping bombs that hit them. These bombs can also destroy some of the walls, and behind one of them is a door that gets the player to the next level once all enemies are dealt with. Each defeated enemy adds 100 points to the player’s score and each destroyed wall adds 10.
+The goal is to defeat all the enemies on the board by dropping bombs that hit them. These bombs can also destroy some of the walls, and behind one of them is a door that gets the player to the next level once all enemies are dealt with. Each destroyed wall adds 10 points to the player's score.
 
 The dropped bombs can also hit the player, who starts with 3 lives, and there may be extra lives somewhere on the board.
 
