@@ -132,7 +132,7 @@ int(handle_kbd_event)(Game *game, Key key) {
           break;
         }
         case KEY_ESCAPE:
-          game->state = START;
+          game->state = PAUSE;
           break;
         default:
           break;
@@ -169,6 +169,31 @@ int(handle_mouse_event)(Game *game, mouse_info_t mouse_info) {
 
   switch (game->state) {
     case START:
+      // handle menu button highlighting
+      if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W + 50 &&
+          mouse_info.y >= START_BY && mouse_info.y < START_BY + BUTTON_H) {
+        game->menu_option = 1;
+      }
+      else if (mouse_info.x >= EXIT_BX && mouse_info.x < EXIT_BX + BUTTON_W &&
+               mouse_info.y >= EXIT_BY && mouse_info.y < EXIT_BY + BUTTON_H) {
+        game->menu_option = 2;
+      }
+      else {
+        game->menu_option = 0;
+      }
+
+      // handle clicks
+      if (mouse_info.lb) {
+        if (game->menu_option == 1) {
+          game->state = GAME;
+        }
+        else if (game->menu_option == 2) {
+          init_game(game);
+          game->state = START;
+        }
+      }
+      break;
+
     case PAUSE:
       // handle menu button highlighting
       if (mouse_info.x >= START_BX && mouse_info.x < START_BX + BUTTON_W &&
