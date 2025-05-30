@@ -44,7 +44,6 @@ int(handle_kbd_event)(Game *game, Key key) {
 
   switch (game->state) {
     case START:
-    case PAUSE:
       switch (key) {
         case KEY_LEFT:
           game->menu_option = 1;
@@ -61,7 +60,31 @@ int(handle_kbd_event)(Game *game, Key key) {
           }
           break;
         case KEY_ESCAPE:
-          game->state = (game->state == START) ? EXIT : START;
+          game->state = EXIT;
+          break;
+        default:
+          break;
+      }
+      break;
+
+    case PAUSE:
+      switch (key) {
+        case KEY_LEFT:
+          game->menu_option = 1;
+          break;
+        case KEY_RIGHT:
+          game->menu_option = 2;
+          break;
+        case KEY_ENTER:
+          if (game->menu_option == 1) {
+            game->state = GAME;
+          }
+          else if (game->menu_option == 2) {
+            game->state = START;
+          }
+          break;
+        case KEY_ESCAPE:
+          game->state = START;
           break;
         default:
           break;
