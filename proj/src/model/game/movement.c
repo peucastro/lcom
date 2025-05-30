@@ -34,32 +34,20 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
 
   if (xmov > 0) {
     p->dir = RIGHT;
-    p->anim = game->player_anims[RIGHT];
-    p->anim->cur_fig = 0;
-    p->anim->cur_aspeed = 0;
-    p->sprite = p->anim->sp;
   }
   else if (xmov < 0) {
     p->dir = LEFT;
-    p->anim = game->player_anims[LEFT];
-    p->anim->cur_fig = 0;
-    p->anim->cur_aspeed = 0;
-    p->sprite = p->anim->sp;
   }
   else if (ymov > 0) {
     p->dir = DOWN;
-    p->anim = game->player_anims[DOWN];
-    p->anim->cur_fig = 0;
-    p->anim->cur_aspeed = 0;
-    p->sprite = p->anim->sp;
   }
   else if (ymov < 0) {
     p->dir = UP;
-    p->anim = game->player_anims[UP];
-    p->anim->cur_fig = 0;
-    p->anim->cur_aspeed = 0;
-    p->sprite = p->anim->sp;
   }
+  p->anim = get_player_anim(p->dir);
+  p->anim->cur_fig = 0;
+  p->anim->cur_aspeed = 0;
+  p->sprite = p->anim->sp;
 
   board_element_t destination = game->board.elements[new_y][new_x];
 

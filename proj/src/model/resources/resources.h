@@ -94,6 +94,9 @@
 #include "assets/xpm/explosion/explosion_hand_down_3.xpm"
 #include "assets/xpm/explosion/explosion_hand_down_4.xpm"
 
+#include "model/sprite/anim_sprite.h"
+#include "model/entity/entity.h"
+
 #define ENEMY_ANIM_FRAMES 4
 #define ENEMY_ANIM_SPEED 2
 
@@ -175,6 +178,9 @@ void(destroy_resources)(void);
  * @return Pointer to the `Resources` struct
  */
 const Resources *(get_resources) (void);
+
+
+AnimSprite* get_player_anim(Direction dir);
 
 /**@}*/
 

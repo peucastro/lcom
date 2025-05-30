@@ -3,6 +3,7 @@
 #include "model/resources/resources.h"
 
 static Resources resources;
+static AnimSprite* player_anims[4];
 
 /* enemy */
 static const char **(enemy_a_xpms)[ENEMY_ANIM_FRAMES] = {enemy_a_1_xpm, enemy_a_2_xpm, enemy_a_3_xpm, enemy_a_4_xpm};
@@ -132,6 +133,12 @@ int(create_resources)(void) {
       return 1;
     }
   }
+  player_anims[UP] = create_animSprite(resources.player_up_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, false);
+  player_anims[RIGHT] = create_animSprite(resources.player_right_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, false);
+  player_anims[DOWN] = create_animSprite(resources.player_down_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, false);
+  player_anims[LEFT] = create_animSprite(resources.player_left_sprites, PLAYER_ANIM_FRAMES, PLAYER_ANIM_SPEED, false);
+
+
 
   resources.powerup_sprite = create_sprite(powerup_xpm);
   if (resources.powerup_sprite == NULL) {
@@ -277,8 +284,21 @@ void(destroy_resources)(void) {
     destroy_sprite(resources.lose_sprite);
     resources.lose_sprite = NULL;
   }
+
+  for (int i = 0; i < 4; i++) {
+  if (player_anims[i]) {
+    destroy_animSprite(player_anims[i]);
+    player_anims[i] = NULL;
+  }
+}
 }
 
 const Resources *(get_resources) (void) {
   return &resources;
 }
+
+
+AnimSprite* get_player_anim(Direction dir) {
+  return player_anims[dir];
+}
+
