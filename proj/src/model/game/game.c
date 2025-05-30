@@ -206,14 +206,14 @@ void(update_door_timer)(Game *game) {
     return;
   }
 
-  if (game->num_bricks == 0 && game->door.active) {
+  if (game->num_enemies == 0 && game->door.active) {
     if (game->player.active &&
         game->player.x == game->door.x &&
         game->player.y == game->door.y) {
 
       game->door_timer++;
 
-      if (game->door_timer >= 3) {
+      if (game->door_timer >= 1) {
         game->door_timer = 0;
         if (load_next_level(game) != 0) {
           game->state = WIN;

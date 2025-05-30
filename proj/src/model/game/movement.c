@@ -84,7 +84,7 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
       break;
 
     case DOOR:
-      if (game->door.active && game->num_bricks == 0) {
+      if (game->door.active && game->num_enemies == 0) {
         game->board.elements[p->y][p->x] = EMPTY_SPACE;
         game->board.elements[new_y][new_x] = PLAYER;
         p->move.sx = p->x;
