@@ -269,57 +269,13 @@ static int(draw_background_cache)(Game *game) {
 /**
  * @brief Draws the "SCORE:" label using rectangles
  *
- * @param x X-coordinate for the label position
- * @param y Y-coordinate for the label position
- *
  * @return 0 upon success, non-zero otherwise
  */
-static int(draw_score_label)(uint16_t x, uint16_t y) {
-  const uint32_t color = 0x000000;
-  const uint16_t width = 4;
-  const uint16_t height = 20;
-  const uint16_t spacing = 10;
-
-  graphics_draw_rectangle(x, y, height, width, color);                           // top
-  graphics_draw_rectangle(x, y, width, height, color);                           // left top
-  graphics_draw_rectangle(x, y + height, height, width, color);                  // middle
-  graphics_draw_rectangle(x + height - width, y + height, width, height, color); // right bottom
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color);              // bottom
-  x += height + spacing;
-
-  graphics_draw_rectangle(x, y, height, width, color);              // top
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);  // left
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color); // bottom
-  x += height + spacing;
-
-  graphics_draw_rectangle(x, y, height, width, color);                              // top
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);                  // left
-  graphics_draw_rectangle(x + height - width, y, width, 2 * height + width, color); // right
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color);                 // bottom
-  x += height + spacing;
-
-  graphics_draw_rectangle(x, y, height, width, color);                      // top
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);          // left
-  graphics_draw_rectangle(x, y + height + 4, height, width, color);         // middle
-  graphics_draw_rectangle(x + height - width, y, width, height + 4, color); // right
-
-  int start_x = x;                  // start at right edge of middle bar
-  int start_y = y + height + width; // start below middle bar
-
-  for (int i = 0; i < height; i += width) {
-    graphics_draw_rectangle(start_x + i, start_y + i, width, width, color);
+static int(draw_score_label)(void) {
+  if (draw_sprite(get_resources()->score_sprite, 0, 0) != 0) {
+    fprintf(stderr, "draw_score_label: failed to draw score sprite.");
+    return 1;
   }
-
-  x += height + spacing;
-
-  graphics_draw_rectangle(x, y, height, width, color);              // top
-  graphics_draw_rectangle(x, y + height, height, width, color);     // middle
-  graphics_draw_rectangle(x, y + 2 * height, height, width, color); // bottom
-  graphics_draw_rectangle(x, y, width, 2 * height + width, color);  // left
-  x += height + spacing;
-
-  graphics_draw_rectangle(x + width, y + height / 2, width, width, color);     // top dot
-  graphics_draw_rectangle(x + width, y + height + width, width, width, color); // bottom dot
 
   return 0;
 }
@@ -394,11 +350,9 @@ static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
 
   int score = game->score;
   const uint16_t digit_spacing = 30;
-  char score_str[32];
-  snprintf(score_str, sizeof(score_str), "SCORE: %d", score);
 
-  if (draw_score_label(x, y) != 0) {
-    fprintf(stderr, "draw_score: failed to draw score label.\n");
+  if (draw_score_label() != 0) {
+    fprintf(stderr, "draw_score: failed to draw score label.");
     return 1;
   }
   x += 180;
@@ -424,7 +378,10 @@ static int(draw_score)(Game *game, uint16_t x, uint16_t y) {
     int digit = (score / div) % 10;
     if (digit < 0)
       digit = -digit;
-    draw_digit(x, y, digit);
+    if (draw_digit(x, y, digit) != 0) {
+      fprintf(stderr, "draw_score: failed to draw digit at position (%u, %u).", x, y);
+      return 1;
+    }
     x += digit_spacing;
   }
 

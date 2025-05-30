@@ -13,6 +13,7 @@
 #include "assets/xpm/menu_exit.xpm"
 #include "assets/xpm/menu_start.xpm"
 #include "assets/xpm/powerup.xpm"
+#include "assets/xpm/score.xpm"
 #include "assets/xpm/wall.xpm"
 #include "assets/xpm/win.xpm"
 #include "model/sprite/sprite.h"
@@ -94,10 +95,10 @@
 #define ENEMY_ANIM_SPEED 2
 
 #define PLAYER_ANIM_FRAMES 4
-#define PLAYER_ANIM_SPEED  3
+#define PLAYER_ANIM_SPEED 3
 
 #define BOMB_ANIM_FRAMES 4
-#define BOMB_ANIM_SPEED  6
+#define BOMB_ANIM_SPEED 6
 
 #define EXPLOSION_ANIM_FRAMES 4
 #define EXPLOSION_ANIM_SPEED 4
@@ -124,9 +125,9 @@ typedef struct {
   Sprite *lose_sprite;                        /**< @brief Pointer to the lose sprite */
   Sprite *menu_sprite[3];                     /**< @brief Array of pointers to the menu sprites */
 
-  Sprite *player_up_sprites   [PLAYER_ANIM_FRAMES];
-  Sprite *player_left_sprites [PLAYER_ANIM_FRAMES];
-  Sprite *player_down_sprites [PLAYER_ANIM_FRAMES];
+  Sprite *player_up_sprites[PLAYER_ANIM_FRAMES];
+  Sprite *player_left_sprites[PLAYER_ANIM_FRAMES];
+  Sprite *player_down_sprites[PLAYER_ANIM_FRAMES];
   Sprite *player_right_sprites[PLAYER_ANIM_FRAMES];
 
   Sprite *bomb_sprites[BOMB_ANIM_FRAMES];
@@ -139,9 +140,10 @@ typedef struct {
   Sprite *explosion_hand_left_sprites[EXPLOSION_ANIM_FRAMES];
   Sprite *explosion_hand_right_sprites[EXPLOSION_ANIM_FRAMES];
 
-  Sprite *powerup_sprite;                     /**< @brief Pointer to the powerup sprite */
-  Sprite *win_sprite;                         /**< @brief Pointer to the win sprite */
-  Sprite *wall_sprite;                        /**< @brief Pointer to the wall sprite */
+  Sprite *powerup_sprite; /**< @brief Pointer to the powerup sprite */
+  Sprite *score_sprite;   /**< @brief Pointer to the score text sprite */
+  Sprite *win_sprite;     /**< @brief Pointer to the win sprite */
+  Sprite *wall_sprite;    /**< @brief Pointer to the wall sprite */
 } Resources;
 
 /**

@@ -84,8 +84,14 @@ void(move_player)(Entity *p, Game *game, int16_t xmov, int16_t ymov) {
         game->board.elements[p->y][p->x] = EMPTY_SPACE;
         game->board.elements[new_y][new_x] = PLAYER;
         game->player.data++;
-        p->x = new_x;
-        p->y = new_y;
+
+        p->move.sx = p->x;
+        p->move.sy = p->y;
+        p->move.tx = new_x;
+        p->move.ty = new_y;
+        p->move.tick = 0;
+        p->move.total_ticks = PLAYER_ANIM_SPEED * PLAYER_ANIM_FRAMES;
+        p->move.moving = true;
       }
       break;
 
@@ -134,7 +140,7 @@ void(schedule_enemy_moves)(Game *game) {
       if (nx < 0 || nx >= game->board.width || ny < 0 || ny >= game->board.height)
         continue;
       board_element_t dest = game->board.elements[ny][nx];
-      if (dest == EMPTY_SPACE || dest == POWERUP || dest == PLAYER)
+      if (dest == EMPTY_SPACE || dest == PLAYER)
         valid[vc++] = d;
     }
     if (!vc)
