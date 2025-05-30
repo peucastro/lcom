@@ -137,6 +137,17 @@ void(explode_bomb)(Game *game, uint8_t bomb_index) {
                 game->board.elements[e->move.ty][e->move.tx] = EMPTY_SPACE;
                 e->active = false;
                 e->move.moving = false;
+
+                uint8_t alive = 0;
+                for (uint8_t j = 0; j < game->num_enemies; j++) {
+                  if (game->enemies[j].active) {
+                    if (j != alive)
+                      game->enemies[alive] = game->enemies[j];
+                    alive++;
+                  }
+                }
+                game->num_enemies = alive;
+              
               }
               break;
             }
