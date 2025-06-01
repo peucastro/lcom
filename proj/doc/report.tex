@@ -133,7 +133,7 @@ The MVC components communicate through well-defined interfaces:
 The architecture's modularity allows for easy maintenance and extension, with each component handling its specific responsibilities while maintaining loose coupling through well-defined interfaces.
 
 \section{Devices and Interfaces Used}
-This project integrates five devices—Keyboard, Mouse, Timer (PIT 0), RTC, and Video (VBE/VGA)—to handle input, timing, and rendering. Below is a concise description of how each device is used in the game.
+This project integrates five devices—Timer (PIT 0), Keyboard, Mouse, Video (VBE/VGA), and RTC—to handle timing, input, and rendering. Below is a concise description of how each device is used in the game.
 
 \subsection*{Timer (PIT 0)}
 The PIT is set to 60 Hz to synchronize rendering and game updates. On each IRQ 0, \texttt{timer\_handler(game)} calls \texttt{timer\_int\_handler()} to increment a tick counter, then executes \texttt{draw\_next\_frame(game)}—copying the static buffer into the back buffer, blitting all dynamic sprites, and calling \texttt{vbe\_flip\_page()}—to render a new frame. After rendering, \texttt{handle\_timer\_event(game, timer\_get\_counter())} updates animations (\texttt{player.update}, \texttt{enemy.update}) and processes timed logic (\texttt{update\_bombs}, \texttt{update\_explosions}) when \texttt{state == GAME}, ensuring fluid motion and synchronized gameplay.
