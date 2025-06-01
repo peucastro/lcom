@@ -9,7 +9,6 @@ all: $(REPORT_PDF) $(REFMAN_PDF)
 
 $(REPORT_PDF): $(REPORT_TEX)
 	pdflatex $(REPORT_TEX)
-	pdflatex $(REPORT_TEX)
 
 $(REFMAN_PDF): $(DOXYFILE)
 	cd $(ROOT_DIR) && doxygen Doxyfile
