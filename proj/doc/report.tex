@@ -133,13 +133,22 @@ The MVC components communicate through well-defined interfaces:
 The architecture's modularity allows for easy maintenance and extension, with each component handling its specific responsibilities while maintaining loose coupling through well-defined interfaces.
 
 \section{Devices and Interfaces Used}
-What devices did we use and for what purpose?
-\begin{itemize}[itemsep=0.5em]
-  \item \textbf{Mouse:} \ldots
-  \item \textbf{Timer:} \ldots
-  \item \textbf{Keyboard:} \ldots
-  \item \textbf{RTC:} \ldots
-\end{itemize}
+This project integrates five devices—Keyboard, Mouse, Timer (PIT 0), RTC, and Video (VBE/VGA)—to handle input, timing, and rendering. Below is a concise description of how each device is used in the game.
+
+\subsection*{Timer (PIT 0)}
+The PIT is set to 60 Hz to synchronize rendering and game updates. On each IRQ 0, \texttt{timer\_handler(game)} calls \texttt{timer\_int\_handler()} to increment a tick counter, then executes \texttt{draw\_next\_frame(game)}—copying the static buffer into the back buffer, blitting all dynamic sprites, and calling \texttt{vbe\_flip\_page()}—to render a new frame. After rendering, \texttt{handle\_timer\_event(game, timer\_get\_counter())} updates animations (\texttt{player.update}, \texttt{enemy.update}) and processes timed logic (\texttt{update\_bombs}, \texttt{update\_explosions}) when \texttt{state == GAME}, ensuring fluid motion and synchronized gameplay.
+
+\subsection*{Keyboard}
+The PS/2 keyboard handles directional and command input. Each IRQ reads a scancode via \texttt{get\_scancode()}, then \texttt{translate\_scancode(...)} maps it to a \texttt{Key} (arrows/WASD, Enter, Space, ESC). In START/PAUSE, arrow or A/D keys adjust \texttt{game->menu\_option}, Enter confirms, and ESC cancels or returns. In GAME, arrows/WASD call \texttt{move\_player(\&game->player, game, dx, dy)}, Enter/ESC pauses, and Space places a bomb behind the player based on \texttt{player.dir}.
+
+\subsection*{Mouse}
+The PS/2 mouse provides menu navigation and bomb placement. Each IRQ reads raw PS/2 packets (\texttt{mouse\_ih()}/\texttt{mouse\_sync()}) and decodes X/Y deltas and button states into a \texttt{mouse\_info\_t} struct. After parsing, we update the cursor’s stored coordinates by adding those deltas. In START/PAUSE, the cursor’s position is compared against predefined rectangular regions to set \texttt{game->menu\_option}, and a left-click confirms (start, resume, back, or exit). In GAME, a left-click maps the cursor to a grid cell and calls \texttt{drop\_bomb(game, x\_tile, y\_tile)} to place a bomb.
+
+\subsection*{Video (VBE/VGA)}
+We initialize a linear VGA mode and employ triple buffering (a static buffer in RAM, a back buffer in RAM, and VRAM pages as front buffers) to render all game entities’ sprites without flicker. The static buffer holds the background and UI elements; each frame, \texttt{draw\_next\_frame(game)} copies this static buffer into the back buffer, then uses \texttt{draw\_sprite} to blit dynamic sprites (player, enemies, bombs, explosions, power-ups, cursor). Finally, \texttt{vbe\_flip\_page()} swaps the back buffer into VRAM for display, guaranteeing a smooth visual experience.
+
+\subsection*{RTC}
+The RTC is programmed to generate a 1 s periodic interrupt that drives enemy AI, the in-game level timer, and door timers. On each IRQ 8, \texttt{rtc\_handler(game)} clears the interrupt via \texttt{rtc\_ih()} and calls \texttt{handle\_rtc\_event(game)}. If the game is in the GAME state, \texttt{handle\_rtc\_event} advances each enemy one tile (\texttt{schedule\_enemy\_moves}), decrements door open/close timers (\texttt{update\_door\_timer}), and decrements the level or power-up timer (\texttt{update\_level\_timer}).
 
 \section{Differentiating Features}
 What are the differentiating features of our project?
