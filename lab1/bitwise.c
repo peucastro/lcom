@@ -1,15 +1,33 @@
 #include "bitwise.h"
 
-#define TODO return 255
+uint8_t clear(uint8_t msk, int pos) {
+  return msk & ~(1 << pos);
+}
 
-uint8_t clear(uint8_t msk, int pos) { TODO; }
+uint8_t set(uint8_t msk, int pos) {
+  return msk | (1 << pos);
+}
 
-uint8_t set(uint8_t msk, int pos) { TODO; }
+bool is_set(uint8_t msk, int pos) {
+  return (msk & (1 << pos)) != 0;
+}
 
-bool is_set(uint8_t msk, int pos) { TODO; }
+uint8_t lsb(uint16_t wide_msk) {
+  return wide_msk & 0xFF;
+}
 
-uint8_t lsb(uint16_t wide_msk) { TODO; }
+uint8_t msb(uint16_t wide_msk) {
+  return (wide_msk >> 8) & 0xFF;
+}
 
-uint8_t msb(uint16_t wide_msk) { TODO; }
+uint8_t mask(int pos, ...) {
+  uint8_t res = 0;
 
-uint8_t mask(int pos, ...) { TODO; }
+  int *p = &pos;
+  while (*p != MSK_END) {
+    res |= (1 << *p);
+    p++;
+  }
+
+  return res;
+}
