@@ -22,12 +22,16 @@ uint8_t msb(uint16_t wide_msk) {
 
 uint8_t mask(int pos, ...) {
   uint8_t res = 0;
+  va_list args;
 
-  int *p = &pos;
-  while (*p != MSK_END) {
-    res |= (1 << *p);
-    p++;
+  va_start(args, pos);
+
+  int current = pos;
+  while (current != MSK_END) {
+    res |= (1 << current);
+    current = va_arg(args, int);
   }
 
+  va_end(args);
   return res;
 }
