@@ -1,3 +1,5 @@
+#include <lcom/lcf.h>
+
 #include "rtc.h"
 
 #define RTC_ADDR_REG 0x70
@@ -31,6 +33,8 @@ int rtc_read_date(rtc_date *date) {
       perror("rtc_read_date: failed to read from RTC data register (Reg A)");
       return 1;
     }
+
+    tickdelay(micros_to_ticks(2000));
   } while (reg_a & RTC_UIP_MSK);
 
   if (sys_outb(RTC_ADDR_REG, RTC_REG_B) != 0) {
@@ -42,7 +46,7 @@ int rtc_read_date(rtc_date *date) {
     return 1;
   }
 
-  int is_bcd = !(reg_b & RTC_DM_MSK);
+  bool is_bcd = !(reg_b & RTC_DM_MSK);
 
   if (sys_outb(RTC_ADDR_REG, RTC_REG_DAY) != 0 || sys_inb(RTC_DATA_REG, &day) != 0) {
     fprintf(stderr, "rtc_read_date: failed to read Day register.\n");
@@ -57,9 +61,16 @@ int rtc_read_date(rtc_date *date) {
     return 1;
   }
 
-  date->day = is_bcd ? (uint8_t) bcd_to_bin(day) : (uint8_t) day;
-  date->month = is_bcd ? (uint8_t) bcd_to_bin(month) : (uint8_t) month;
-  date->year = is_bcd ? (uint8_t) bcd_to_bin(year) : (uint8_t) year;
+  if (is_bcd) {
+    date->day = (uint8_t) bcd_to_bin(day);
+    date->month = (uint8_t) bcd_to_bin(month);
+    date->year = (uint8_t) bcd_to_bin(year);
+  }
+  else {
+    date->day = (uint8_t) day;
+    date->month = (uint8_t) month;
+    date->year = (uint8_t) year;
+  }
 
   return 0;
 }

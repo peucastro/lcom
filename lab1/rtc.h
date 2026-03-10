@@ -1,6 +1,5 @@
 #pragma once
 
-#include <minix/syslib.h>
 #include <stdint.h>
 
 typedef struct {
