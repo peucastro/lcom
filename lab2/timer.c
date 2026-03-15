@@ -149,21 +149,7 @@ int(timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field
       break;
 
     case tsf_initial:
-      switch ((st >> 3) & 0x3) { // extract the initialization mode (bits 4 and 5)
-        case 1:
-          val.in_mode = LSB_only;
-          break;
-        case 2:
-          val.in_mode = MSB_only;
-          break;
-        case 3:
-          val.in_mode = MSB_after_LSB;
-          break;
-        default:
-          val.in_mode = INVAL_val;
-          fprintf(stderr, "timer_display_conf: invalid initialization mode.");
-          return 1;
-      }
+      val.in_mode = (st >> 3) & 0x3; // extract the initialization mode (bits 4 and 5)
       break;
 
     case tsf_mode:
