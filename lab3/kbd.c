@@ -2,7 +2,7 @@
 
 #include "kbd.h"
 
-// hook id used for subscribing and unsubscribing mouse interrupts.
+// hook id used for subscribing and unsubscribing keyboard interrupts.
 static int kbd_hook_id = 5;
 // static global variable for communicating with our program
 static uint8_t scancode = 0;
