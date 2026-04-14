@@ -2,15 +2,15 @@
 PROG=lab3
 
 # source code files to be compiled
-SRCS = lab3.c kbc.c kbd.c timer.c utils.c
+SRCS = lab3.c kbc.c kbd.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
-CFLAGS += -pedantic -DLAB3
+CFLAGS += -I../lab2 -pedantic -DLAB3
 
 # list of library dependencies
 DPADD += ${LIBLCF}
-LDADD += -llcf
+LDADD += -llcf -L../lab2 -ltimer
 
 # include LCOM's makefile that does all the "heavy lifting"
 .include <minix.lcom.mk>
