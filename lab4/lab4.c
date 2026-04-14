@@ -167,7 +167,7 @@ int(mouse_test_packet)(uint32_t cnt) {
 
   struct packet pp;
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
+  if (mouse_en_data_reporting() != 0) {
     return 1;
   }
 
@@ -212,7 +212,7 @@ int(mouse_test_packet)(uint32_t cnt) {
     return 1;
   }
 
-  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
+  if (mouse_dis_data_reporting() != 0) {
     return 1;
   }
 
@@ -232,14 +232,14 @@ int(mouse_test_async)(uint8_t idle_time) {
   }
   irq_set_timer = BIT(bit_no);
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
-    return 1;
-  }
-
   if (mouse_subscribe_int(&bit_no) != 0) {
     return 1;
   }
   irq_set_mouse = BIT(bit_no);
+
+  if (mouse_en_data_reporting() != 0) {
+    return 1;
+  }
 
   while (time < idle_time) {
     /* get a request message. */
@@ -282,7 +282,7 @@ int(mouse_test_async)(uint8_t idle_time) {
     return 1;
   }
 
-  if (mouse_write_cmd(MOUSE_DIS_DATA_REPORTS) != 0) {
+  if (mouse_dis_data_reporting() != 0) {
     return 1;
   }
 
@@ -308,7 +308,7 @@ int(mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
   }
   irq_set = BIT(bit_no);
 
-  if (mouse_write_cmd(MOUSE_EN_DATA_REPORTS) != 0) {
+  if (mouse_en_data_reporting() != 0) {
     return 1;
   }
 

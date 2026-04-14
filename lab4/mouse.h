@@ -32,18 +32,18 @@ int(mouse_subscribe_int)(uint8_t *bit_no);
 int(mouse_unsubscribe_int)(void);
 
 /**
- * @brief Disables mouse data reporting
- *
- * @return Return 0 upon success and non-zero otherwise
- */
-int(mouse_disable_data_reporting)(void);
-
-/**
  * @brief Enables mouse data reporting
  *
  * @return Return 0 upon success and non-zero otherwise
  */
-int(mouse_enable_data_reporting)(void);
+int(mouse_en_data_reporting)(void);
+
+/**
+ * @brief Disables mouse data reporting
+ *
+ * @return Return 0 upon success and non-zero otherwise
+ */
+int(mouse_dis_data_reporting)(void);
 
 /**
  * @brief Writes a command to the mouse
