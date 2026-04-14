@@ -232,14 +232,14 @@ int(mouse_test_async)(uint8_t idle_time) {
   }
   irq_set_timer = BIT(bit_no);
 
+  if (mouse_en_data_reporting() != 0) {
+    return 1;
+  }
+
   if (mouse_subscribe_int(&bit_no) != 0) {
     return 1;
   }
   irq_set_mouse = BIT(bit_no);
-
-  if (mouse_en_data_reporting() != 0) {
-    return 1;
-  }
 
   while (time < idle_time) {
     /* get a request message. */
