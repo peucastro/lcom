@@ -43,6 +43,14 @@ int(mouse_unsubscribe_int)(void) {
   return 0;
 }
 
+int(mouse_disable_data_reporting)(void) {
+  return mouse_write_cmd(MOUSE_DIS_DATA_REPORTS);
+}
+
+int(mouse_enable_data_reporting)(void) {
+  return mouse_write_cmd(MOUSE_EN_DATA_REPORTS);
+}
+
 int(mouse_write_cmd)(uint8_t cmd) {
   int attempts = KBC_MAX_ATTEMPTS;
   uint8_t response;
