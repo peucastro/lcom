@@ -58,15 +58,16 @@ int(graphics_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
     return 1;
   }
 
-  /* draw the horizontal line pixel by pixel.
-   * we iterate from the start position x up to (x + len), keeping the same y */
-  for (uint16_t col = x; col < x + len; col++) {
-    // draw each pixel along the horizontal direction
-    if (graphics_draw_pixel(col, y, color) != 0) {
-      fprintf(stderr, "graphics_draw_hline: failed to draw pixel.");
-      return 1;
-    }
+  uint8_t bytes_per_pixel = (vbe_get_mode().BitsPerPixel + 7) / 8;
+  uint8_t *line_start = vbe_get_video_mem() + (y * vbe_get_mode().XResolution + x) * bytes_per_pixel;
+  uint32_t line_size = len * bytes_per_pixel;
+
+  uint8_t line_buffer[line_size];
+  for (uint16_t i = 0; i < len; i++) {
+    memcpy(line_buffer + i * bytes_per_pixel, &color, bytes_per_pixel);
   }
+
+  memcpy(line_start, line_buffer, line_size);
 
   return 0;
 }
